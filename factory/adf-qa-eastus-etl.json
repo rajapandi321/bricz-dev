@@ -1,0 +1,12 @@
+{
+	"name": "adf-qa-eastus-etl",
+	"properties": {
+		"globalParameters": {
+			"dlradial": {
+				"type": "string",
+				"value": "https://radialdemoacc.dfs.core.windows.net/"
+			}
+		}
+	},
+	"location": "eastus"
+}

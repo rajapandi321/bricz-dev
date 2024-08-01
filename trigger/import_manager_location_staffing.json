@@ -1,0 +1,31 @@
+{
+	"name": "import_manager_location_staffing",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "LOCATION_STAFFING",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"quote": "'",
+					"folder_path": "@triggerBody().folderPath",
+					"file_name": "@triggerBody().fileName",
+					"next_line": "\\n"
+				}
+			}
+		],
+		"type": "BlobEventsTrigger",
+		"typeProperties": {
+			"blobPathBeginsWith": "/staging/blobs/DEV/Upload/LocationStaffing/",
+			"blobPathEndsWith": ".xlsx",
+			"ignoreEmptyBlobs": true,
+			"scope": "/subscriptions/c061dde2-a728-4240-8f3d-15ccff95ec4d/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Storage/storageAccounts/stdevdatapipe001",
+			"events": [
+				"Microsoft.Storage.BlobCreated"
+			]
+		}
+	}
+}

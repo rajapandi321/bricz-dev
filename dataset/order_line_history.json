@@ -1,0 +1,86 @@
+{
+	"name": "order_line_history",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "PgSQL_LinkedService3",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "db_tables"
+		},
+		"annotations": [],
+		"type": "AzurePostgreSqlTable",
+		"schema": [
+			{
+				"name": "order_id",
+				"type": "integer",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "order_line_code",
+				"type": "character varying",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "item_code",
+				"type": "character varying",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "item_name",
+				"type": "character varying",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "item_description",
+				"type": "character varying",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "order_quantity",
+				"type": "real",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "ship_quantity",
+				"type": "real",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "line_status",
+				"type": "character varying",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "item_price",
+				"type": "real",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "business_unit_id",
+				"type": "uuid",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "organization_id",
+				"type": "uuid",
+				"precision": 0,
+				"scale": 0
+			}
+		],
+		"typeProperties": {
+			"schema": "pfp",
+			"table": "order_line_history"
+		}
+	}
+}

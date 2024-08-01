@@ -1,0 +1,18 @@
+{
+	"name": "temp_binary_sample_files",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "datalakelinkedservice",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "temp",
+				"fileSystem": "staging"
+			}
+		}
+	}
+}

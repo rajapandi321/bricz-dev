@@ -1,0 +1,31 @@
+{
+	"name": "SHIPMENT_HISTORY_STAGING",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "QA_Datalake",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "src_files"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "Radial/OrderHistory",
+				"fileSystem": "staging"
+			},
+			"columnDelimiter": "|",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "Order ID|Order Line ID|Channel|Order date|Order Original Ship date|Order Actual Ship date|Order due date|Order Received (in Warehouse) Date and time|Order Completed (in Warehouse) Date and time|Destination zip code (Ship to)|Item code|Order quantity|Quantity (UOM) Picked|Order Status|Carrier|Service Type|Shipment Fees|Order Value",
+				"type": "String"
+			}
+		]
+	}
+}

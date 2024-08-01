@@ -1,0 +1,22 @@
+{
+	"name": "PgSQL_LinkedService3",
+	"properties": {
+		"annotations": [],
+		"type": "AzurePostgreSql",
+		"typeProperties": {
+			"connectionString": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "briczkeyvault",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "ADF-DB-CONNECTIONSTRING"
+			}
+		},
+		"connectVia": {
+			"referenceName": "AutoResolveIntegrationRuntime",
+			"type": "IntegrationRuntimeReference"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/linkedservices"
+}

@@ -1,0 +1,249 @@
+{
+	"name": "SFTP_REDIRECT_BLOB_SINGLE",
+	"properties": {
+		"activities": [
+			{
+				"name": "Fetchallrecords",
+				"type": "GetMetadata",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "BinaryOutbound",
+						"type": "DatasetReference",
+						"parameters": {
+							"folder_name": {
+								"value": "@pipeline().parameters.folder_path",
+								"type": "Expression"
+							}
+						}
+					},
+					"fieldList": [
+						"childItems"
+					],
+					"storeSettings": {
+						"type": "SftpReadSettings",
+						"recursive": true,
+						"enablePartitionDiscovery": false,
+						"disableChunking": false
+					},
+					"formatSettings": {
+						"type": "BinaryReadSettings"
+					}
+				}
+			},
+			{
+				"name": "Filter1",
+				"type": "Filter",
+				"dependsOn": [
+					{
+						"activity": "Fetchallrecords",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Fetchallrecords').output.childItems",
+						"type": "Expression"
+					},
+					"condition": {
+						"value": "@equals(item().type,'File')",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "ForEach1",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Filter1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Filter1').output.Value",
+						"type": "Expression"
+					},
+					"isSequential": true,
+					"activities": [
+						{
+							"name": "copymultiplefiles",
+							"type": "Copy",
+							"dependsOn": [
+								{
+									"activity": "Set variable1",
+									"dependencyConditions": [
+										"Completed"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "BinarySource",
+									"storeSettings": {
+										"type": "SftpReadSettings",
+										"recursive": true,
+										"deleteFilesAfterCompletion": false,
+										"disableChunking": false
+									},
+									"formatSettings": {
+										"type": "BinaryReadSettings"
+									}
+								},
+								"sink": {
+									"type": "BinarySink",
+									"storeSettings": {
+										"type": "AzureBlobFSWriteSettings",
+										"copyBehavior": "PreserveHierarchy"
+									}
+								},
+								"enableStaging": false
+							},
+							"inputs": [
+								{
+									"referenceName": "BinaryOutbound_FetchFiles",
+									"type": "DatasetReference",
+									"parameters": {
+										"folder_name": {
+											"value": "@pipeline().parameters.folder_path",
+											"type": "Expression"
+										},
+										"file_name": {
+											"value": "@item().name",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "BinaryDataDestination",
+									"type": "DatasetReference",
+									"parameters": {
+										"Container": {
+											"value": "@pipeline().parameters.container",
+											"type": "Expression"
+										},
+										"Directory": {
+											"value": "@variables('output_path')[0]",
+											"type": "Expression"
+										},
+										"filename": {
+											"value": "@item().name",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						},
+						{
+							"name": "deletemultiplefiles",
+							"type": "Delete",
+							"dependsOn": [
+								{
+									"activity": "copymultiplefiles",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"dataset": {
+									"referenceName": "BinaryOutbound_FetchFiles",
+									"type": "DatasetReference",
+									"parameters": {
+										"folder_name": {
+											"value": "@pipeline().parameters.folder_path",
+											"type": "Expression"
+										},
+										"file_name": {
+											"value": "@item().name",
+											"type": "Expression"
+										}
+									}
+								},
+								"enableLogging": false,
+								"storeSettings": {
+									"type": "SftpReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false,
+									"disableChunking": false
+								}
+							}
+						},
+						{
+							"name": "Set variable1",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "output_path",
+								"value": {
+									"value": "@if(\n    contains(toLower(item().name), 'order'),\n    json('[\"Radial/OrderHistory\"]'),\n    if(\n        contains(toLower(item().name), 'shipment'),\n        json('[\"Radial/ShipmentHistory\"]'),\n        if(\n            contains(toLower(item().name), 'budget'),\n            json('[\"Radial/BudgetStaffing\"]'),\n            if(\n                contains(toLower(item().name), 'daily'),\n                json('[\"Radial/DailyActuals\"]'),\n                if(\n                    contains(toLower(item().name), 'fulfillment'),\n                    json('[\"Radial/FulfillmentForecast\"]'),\n                    if(\n                        contains(toLower(item().name), 'item'),\n                        json('[\"Radial/ItemMaster\"]'),\n                        if(\n                            contains(toLower(item().name), 'location'),\n                            json('[\"Radial/LocationMaster\"]'),\n                            if(\n                                contains(toLower(item().name), 'staffing'),\n                                json('[\"Radial/StaffingHistory\"]'),\n                                json('[\"C\"]')\n                            )\n                        )\n                    )\n                )\n            )\n        )\n    )\n)",
+									"type": "Expression"
+								}
+							}
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"folder_path": {
+				"type": "string",
+				"defaultValue": "outbound"
+			},
+			"container": {
+				"type": "string",
+				"defaultValue": "main"
+			}
+		},
+		"variables": {
+			"file_path": {
+				"type": "Array"
+			},
+			"output_path": {
+				"type": "Array"
+			}
+		},
+		"folder": {
+			"name": "FTP"
+		},
+		"annotations": []
+	}
+}

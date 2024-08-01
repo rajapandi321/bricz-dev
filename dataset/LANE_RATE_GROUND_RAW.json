@@ -1,0 +1,72 @@
+{
+	"name": "LANE_RATE_GROUND_RAW",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "datalakelinkedservice",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "src_files"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "Radial/LaneRates/UPS/Ground",
+				"fileSystem": "main"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "Zones",
+				"type": "String"
+			},
+			{
+				"name": "2",
+				"type": "String"
+			},
+			{
+				"name": "3",
+				"type": "String"
+			},
+			{
+				"name": "4",
+				"type": "String"
+			},
+			{
+				"name": "5",
+				"type": "String"
+			},
+			{
+				"name": "6",
+				"type": "String"
+			},
+			{
+				"name": "7",
+				"type": "String"
+			},
+			{
+				"name": "8",
+				"type": "String"
+			},
+			{
+				"name": "44",
+				"type": "String"
+			},
+			{
+				"name": "45",
+				"type": "String"
+			},
+			{
+				"name": "46",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

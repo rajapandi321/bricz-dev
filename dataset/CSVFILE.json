@@ -1,0 +1,65 @@
+{
+	"name": "CSVFILE",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "datalakelinkedservice",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "LocationMaster",
+				"fileSystem": "staging"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "Location Code",
+				"type": "String"
+			},
+			{
+				"name": "name",
+				"type": "String"
+			},
+			{
+				"name": "address",
+				"type": "String"
+			},
+			{
+				"name": "zip",
+				"type": "String"
+			},
+			{
+				"name": "inbound_handling_cost",
+				"type": "String"
+			},
+			{
+				"name": "outbound_handling_cost",
+				"type": "String"
+			},
+			{
+				"name": "status",
+				"type": "String"
+			},
+			{
+				"name": "inbound_processing_time",
+				"type": "String"
+			},
+			{
+				"name": "outbound_processing_time",
+				"type": "String"
+			},
+			{
+				"name": "type",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

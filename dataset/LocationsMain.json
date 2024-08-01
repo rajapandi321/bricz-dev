@@ -1,0 +1,152 @@
+{
+	"name": "LocationsMain",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "datalakelinkedservice",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "DEV/Upload/Location",
+				"fileSystem": "main"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "Location ID*",
+				"type": "String"
+			},
+			{
+				"name": "Location Name",
+				"type": "String"
+			},
+			{
+				"name": "Address",
+				"type": "String"
+			},
+			{
+				"name": "City",
+				"type": "String"
+			},
+			{
+				"name": "State",
+				"type": "String"
+			},
+			{
+				"name": "Zip",
+				"type": "String"
+			},
+			{
+				"name": "Country",
+				"type": "String"
+			},
+			{
+				"name": "Longitude",
+				"type": "String"
+			},
+			{
+				"name": "Latitude",
+				"type": "String"
+			},
+			{
+				"name": "Location Status",
+				"type": "String"
+			},
+			{
+				"name": "Location Type",
+				"type": "String"
+			},
+			{
+				"name": "Daily Throughput",
+				"type": "String"
+			},
+			{
+				"name": "Storage Capacity",
+				"type": "String"
+			},
+			{
+				"name": "Inbound Handling Cost",
+				"type": "String"
+			},
+			{
+				"name": "Outbound Handling Cost",
+				"type": "String"
+			},
+			{
+				"name": "Inbound Processing Time",
+				"type": "String"
+			},
+			{
+				"name": "Outbound Processing Time",
+				"type": "String"
+			},
+			{
+				"name": "Transfer Inbound Processing Time",
+				"type": "String"
+			},
+			{
+				"name": "Transfer Outbound Processing Time",
+				"type": "String"
+			},
+			{
+				"name": "Transfer Inbound Handling Cost",
+				"type": "String"
+			},
+			{
+				"name": "Transfer Outbound Handling Cost",
+				"type": "String"
+			},
+			{
+				"name": "Units per Hour",
+				"type": "String"
+			},
+			{
+				"name": "Max FTE Regular Hours",
+				"type": "String"
+			},
+			{
+				"name": "Min FTE Regular Hours",
+				"type": "String"
+			},
+			{
+				"name": "Max Temp Regular Hours",
+				"type": "String"
+			},
+			{
+				"name": "Min Temp Regular Hours",
+				"type": "String"
+			},
+			{
+				"name": "Regular FTE Wage",
+				"type": "String"
+			},
+			{
+				"name": "Regular Temp Wage",
+				"type": "String"
+			},
+			{
+				"name": "Overtime FTE Wage",
+				"type": "String"
+			},
+			{
+				"name": "Overtime Temp Wage",
+				"type": "String"
+			},
+			{
+				"name": "FTE Staff Count",
+				"type": "String"
+			},
+			{
+				"name": "Temp Staff Count",
+				"type": "String"
+			}
+		]
+	}
+}

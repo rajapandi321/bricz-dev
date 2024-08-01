@@ -1,0 +1,293 @@
+{
+	"name": "SFTP_TO_STORAGE",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data1",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"recursive": true,
+							"wildcardFolderPath": "Radial/OrderHistory/OH",
+							"wildcardFileName": "2021B*",
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings",
+							"copyBehavior": "PreserveHierarchy"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".csv"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "Order ID",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Order ID",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Order Line ID",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Order Line ID",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Location ID",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Location ID",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Channel",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Channel",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Order date",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Order Date",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Order Original Ship date",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Order Original Ship Date",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Order Actual Ship date",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Order Actual Ship Date",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Order due date",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Order Due Date",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Order Received (in Warehouse) Date and time",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Order Received Date and Time",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Order Completed (in Warehouse) Date and time",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Order Completed Date and Time",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Destination zip code (Ship to)",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Destination Zip Code",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Item code",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Item Code",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Order quantity",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Order Quantity",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Quantity (UOM) Picked",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Quantity (UOM) Picked",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Order Status",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Order Status",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Carrier",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Carrier",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Service Type",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Service Type",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Shipment Fees",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Shipment Fees",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Order Value",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Order Value",
+									"type": "String",
+									"physicalType": "String"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "ORDER_HISTORY_SFTP",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "ORDER_HISTORY_RAW",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
+		"folder": {
+			"name": "REMOTE"
+		},
+		"annotations": []
+	}
+}

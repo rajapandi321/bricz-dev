@@ -1,0 +1,89 @@
+{
+	"name": "notification",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "PgSQL_LinkedService3",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzurePostgreSqlTable",
+		"schema": [
+			{
+				"name": "id",
+				"type": "integer",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "run_id",
+				"type": "integer",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "run_status",
+				"type": "character varying",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "description",
+				"type": "character varying",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "user_id",
+				"type": "uuid",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "notification_status",
+				"type": "USER-DEFINED",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "notification_type",
+				"type": "character varying",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "feature_id",
+				"type": "integer",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "created_at",
+				"type": "timestamp with time zone",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "updated_at",
+				"type": "timestamp with time zone",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "business_unit_id",
+				"type": "uuid",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "organization_id",
+				"type": "uuid",
+				"precision": 0,
+				"scale": 0
+			}
+		],
+		"typeProperties": {
+			"schema": "pfp",
+			"table": "notification"
+		}
+	}
+}

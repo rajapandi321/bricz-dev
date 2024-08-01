@@ -1,0 +1,194 @@
+{
+	"name": "SHIPMENT_HISTORY_STAGING_TO_MAIN",
+	"properties": {
+		"activities": [
+			{
+				"name": "SFTP_TO_MAIN",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"recursive": true,
+							"wildcardFolderPath": "Radial/OrderHistory/SH",
+							"wildcardFileName": "*SHIPMENT_HISTORY.csv",
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings",
+							"copyBehavior": "PreserveHierarchy"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".csv"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "Shipment ID",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Shipment ID",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Order Line ID",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Order Line ID",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Location ID",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Location ID",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Carrier Name",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Carrier Name",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Mode",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Mode",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Total Units",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Total Units",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Total Shipment Weight",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Total Shipment Weight",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Total Shipment Volume",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Total Shipment Volume",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Total Shipment Cost",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Total Shipment Cost",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Total Shipment Value",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Total Shipment Value",
+									"type": "String",
+									"physicalType": "String"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "SHIPMENT_HISTORY_STAGING",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "SHIPMENT_HISTORY_RAW",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
+		"folder": {
+			"name": "REMOTE"
+		},
+		"annotations": []
+	}
+}

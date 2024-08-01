@@ -1,0 +1,64 @@
+{
+	"name": "INVENTORY_MAIN_UX",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "datalakelinkedservice",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "DEV/Upload/Inventory",
+				"fileSystem": "main"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "Item ID",
+				"type": "String"
+			},
+			{
+				"name": "Location ID",
+				"type": "String"
+			},
+			{
+				"name": "Stock Date",
+				"type": "String"
+			},
+			{
+				"name": "Stock Quantity",
+				"type": "String"
+			},
+			{
+				"name": "Reserved Quantity",
+				"type": "String"
+			},
+			{
+				"name": "Available Quantity",
+				"type": "String"
+			},
+			{
+				"name": "On Order ID",
+				"type": "String"
+			},
+			{
+				"name": "On Order Due Date",
+				"type": "String"
+			},
+			{
+				"name": "On Order Supplier Shipping Date",
+				"type": "String"
+			},
+			{
+				"name": "On Order Promised Delivery Date",
+				"type": "String"
+			}
+		]
+	}
+}

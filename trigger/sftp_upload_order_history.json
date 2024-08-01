@@ -1,0 +1,28 @@
+{
+	"name": "sftp_upload_order_history",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "ORDER_HISTORY_COPY",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"filename": "@triggerBody().filename"
+				}
+			}
+		],
+		"type": "BlobEventsTrigger",
+		"typeProperties": {
+			"blobPathBeginsWith": "/main/blobs/Radial/OrderHistory",
+			"blobPathEndsWith": ".csv",
+			"ignoreEmptyBlobs": true,
+			"scope": "/subscriptions/c061dde2-a728-4240-8f3d-15ccff95ec4d/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Storage/storageAccounts/stdevdatapipe001",
+			"events": [
+				"Microsoft.Storage.BlobCreated"
+			]
+		}
+	}
+}

@@ -1,0 +1,59 @@
+{
+	"name": "FULFILLMENT_FORECAST_UX_STAGING",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "datalakelinkedservice",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Excel",
+		"typeProperties": {
+			"sheetName": "Fulfillment Forecast Import Tem",
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "338.xlsx",
+				"folderPath": "DEV/Upload/FulfillmentForecast",
+				"fileSystem": "staging"
+			},
+			"firstRowAsHeader": true
+		},
+		"schema": [
+			{
+				"name": "Forecast Date*",
+				"type": "String"
+			},
+			{
+				"name": "Forecast 1 Units",
+				"type": "String"
+			},
+			{
+				"name": "Forecast 1 Orders",
+				"type": "String"
+			},
+			{
+				"name": "Forecast 2 Units",
+				"type": "String"
+			},
+			{
+				"name": "Units per Order",
+				"type": "String"
+			},
+			{
+				"name": "Forecast Locked Date",
+				"type": "String"
+			},
+			{
+				"name": "Fulfillment Service*",
+				"type": "String"
+			},
+			{
+				"name": "Fulfillment Location ID*",
+				"type": "String"
+			},
+			{
+				"name": "Forecast 2 Orders",
+				"type": "String"
+			}
+		]
+	}
+}

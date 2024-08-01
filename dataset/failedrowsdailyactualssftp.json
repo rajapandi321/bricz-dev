@@ -1,0 +1,22 @@
+{
+	"name": "failedrowsdailyactualssftp",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "SFTP_RADIAL_STORAGE",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "SftpLocation",
+				"folderPath": "/faileduploads/DailyActuals"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}

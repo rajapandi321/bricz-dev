@@ -1,0 +1,61 @@
+{
+	"name": "FulfillmentForecastMain",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "datalakelinkedservice",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "338.txt",
+				"folderPath": "DEV/Upload/FulfillmentForecast",
+				"fileSystem": "main"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "Fulfillment Location ID*",
+				"type": "String"
+			},
+			{
+				"name": "Fulfillment Service*",
+				"type": "String"
+			},
+			{
+				"name": "Forecast Date*",
+				"type": "String"
+			},
+			{
+				"name": "Forecast 1 Units",
+				"type": "String"
+			},
+			{
+				"name": "Forecast 1 Orders",
+				"type": "String"
+			},
+			{
+				"name": "Forecast 2 Units",
+				"type": "String"
+			},
+			{
+				"name": "Forecast 2 Orders",
+				"type": "String"
+			},
+			{
+				"name": "Units per Order",
+				"type": "String"
+			},
+			{
+				"name": "Forecast Locked Date",
+				"type": "String"
+			}
+		]
+	}
+}

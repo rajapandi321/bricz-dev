@@ -1,0 +1,56 @@
+{
+	"name": "LOCATION_MASTER",
+	"properties": {
+		"activities": [
+			{
+				"name": "df_activity_location_master",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "df_location_master",
+						"type": "DataFlowReference",
+						"parameters": {
+							"file_path": {
+								"value": "'@{replace(concat(pipeline().parameters.folder_path,'/',pipeline().parameters.file_name),'main','')}'",
+								"type": "Expression"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine",
+					"continuationSettings": {
+						"customizedCheckpointKey": "07bf77db-08a7-4725-afab-425dfbda5236"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"folder_path": {
+				"type": "string",
+				"defaultValue": "Radial/LocationMaster"
+			},
+			"file_name": {
+				"type": "String",
+				"defaultValue": "data_107e2644-2ce0-4274-abb8-2ad1ea4d944d_d6b001c9-e396-41a1-ad43-b5f3d1aebeae.csv"
+			}
+		},
+		"folder": {
+			"name": "FTP"
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-10-10T12:18:39Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

@@ -1,0 +1,22 @@
+{
+	"name": "FAILED_LOCATION_MASTER_ROWS_SFTP",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "SFTP_RADIAL_STORAGE",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "SftpLocation",
+				"folderPath": "/faileduploads/LocationMaster"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}

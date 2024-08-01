@@ -1,0 +1,159 @@
+{
+	"name": "transportation_lane",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "PgSQL_LinkedService3",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "db_tables"
+		},
+		"annotations": [],
+		"type": "AzurePostgreSqlTable",
+		"schema": [
+			{
+				"name": "id",
+				"type": "integer",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "delivery_partner_id",
+				"type": "character varying",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "rate_code",
+				"type": "character varying",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "fulfillment_service_type",
+				"type": "character varying",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "service_type",
+				"type": "character varying",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "origin_location_code",
+				"type": "integer",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "origin_address",
+				"type": "character varying",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "origin_city",
+				"type": "character varying",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "origin_state",
+				"type": "character varying",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "origin_zip",
+				"type": "character varying",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "origin_country",
+				"type": "character varying",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "destination_location_code",
+				"type": "integer",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "destination_address",
+				"type": "character varying",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "destination_city",
+				"type": "character varying",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "destination_state",
+				"type": "character varying",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "destination_zip",
+				"type": "character varying",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "destination_country",
+				"type": "character varying",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "transit_time",
+				"type": "integer",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "zone",
+				"type": "character varying",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "created_date",
+				"type": "timestamp with time zone",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "updated_date",
+				"type": "timestamp with time zone",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "business_unit_id",
+				"type": "uuid",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "organization_id",
+				"type": "uuid",
+				"precision": 0,
+				"scale": 0
+			}
+		],
+		"typeProperties": {
+			"schema": "pfp",
+			"table": "transportation_lane"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

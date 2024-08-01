@@ -1,0 +1,103 @@
+{
+	"name": "ORDER_HISTORY_SFTP",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "QA_Datalake",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "src_files"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "Radial/OrderHistory/OH",
+				"fileSystem": "staging"
+			},
+			"columnDelimiter": "|",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "Order ID",
+				"type": "String"
+			},
+			{
+				"name": "Order Line ID",
+				"type": "String"
+			},
+			{
+				"name": "Location ID",
+				"type": "String"
+			},
+			{
+				"name": "Channel",
+				"type": "String"
+			},
+			{
+				"name": "Order date",
+				"type": "String"
+			},
+			{
+				"name": "Order Original Ship date",
+				"type": "String"
+			},
+			{
+				"name": "Order Actual Ship date",
+				"type": "String"
+			},
+			{
+				"name": "Order due date",
+				"type": "String"
+			},
+			{
+				"name": "Order Received (in Warehouse) Date and time",
+				"type": "String"
+			},
+			{
+				"name": "Order Completed (in Warehouse) Date and time",
+				"type": "String"
+			},
+			{
+				"name": "Destination zip code (Ship to)",
+				"type": "String"
+			},
+			{
+				"name": "Item code",
+				"type": "String"
+			},
+			{
+				"name": "Order quantity",
+				"type": "String"
+			},
+			{
+				"name": "Quantity (UOM) Picked",
+				"type": "String"
+			},
+			{
+				"name": "Order Status",
+				"type": "String"
+			},
+			{
+				"name": "Carrier",
+				"type": "String"
+			},
+			{
+				"name": "Service Type",
+				"type": "String"
+			},
+			{
+				"name": "Shipment Fees",
+				"type": "String"
+			},
+			{
+				"name": "Order Value",
+				"type": "String"
+			}
+		]
+	}
+}

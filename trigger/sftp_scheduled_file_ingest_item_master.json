@@ -1,0 +1,30 @@
+{
+	"name": "sftp_scheduled_file_ingest_item_master",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Stopped",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "SFTP_TO_MAIN_FOR_PROCESSING",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"SourceStore_Location": "outbound",
+					"SourceStore_Directory": "ItemMaster",
+					"DestinationStore_Location": "main/Radial/",
+					"DestinationStore_Directory": "ItemMaster"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Day",
+				"interval": 1,
+				"startTime": "2024-07-04T05:10:00",
+				"timeZone": "Central Standard Time"
+			}
+		}
+	}
+}

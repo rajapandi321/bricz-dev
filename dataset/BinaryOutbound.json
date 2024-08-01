@@ -1,0 +1,25 @@
+{
+	"name": "BinaryOutbound",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "SFTP_RADIAL_STORAGE",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"folder_name": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "SftpLocation",
+				"folderPath": {
+					"value": "@dataset().folder_name",
+					"type": "Expression"
+				}
+			}
+		}
+	}
+}

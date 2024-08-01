@@ -1,0 +1,28 @@
+{
+	"name": "SFTP_RADIAL_STORAGE",
+	"properties": {
+		"annotations": [],
+		"type": "Sftp",
+		"typeProperties": {
+			"host": "ftp.gsipartners.com",
+			"port": 22,
+			"skipHostKeyValidation": true,
+			"authenticationType": "Basic",
+			"userName": "bricz",
+			"password": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "briczkeyvault",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "SFTP-PASSWORD",
+				"secretVersion": "623aa48f57e54062bf4fd768fcb2a2b2"
+			}
+		},
+		"connectVia": {
+			"referenceName": "AutoResolveIntegrationRuntime",
+			"type": "IntegrationRuntimeReference"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/linkedservices"
+}

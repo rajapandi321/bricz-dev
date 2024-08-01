@@ -1,0 +1,138 @@
+{
+	"name": "ORDER_HISTORY",
+	"properties": {
+		"activities": [
+			{
+				"name": "df_order_history",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "df_order_history",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 32,
+						"computeType": "MemoryOptimized"
+					},
+					"traceLevel": "Fine",
+					"continuationSettings": {
+						"customizedCheckpointKey": "bd83f014-f182-4d2c-8f76-89b0fa32937d"
+					}
+				}
+			},
+			{
+				"name": "Notify Mail",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "df_order_status_history",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"method": "POST",
+					"url": "https://prod-69.eastus.logic.azure.com:443/workflows/0755ac6ab8ba4359b56ea72ce6dc03e9/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=j4Y5kxvgBtB_wNtZkEsXV79Asm4Ct1qzmlV9R7zf8uc",
+					"connectVia": {
+						"referenceName": "AutoResolveIntegrationRuntime",
+						"type": "IntegrationRuntimeReference"
+					},
+					"body": {
+						"value": "{\n\"datafactoryname\" : \"@{pipeline().DataFactory}\", \n\"pipelineName\" : \"@{pipeline().Pipeline}\", \n\"runID\" : \"@{pipeline().RunId}\",\n\"records_read_from_file\" : \"@{activity('df_order_history').output.runStatus.metrics.OrderHistory.sources.orderhistoryraw.rowsRead}\",\n\"records_written_order_history\" : \"@{activity('df_order_history').output.runStatus.metrics.OrderHistory.rowsWritten}\",\n\"records_written_order_line_history\" : \"@{activity('df_order_line_history').output.runStatus.metrics.OrderLineHistory.rowsWritten}\",\n\"records_written_order_status_history\" : \"@{activity('df_order_status_history').output.runStatus.metrics.OrderStatusHistory.rowsWritten}\" ,\"time_taken_order_history\":\"@{activity('df_order_history').Duration}\",\n\"time_taken_order_line_history\":\"@{activity('df_order_line_history').Duration}\",\n\"time_taken_order_status_history\":\"@{activity('df_order_status_history').Duration}\"\n}",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "df_order_line_history",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [
+					{
+						"activity": "df_order_history",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "df_order_line_history",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 32,
+						"computeType": "MemoryOptimized"
+					},
+					"traceLevel": "Fine",
+					"continuationSettings": {
+						"customizedCheckpointKey": "15bce445-52eb-4c37-9bcf-1b6d6720d802"
+					}
+				}
+			},
+			{
+				"name": "df_order_status_history",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [
+					{
+						"activity": "df_order_line_history",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "df_order_status_history",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 32,
+						"computeType": "MemoryOptimized"
+					},
+					"traceLevel": "Fine",
+					"continuationSettings": {
+						"customizedCheckpointKey": "9a27ee55-a57e-4214-9863-64ee1eea9dc9"
+					}
+				}
+			}
+		],
+		"folder": {
+			"name": "REMOTE"
+		},
+		"annotations": []
+	}
+}

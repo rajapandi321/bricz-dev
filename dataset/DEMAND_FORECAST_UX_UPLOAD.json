@@ -1,0 +1,67 @@
+{
+	"name": "DEMAND_FORECAST_UX_UPLOAD",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "datalakelinkedservice",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Excel",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "10.xlsx",
+				"folderPath": "DEV/Upload/DemandForecast",
+				"fileSystem": "staging"
+			},
+			"sheetIndex": 0,
+			"firstRowAsHeader": true
+		},
+		"schema": [
+			{
+				"name": "Item ID*",
+				"type": "String"
+			},
+			{
+				"name": "Area ID (3 Digit Zip Code)*",
+				"type": "String"
+			},
+			{
+				"name": "Customer Type",
+				"type": "String"
+			},
+			{
+				"name": "Fulfillment Service*",
+				"type": "String"
+			},
+			{
+				"name": "Forecast Start Date*",
+				"type": "String"
+			},
+			{
+				"name": "Forecast End Date*",
+				"type": "String"
+			},
+			{
+				"name": "Low Demand Quantity",
+				"type": "String"
+			},
+			{
+				"name": "Consensus Demand Quantity",
+				"type": "String"
+			},
+			{
+				"name": "High Demand Quantity",
+				"type": "String"
+			},
+			{
+				"name": "Fulfillment Location ID",
+				"type": "String"
+			},
+			{
+				"name": "Fixed Fulfillment",
+				"type": "String"
+			}
+		]
+	}
+}

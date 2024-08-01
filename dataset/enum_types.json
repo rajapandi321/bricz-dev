@@ -1,0 +1,45 @@
+{
+	"name": "enum_types",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "PgSQL_LinkedService3",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "db_tables"
+		},
+		"annotations": [],
+		"type": "AzurePostgreSqlTable",
+		"schema": [
+			{
+				"name": "id",
+				"type": "integer",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "name",
+				"type": "character varying",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "created_date",
+				"type": "timestamp with time zone",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "updated_date",
+				"type": "timestamp with time zone",
+				"precision": 0,
+				"scale": 0
+			}
+		],
+		"typeProperties": {
+			"schema": "pfp",
+			"table": "enum_type"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

@@ -1,0 +1,104 @@
+{
+	"name": "SHIPMENT_HISTORY",
+	"properties": {
+		"activities": [
+			{
+				"name": "df_shipment_history",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "df_shipment_history",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine",
+					"continuationSettings": {
+						"customizedCheckpointKey": "4dfa84a5-86d5-4909-82ce-972c39e64017"
+					}
+				}
+			},
+			{
+				"name": "df_shipment_line_history",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [
+					{
+						"activity": "df_shipment_history",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "df_shipment_line_history",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine",
+					"continuationSettings": {
+						"customizedCheckpointKey": "b14fc32f-e468-4b0b-b227-ccfd1ec5562a"
+					}
+				}
+			},
+			{
+				"name": "Notify_shipment_history",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "df_shipment_line_history",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"method": "POST",
+					"url": "https://prod-24.eastus.logic.azure.com:443/workflows/3f1f036d9abd4a62b2bc78fb3b8d2d28/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=En5Cc4PP9vYZHA_L0IiC9QO75q-a5sSAn08HSO_fU_s",
+					"connectVia": {
+						"referenceName": "AutoResolveIntegrationRuntime",
+						"type": "IntegrationRuntimeReference"
+					},
+					"body": {
+						"value": "{\n\"datafactoryname\" : \"@{pipeline().DataFactory}\", \n\"pipelineName\" : \"@{pipeline().Pipeline}\", \n\"runID\" : \"@{pipeline().RunId}\",\n\"records_read_from_file\" : \"@{activity('df_shipment_history').output.runStatus.metrics.ShipmentHistory.sources.shipmenthistoryraw.rowsRead}\",\n\"records_written_shipment_history\" : \"@{activity('df_shipment_history').output.runStatus.metrics.ShipmentHistory.rowsWritten}\",\n\"records_written_shipment_line_history\" : \"@{activity('df_shipment_line_history').output.runStatus.metrics.ShipmentLineHistory.rowsWritten}\",\n\"time_taken_shipment_history\":\"@{activity('df_shipment_history').Duration}\",\n\"time_taken_shipment_line_history\":\"@{activity('df_shipment_line_history').Duration}\"\n}",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"folder": {
+			"name": "REMOTE"
+		},
+		"annotations": []
+	}
+}

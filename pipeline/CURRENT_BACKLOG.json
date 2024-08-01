@@ -1,0 +1,38 @@
+{
+	"name": "CURRENT_BACKLOG",
+	"properties": {
+		"activities": [
+			{
+				"name": "df_activity_current_backlog",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "df_current_backlog",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine",
+					"continuationSettings": {
+						"customizedCheckpointKey": "d274d239-0ecc-4f5a-8334-5b71f5b09c36"
+					}
+				}
+			}
+		],
+		"folder": {
+			"name": "FTP"
+		},
+		"annotations": []
+	}
+}

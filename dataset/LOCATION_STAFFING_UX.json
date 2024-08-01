@@ -1,0 +1,43 @@
+{
+	"name": "LOCATION_STAFFING_UX",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "datalakelinkedservice",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Excel",
+		"typeProperties": {
+			"sheetName": "Location Staffing Import Templa",
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "18.xlsx",
+				"folderPath": "DEV/Upload/LocationStaffing",
+				"fileSystem": "staging"
+			},
+			"firstRowAsHeader": true
+		},
+		"schema": [
+			{
+				"name": "Profile Name*",
+				"type": "String"
+			},
+			{
+				"name": "Location ID*",
+				"type": "String"
+			},
+			{
+				"name": "Date*",
+				"type": "String"
+			},
+			{
+				"name": "Metric Name*",
+				"type": "String"
+			},
+			{
+				"name": "Value*",
+				"type": "String"
+			}
+		]
+	}
+}

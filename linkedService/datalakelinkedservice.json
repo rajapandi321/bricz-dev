@@ -1,0 +1,24 @@
+{
+	"name": "datalakelinkedservice",
+	"properties": {
+		"description": "linked service to connect to datalake storage gen 2 account. Specially built for migrating and transforming data from radial",
+		"annotations": [],
+		"type": "AzureBlobFS",
+		"typeProperties": {
+			"url": "https://stdevdatapipe001.dfs.core.windows.net/",
+			"accountKey": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "briczkeyvault",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "ADF-STORAGE-KEY"
+			}
+		},
+		"connectVia": {
+			"referenceName": "AutoResolveIntegrationRuntime",
+			"type": "IntegrationRuntimeReference"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/linkedservices"
+}

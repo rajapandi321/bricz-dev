@@ -1,0 +1,119 @@
+{
+	"name": "forecast",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "PgSQL_LinkedService3",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzurePostgreSqlTable",
+		"schema": [
+			{
+				"name": "id",
+				"type": "integer",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "item_id",
+				"type": "integer",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "area_id",
+				"type": "integer",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "customer_type",
+				"type": "integer",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "fulfillment_service",
+				"type": "integer",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "forecast_start_date",
+				"type": "timestamp with time zone",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "forecast_end_date",
+				"type": "timestamp with time zone",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "fulfillment_location",
+				"type": "integer",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "created_date",
+				"type": "timestamp with time zone",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "updated_date",
+				"type": "timestamp with time zone",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "organization_id",
+				"type": "uuid",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "business_unit_id",
+				"type": "uuid",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "low_demand_quantity",
+				"type": "integer",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "consensus_demand_quantity",
+				"type": "integer",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "high_demand_quantity",
+				"type": "integer",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "fixed_fulfillment",
+				"type": "boolean",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "area_hierarchy_id",
+				"type": "integer",
+				"precision": 0,
+				"scale": 0
+			}
+		],
+		"typeProperties": {
+			"schema": "pfp",
+			"table": "forecast"
+		}
+	}
+}

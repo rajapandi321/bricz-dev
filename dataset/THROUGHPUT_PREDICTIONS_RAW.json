@@ -1,0 +1,64 @@
+{
+	"name": "THROUGHPUT_PREDICTIONS_RAW",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "datalakelinkedservice",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "src_files"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "Radial/ThroughputPredictions",
+				"fileSystem": "main"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "Prop_0",
+				"type": "String"
+			},
+			{
+				"name": "date",
+				"type": "String"
+			},
+			{
+				"name": "unit_volume",
+				"type": "String"
+			},
+			{
+				"name": "capacity",
+				"type": "String"
+			},
+			{
+				"name": "picker_capacity",
+				"type": "String"
+			},
+			{
+				"name": "packer_capacity",
+				"type": "String"
+			},
+			{
+				"name": "total_work_hours",
+				"type": "String"
+			},
+			{
+				"name": "inventory_level",
+				"type": "String"
+			},
+			{
+				"name": "throughput_preds",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

@@ -1,0 +1,48 @@
+{
+	"name": "CurrentBacklogMain",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "datalakelinkedservice",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "DEV/Upload/CurrentBacklog",
+				"fileSystem": "main"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "Fulfillment Location ID*",
+				"type": "String"
+			},
+			{
+				"name": "Fulfillment Service*",
+				"type": "String"
+			},
+			{
+				"name": "Backlog Date*",
+				"type": "String"
+			},
+			{
+				"name": "Backlog Units",
+				"type": "String"
+			},
+			{
+				"name": "Backlog Orders",
+				"type": "String"
+			},
+			{
+				"name": "Units per Order",
+				"type": "String"
+			}
+		]
+	}
+}

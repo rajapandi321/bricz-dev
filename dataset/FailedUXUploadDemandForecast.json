@@ -1,0 +1,19 @@
+{
+	"name": "FailedUXUploadDemandForecast",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "datalakelinkedservice",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "FailedTransactions/DemandForecast",
+				"fileSystem": "main"
+			}
+		},
+		"schema": {}
+	}
+}

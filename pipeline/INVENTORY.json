@@ -1,0 +1,41 @@
+{
+	"name": "INVENTORY",
+	"properties": {
+		"activities": [
+			{
+				"name": "df_activity_inventory",
+				"description": "test publish test",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "df_inventory",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine",
+					"continuationSettings": {
+						"customizedCheckpointKey": "37682b5c-5f39-47c5-97e5-ebbed3aa67bf"
+					}
+				}
+			}
+		],
+		"folder": {
+			"name": "FTP"
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-10-09T13:11:24Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

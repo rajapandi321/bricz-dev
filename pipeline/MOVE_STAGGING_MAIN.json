@@ -1,0 +1,55 @@
+{
+	"name": "MOVE_STAGGING_MAIN",
+	"properties": {
+		"activities": [
+			{
+				"name": "Data flow1",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "df_validation_location_staffing",
+						"type": "DataFlowReference",
+						"parameters": {
+							"file_path": {
+								"value": "'@{pipeline().parameters.file_path}'",
+								"type": "Expression"
+							},
+							"transaction_id": {
+								"value": "'@{pipeline().parameters.transaction_id}'",
+								"type": "Expression"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"parameters": {
+			"file_path": {
+				"type": "string",
+				"defaultValue": "DEV/Upload/LocationStaffing/17.xlsx"
+			},
+			"transaction_id": {
+				"type": "string",
+				"defaultValue": "17"
+			}
+		},
+		"folder": {
+			"name": "REMOTE"
+		},
+		"annotations": []
+	}
+}

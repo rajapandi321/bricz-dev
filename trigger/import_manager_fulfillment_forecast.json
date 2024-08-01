@@ -1,0 +1,31 @@
+{
+	"name": "import_manager_fulfillment_forecast",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "FULFILLMENT_FORECAST_UX",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"quote": "'",
+					"folder_path": "@triggerBody().folderPath",
+					"file_name": "@triggerBody().fileName",
+					"next_line": "\\n"
+				}
+			}
+		],
+		"type": "BlobEventsTrigger",
+		"typeProperties": {
+			"blobPathBeginsWith": "/staging/blobs/DEV/Upload/FulfillmentForecast/",
+			"blobPathEndsWith": ".xlsx",
+			"ignoreEmptyBlobs": true,
+			"scope": "/subscriptions/c061dde2-a728-4240-8f3d-15ccff95ec4d/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Storage/storageAccounts/stdevdatapipe001",
+			"events": [
+				"Microsoft.Storage.BlobCreated"
+			]
+		}
+	}
+}

@@ -1,0 +1,187 @@
+{
+	"name": "CSV2TSV",
+	"properties": {
+		"activities": [
+			{
+				"name": "copy_csv2tsv",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"recursive": true,
+							"wildcardFolderPath": "LocationMaster",
+							"wildcardFileName": "*",
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings",
+							"copyBehavior": "PreserveHierarchy"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".tsv"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "Location Code",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Location Code",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "name",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Name",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "address",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Address",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "zip",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Zip",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "inbound_handling_cost",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Inbound Handling Cost",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "outbound_handling_cost",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Outbound Handling Cost",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "status",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Status",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "inbound_processing_time",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Inbound Processing Time",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "outbound_processing_time",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Outbound Processing Time",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "type",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Type",
+									"physicalType": "String"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "CSVFILE",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "TSVFILE",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
+		"folder": {
+			"name": "UTILITY_PIPELINES"
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-10-16T10:33:14Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

@@ -1,0 +1,29 @@
+{
+	"name": "sftp_upload_budget_staffing",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "BUDGET_STAFFING",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"folder_path": "@triggerBody().folderPath",
+					"file_name": "@triggerBody().fileName"
+				}
+			}
+		],
+		"type": "BlobEventsTrigger",
+		"typeProperties": {
+			"blobPathBeginsWith": "/main/blobs/Radial/BudgetStaffing",
+			"blobPathEndsWith": ".csv",
+			"ignoreEmptyBlobs": true,
+			"scope": "/subscriptions/c061dde2-a728-4240-8f3d-15ccff95ec4d/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Storage/storageAccounts/stdevdatapipe001",
+			"events": [
+				"Microsoft.Storage.BlobCreated"
+			]
+		}
+	}
+}

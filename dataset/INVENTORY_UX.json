@@ -1,0 +1,63 @@
+{
+	"name": "INVENTORY_UX",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "datalakelinkedservice",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Excel",
+		"typeProperties": {
+			"sheetName": "Inventory Import Template",
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "211.xlsx",
+				"folderPath": "DEV/Upload/Inventory",
+				"fileSystem": "staging"
+			},
+			"firstRowAsHeader": true
+		},
+		"schema": [
+			{
+				"name": "Item ID",
+				"type": "String"
+			},
+			{
+				"name": "Location ID",
+				"type": "String"
+			},
+			{
+				"name": "Stock Date",
+				"type": "String"
+			},
+			{
+				"name": "Stock Quantity",
+				"type": "String"
+			},
+			{
+				"name": "Reserved Quantity",
+				"type": "String"
+			},
+			{
+				"name": "Available Quantity",
+				"type": "String"
+			},
+			{
+				"name": "On Order ID",
+				"type": "String"
+			},
+			{
+				"name": "On Order Due Date",
+				"type": "String"
+			},
+			{
+				"name": "On Order Supplier Shipping Date",
+				"type": "String"
+			},
+			{
+				"name": "On Order Promised Delivery Date",
+				"type": "String"
+			}
+		]
+	}
+}

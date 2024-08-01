@@ -1,0 +1,67 @@
+{
+	"name": "SHIPMENT_HISTORY_RAW",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "datalakelinkedservice",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "src_files"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "Radial/ShipmentHistory",
+				"fileSystem": "main"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "Shipment ID",
+				"type": "String"
+			},
+			{
+				"name": "Order Line ID",
+				"type": "String"
+			},
+			{
+				"name": "Location ID",
+				"type": "String"
+			},
+			{
+				"name": "Carrier Name",
+				"type": "String"
+			},
+			{
+				"name": "Mode",
+				"type": "String"
+			},
+			{
+				"name": "Total Units",
+				"type": "String"
+			},
+			{
+				"name": "Total Shipment Weight",
+				"type": "String"
+			},
+			{
+				"name": "Total Shipment Volume",
+				"type": "String"
+			},
+			{
+				"name": "Total Shipment Cost",
+				"type": "String"
+			},
+			{
+				"name": "Total Shipment Value",
+				"type": "String"
+			}
+		]
+	}
+}

@@ -1,0 +1,76 @@
+{
+	"name": "INVENTORY_RAW",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "datalakelinkedservice",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "src_files"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "Radial/Inventory",
+				"fileSystem": "main"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "Item ID",
+				"type": "String"
+			},
+			{
+				"name": "Location ID",
+				"type": "String"
+			},
+			{
+				"name": "On Hand Stock Date",
+				"type": "String"
+			},
+			{
+				"name": "On Hand Stock Quantity",
+				"type": "String"
+			},
+			{
+				"name": "Reserved On Hold Stock",
+				"type": "String"
+			},
+			{
+				"name": "Available Stock",
+				"type": "String"
+			},
+			{
+				"name": "Lot ID",
+				"type": "String"
+			},
+			{
+				"name": "On Order Due Date",
+				"type": "String"
+			},
+			{
+				"name": "On Order Quantity",
+				"type": "String"
+			},
+			{
+				"name": "Purchase Order Status",
+				"type": "String"
+			},
+			{
+				"name": "On Order Supplier Shipping Date",
+				"type": "String"
+			},
+			{
+				"name": "On Order Promised Delivery Date",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

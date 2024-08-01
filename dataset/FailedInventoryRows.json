@@ -1,0 +1,19 @@
+{
+	"name": "FailedInventoryRows",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "datalakelinkedservice",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "DEV/FailedTransactions/Inventory",
+				"fileSystem": "main"
+			}
+		},
+		"schema": {}
+	}
+}

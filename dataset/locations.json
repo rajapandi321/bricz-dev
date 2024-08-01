@@ -1,0 +1,285 @@
+{
+	"name": "locations",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "PgSQL_LinkedService3",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "db_tables"
+		},
+		"annotations": [],
+		"type": "AzurePostgreSqlTable",
+		"schema": [
+			{
+				"name": "id",
+				"type": "integer",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "location_code",
+				"type": "character varying",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "name",
+				"type": "character varying",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "address",
+				"type": "character varying",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "city",
+				"type": "character varying",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "state",
+				"type": "character varying",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "zip",
+				"type": "character varying",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "country",
+				"type": "character varying",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "sub_type",
+				"type": "character varying",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "delivery_partners",
+				"type": "character varying",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "throughput",
+				"type": "real",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "capacity",
+				"type": "real",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "special_information",
+				"type": "character varying",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "holding_cost",
+				"type": "real",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "inbound_handling_cost",
+				"type": "real",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "outbound_handling_cost",
+				"type": "real",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "longitude",
+				"type": "double precision",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "latitude",
+				"type": "double precision",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "updated_date",
+				"type": "date",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "created_date",
+				"type": "date",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "status",
+				"type": "character varying",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "inbound_processing_time",
+				"type": "numeric",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "outbound_processing_time",
+				"type": "numeric",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "type",
+				"type": "integer",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "transfer_inbound_processing_time",
+				"type": "double precision",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "transfer_outbound_processing_time",
+				"type": "double precision",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "transfer_inbound_handling_cost",
+				"type": "double precision",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "transfer_outbound_handling_cost",
+				"type": "double precision",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "tenant_id",
+				"type": "uuid",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "organization_id",
+				"type": "uuid",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "business_unit_id",
+				"type": "uuid",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "units_per_hour",
+				"type": "real",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "max_fte_regular_hours",
+				"type": "real",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "min_fte_regular_hours",
+				"type": "real",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "max_temp_regular_hours",
+				"type": "real",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "min_temp_regular_hours",
+				"type": "real",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "max_fte_overtime_hours",
+				"type": "real",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "max_temp_overtime_hours",
+				"type": "real",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "regular_fte_wage",
+				"type": "real",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "regular_temp_wage",
+				"type": "real",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "overtime_fte_wage",
+				"type": "real",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "overtime_temp_wage",
+				"type": "real",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "fte_staff_count",
+				"type": "integer",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "temp_staff_count",
+				"type": "integer",
+				"precision": 0,
+				"scale": 0
+			}
+		],
+		"typeProperties": {
+			"schema": "pfp",
+			"table": "locations"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

@@ -1,0 +1,22 @@
+{
+	"name": "SFTP_Failed_FulfillmentForecast",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "SFTP_RADIAL_STORAGE",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "SftpLocation",
+				"folderPath": "/faileduploads/FulfillmentForecast"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}

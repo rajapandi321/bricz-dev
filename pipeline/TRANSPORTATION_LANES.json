@@ -1,0 +1,41 @@
+{
+	"name": "TRANSPORTATION_LANES",
+	"properties": {
+		"activities": [
+			{
+				"name": "df_activity_transportation_lanes",
+				"description": "Dataflow actvity to transform data to transportation_lane table",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "df_transportation_lane",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine",
+					"continuationSettings": {
+						"customizedCheckpointKey": "d32679e3-42d6-41a0-861e-373bbc45824b"
+					}
+				}
+			}
+		],
+		"folder": {
+			"name": "FTP"
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-10-10T12:18:39Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

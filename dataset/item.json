@@ -1,0 +1,225 @@
+{
+	"name": "item",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "PgSQL_LinkedService3",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "db_tables"
+		},
+		"annotations": [],
+		"type": "AzurePostgreSqlTable",
+		"schema": [
+			{
+				"name": "id",
+				"type": "integer",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "item_code",
+				"type": "character varying",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "description",
+				"type": "character varying",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "short_description",
+				"type": "character varying",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "department",
+				"type": "character varying",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "sub_department",
+				"type": "character varying",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "class",
+				"type": "character varying",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "sub_class",
+				"type": "character varying",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "style",
+				"type": "character varying",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "color",
+				"type": "character varying",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "size",
+				"type": "character varying",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "size_second",
+				"type": "character varying",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "sku_lifecycle_status",
+				"type": "integer",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "product_division",
+				"type": "character varying",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "product_family",
+				"type": "character varying",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "measurement_unit",
+				"type": "character varying",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "unit_cost",
+				"type": "real",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "unit_volume",
+				"type": "real",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "unit_weight",
+				"type": "real",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "unit_cube",
+				"type": "real",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "units_per_pallet",
+				"type": "real",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "uom_conversion_factor",
+				"type": "real",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "distribution_channel",
+				"type": "character varying",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "item_handling_type",
+				"type": "character varying",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "item_unit_price",
+				"type": "real",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "minimum_sales_qty",
+				"type": "real",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "birth_year",
+				"type": "smallint",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "birth_month",
+				"type": "smallint",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "expiration_year",
+				"type": "smallint",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "expiration_month",
+				"type": "smallint",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "created_date",
+				"type": "timestamp with time zone",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "updated_date",
+				"type": "timestamp with time zone",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "business_unit_id",
+				"type": "uuid",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "organization_id",
+				"type": "uuid",
+				"precision": 0,
+				"scale": 0
+			}
+		],
+		"typeProperties": {
+			"schema": "pfp",
+			"table": "item"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

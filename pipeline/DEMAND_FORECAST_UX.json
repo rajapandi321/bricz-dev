@@ -1,0 +1,354 @@
+{
+	"name": "DEMAND_FORECAST_UX",
+	"properties": {
+		"activities": [
+			{
+				"name": "dataflow_demand_forecast_validation",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [
+					{
+						"activity": "StatusInProgress",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "df_demand_forecast_validation",
+						"type": "DataFlowReference",
+						"parameters": {
+							"file_path": {
+								"value": "'@{replace(concat(pipeline().parameters.folder_path,'/',pipeline().parameters.file_name),'staging','')}'",
+								"type": "Expression"
+							},
+							"transaction_id": {
+								"value": "'@{replace(pipeline().parameters.file_name,'.xlsx','')}'",
+								"type": "Expression"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "runtimeerrorvalidation",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [
+					{
+						"activity": "dataflow_demand_forecast_validation",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "runtimefailurecapture",
+						"type": "DataFlowReference",
+						"parameters": {
+							"transaction_id": {
+								"value": "'@{replace(pipeline().parameters.file_name,'.xlsx','')}'",
+								"type": "Expression"
+							},
+							"runtime_error": {
+								"value": "'@{replace(replace(replace(string(json(replace(activity('dataflow_demand_forecast_validation').error.message,'\\n',' ')).Message),pipeline().parameters.quote,' '),'\"',''),pipeline().parameters.next_line,' ')}'",
+								"type": "Expression"
+							},
+							"quote": "'\\''"
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "StatusInProgress",
+				"type": "ExecuteDataFlow",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "importhistorystatusinprogress",
+						"type": "DataFlowReference",
+						"parameters": {
+							"transaction_id": {
+								"value": "'@{replace(pipeline().parameters.file_name,'.xlsx','')}'",
+								"type": "Expression"
+							},
+							"quote": "'\\''"
+						}
+					},
+					"compute": {
+						"coreCount": 32,
+						"computeType": "MemoryOptimized"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "rows_failed",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "dataflow_demand_forecast_validation",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "rows_failed",
+					"value": {
+						"value": "@activity('dataflow_demand_forecast_validation').output.runstatus.metrics.failedrows.rowsWritten",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "failedrowscountcheck",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "rows_failed",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@equals(variables('rows_failed'),0)",
+						"type": "Expression"
+					},
+					"ifFalseActivities": [
+						{
+							"name": "dferrorvalidation",
+							"type": "ExecuteDataFlow",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"dataflow": {
+									"referenceName": "dffailurecapture",
+									"type": "DataFlowReference",
+									"parameters": {
+										"transaction_id": {
+											"value": "'@{replace(pipeline().parameters.file_name,'.xlsx','')}'",
+											"type": "Expression"
+										},
+										"single_quote": "'\\''",
+										"file_path": {
+											"value": "'@{concat(replace(pipeline().parameters.folder_path,'staging',''),'/',pipeline().parameters.file_name)}'",
+											"type": "Expression"
+										}
+									}
+								},
+								"compute": {
+									"coreCount": 8,
+									"computeType": "General"
+								},
+								"traceLevel": "Fine"
+							}
+						}
+					],
+					"ifTrueActivities": [
+						{
+							"name": "transform",
+							"type": "ExecuteDataFlow",
+							"state": "Inactive",
+							"onInactiveMarkAs": "Succeeded",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"dataflow": {
+									"referenceName": "df_demand_forecast_core",
+									"type": "DataFlowReference",
+									"parameters": {
+										"file_path": {
+											"value": "'@{replace(concat(pipeline().parameters.folder_path,'/',replace(pipeline().parameters.file_name,'.xlsx',''),'.txt'),'staging','')}'",
+											"type": "Expression"
+										},
+										"mode": {
+											"value": "'@{'UX-Upload'}'",
+											"type": "Expression"
+										},
+										"transaction_id": {
+											"value": "'@{replace(pipeline().parameters.file_name,'.xlsx','')}'",
+											"type": "Expression"
+										}
+									}
+								},
+								"compute": {
+									"coreCount": 8,
+									"computeType": "General"
+								},
+								"traceLevel": "Fine"
+							}
+						},
+						{
+							"name": "runtimeerrortransform",
+							"type": "ExecuteDataFlow",
+							"state": "Inactive",
+							"onInactiveMarkAs": "Succeeded",
+							"dependsOn": [
+								{
+									"activity": "transform",
+									"dependencyConditions": [
+										"Failed"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"dataflow": {
+									"referenceName": "runtimefailurecapture",
+									"type": "DataFlowReference",
+									"parameters": {
+										"transaction_id": {
+											"value": "'@{replace(pipeline().parameters.file_name,'.xlsx','')}'",
+											"type": "Expression"
+										},
+										"runtime_error": {
+											"value": "'@{replace(replace(replace(string(json(replace(activity('transform').error.message,'\\n',' ')).Message),pipeline().parameters.quote,' '),'\"',''),pipeline().parameters.next_line,' ')}'",
+											"type": "Expression"
+										},
+										"quote": "'\\''"
+									}
+								},
+								"compute": {
+									"coreCount": 8,
+									"computeType": "General"
+								},
+								"traceLevel": "Fine"
+							}
+						},
+						{
+							"name": "StatusComplete",
+							"type": "ExecuteDataFlow",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"dataflow": {
+									"referenceName": "importhistorystatusupdate",
+									"type": "DataFlowReference",
+									"parameters": {
+										"transaction_id": {
+											"value": "'@{replace(pipeline().parameters.file_name,'.xlsx','')}'",
+											"type": "Expression"
+										},
+										"quote": "'\\''",
+										"status_value_id": {
+											"value": "'@{'2'}'",
+											"type": "Expression"
+										}
+									}
+								},
+								"compute": {
+									"coreCount": 8,
+									"computeType": "General"
+								},
+								"traceLevel": "Fine"
+							}
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"quote": {
+				"type": "string",
+				"defaultValue": "'"
+			},
+			"folder_path": {
+				"type": "string",
+				"defaultValue": "/TEST/Upload/DemandForecast"
+			},
+			"file_name": {
+				"type": "string",
+				"defaultValue": "464.xlsx"
+			},
+			"next_line": {
+				"type": "string",
+				"defaultValue": "\\n"
+			}
+		},
+		"variables": {
+			"transaction_id": {
+				"type": "String"
+			},
+			"rows_failed": {
+				"type": "Integer"
+			}
+		},
+		"folder": {
+			"name": "IMPORT_MANAGER"
+		},
+		"annotations": []
+	}
+}

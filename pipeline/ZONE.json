@@ -1,0 +1,42 @@
+{
+	"name": "ZONE",
+	"properties": {
+		"description": "Pipeline built on 2023-08-08",
+		"activities": [
+			{
+				"name": "df_activity_zone",
+				"description": "Dataflow activity for zone table",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "df_zone",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine",
+					"continuationSettings": {
+						"customizedCheckpointKey": "1c7e1575-29b2-429d-b3e5-04524c8d01b6"
+					}
+				}
+			}
+		],
+		"folder": {
+			"name": "FTP"
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-10-09T13:03:57Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

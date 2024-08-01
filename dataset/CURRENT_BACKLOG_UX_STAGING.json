@@ -1,0 +1,47 @@
+{
+	"name": "CURRENT_BACKLOG_UX_STAGING",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "datalakelinkedservice",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Excel",
+		"typeProperties": {
+			"sheetName": "Current Backlog Import Template",
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "25.xlsx",
+				"folderPath": "DEV/Upload/CurrentBacklog",
+				"fileSystem": "staging"
+			},
+			"firstRowAsHeader": true
+		},
+		"schema": [
+			{
+				"name": "Fulfillment Location ID*",
+				"type": "String"
+			},
+			{
+				"name": "Fulfillment Service*",
+				"type": "String"
+			},
+			{
+				"name": "Backlog Date*",
+				"type": "String"
+			},
+			{
+				"name": "Backlog Units",
+				"type": "String"
+			},
+			{
+				"name": "Backlog Orders",
+				"type": "String"
+			},
+			{
+				"name": "Units per Order",
+				"type": "String"
+			}
+		]
+	}
+}

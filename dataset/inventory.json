@@ -1,0 +1,135 @@
+{
+	"name": "inventory",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "PgSQL_LinkedService3",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "db_tables"
+		},
+		"annotations": [],
+		"type": "AzurePostgreSqlTable",
+		"schema": [
+			{
+				"name": "id",
+				"type": "integer",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "item_id",
+				"type": "integer",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "location_id",
+				"type": "integer",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "on_hand_stock_date",
+				"type": "date",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "on_hand_stock_quantity",
+				"type": "real",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "reserved_on_hold_stock_",
+				"type": "real",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "available_stock",
+				"type": "real",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "lot_id",
+				"type": "character varying",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "on_order_due_date",
+				"type": "date",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "on_order_quantity_",
+				"type": "real",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "purchase_order_status",
+				"type": "real",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "on_order_supplier_shipping_date",
+				"type": "date",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "on_order_promised_delivery_date",
+				"type": "date",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "created_date",
+				"type": "timestamp with time zone",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "updated_date",
+				"type": "timestamp with time zone",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "tenant_id",
+				"type": "uuid",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "organization_id",
+				"type": "uuid",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "business_unit_id",
+				"type": "uuid",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "stock_type_id",
+				"type": "integer",
+				"precision": 0,
+				"scale": 0
+			}
+		],
+		"typeProperties": {
+			"schema": "pfp",
+			"table": "inventory"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

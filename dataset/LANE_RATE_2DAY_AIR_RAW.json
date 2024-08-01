@@ -1,0 +1,72 @@
+{
+	"name": "LANE_RATE_2DAY_AIR_RAW",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "datalakelinkedservice",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "src_files"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "Radial/LaneRates/UPS/2DayAir",
+				"fileSystem": "main"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "Zones",
+				"type": "String"
+			},
+			{
+				"name": "202.0",
+				"type": "String"
+			},
+			{
+				"name": "203.0",
+				"type": "String"
+			},
+			{
+				"name": "204.0",
+				"type": "String"
+			},
+			{
+				"name": "205.0",
+				"type": "String"
+			},
+			{
+				"name": "206.0",
+				"type": "String"
+			},
+			{
+				"name": "207.0",
+				"type": "String"
+			},
+			{
+				"name": "208.0",
+				"type": "String"
+			},
+			{
+				"name": "224.0",
+				"type": "String"
+			},
+			{
+				"name": "225.0",
+				"type": "String"
+			},
+			{
+				"name": "226",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

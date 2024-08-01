@@ -1,0 +1,19 @@
+{
+	"name": "FailedLocationStaffingJson",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "datalakelinkedservice",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "DEV/FailedTransactions/LocationStaffing",
+				"fileSystem": "main"
+			}
+		},
+		"schema": {}
+	}
+}

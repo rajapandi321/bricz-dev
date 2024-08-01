@@ -1,0 +1,76 @@
+{
+	"name": "STAFFING_HISTORY_RAW",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "datalakelinkedservice",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"file_name": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "src_files"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": {
+					"value": "@dataset().file_name",
+					"type": "Expression"
+				},
+				"folderPath": "Radial/StaffingHistory",
+				"fileSystem": "main"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "Organization ID",
+				"type": "String"
+			},
+			{
+				"name": "Business ID",
+				"type": "String"
+			},
+			{
+				"name": "Location Code",
+				"type": "String"
+			},
+			{
+				"name": "Date",
+				"type": "String"
+			},
+			{
+				"name": "Plan Type",
+				"type": "String"
+			},
+			{
+				"name": "Staff Type",
+				"type": "String"
+			},
+			{
+				"name": "Staff Count",
+				"type": "String"
+			},
+			{
+				"name": "Average Tenure",
+				"type": "String"
+			},
+			{
+				"name": "Regular Hours",
+				"type": "String"
+			},
+			{
+				"name": "OT Hours",
+				"type": "String"
+			}
+		]
+	}
+}

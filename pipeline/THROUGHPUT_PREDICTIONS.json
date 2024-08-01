@@ -1,0 +1,37 @@
+{
+	"name": "THROUGHPUT_PREDICTIONS",
+	"properties": {
+		"activities": [
+			{
+				"name": "df_activity_throughput",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "df_throughput_predictions",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"folder": {
+			"name": "REMOTE"
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-10-10T12:18:39Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

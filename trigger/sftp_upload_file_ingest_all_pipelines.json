@@ -1,0 +1,28 @@
+{
+	"name": "sftp_upload_file_ingest_all_pipelines",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "SFTP_REDIRECT_BLOB_SINGLE",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"folder_path": "outbound",
+					"container": "main"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Day",
+				"interval": 1,
+				"startTime": "2024-07-22T05:00:00",
+				"timeZone": "Central Standard Time"
+			}
+		}
+	}
+}

@@ -1,0 +1,19 @@
+{
+	"name": "Error_Json",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "datalakelinkedservice",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "DEV/FailedTransactions/FulfillmentForecast",
+				"fileSystem": "main"
+			}
+		},
+		"schema": {}
+	}
+}

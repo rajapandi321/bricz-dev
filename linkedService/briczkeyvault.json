@@ -1,0 +1,10 @@
+{
+	"name": "briczkeyvault",
+	"properties": {
+		"annotations": [],
+		"type": "AzureKeyVault",
+		"typeProperties": {
+			"baseUrl": "https://keyvault-bricz-dev-001.vault.azure.net/"
+		}
+	}
+}

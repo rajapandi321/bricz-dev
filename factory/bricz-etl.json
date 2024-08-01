@@ -1,0 +1,28 @@
+{
+	"name": "bricz-etl",
+	"properties": {
+		"globalParameters": {
+			"storage_acc": {
+				"type": "string",
+				"value": "https://radialdemoacc.dfs.core.windows.net/"
+			},
+			"container_name": {
+				"type": "string",
+				"value": "radial-demo-data"
+			},
+			"primary_env": {
+				"type": "string",
+				"value": "DEV"
+			}
+		},
+		"globalConfigurations": {
+			"PolicyValidationEnabled": "false"
+		}
+	},
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "a2359ff7-4e07-4058-b929-7d2ffefe6d28",
+		"tenantId": "42369595-c74d-4752-bb0f-fb8be13c203a"
+	}
+}
