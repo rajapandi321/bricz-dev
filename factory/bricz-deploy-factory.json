@@ -1,0 +1,9 @@
+{
+	"name": "bricz-deploy-factory",
+	"location": "eastus2",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "5992f230-b46f-4fbb-b7e3-115efedc0b33",
+		"tenantId": "094d25ba-3306-4bc2-b789-6eb55f87b309"
+	}
+}
