@@ -1,0 +1,149 @@
+{
+	"name": "runtimefailurecapture",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "importhistory",
+						"type": "DatasetReference"
+					},
+					"name": "importhistory"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "importhistory",
+						"type": "DatasetReference"
+					},
+					"name": "importhistorysink"
+				},
+				{
+					"dataset": {
+						"referenceName": "notification",
+						"type": "DatasetReference"
+					},
+					"name": "notifications"
+				}
+			],
+			"transformations": [
+				{
+					"name": "filtertransaction"
+				},
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "AlterRow1"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "notificationdescderive"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     transaction_id as string ('1'),",
+				"     runtime_error as string ('Job failed due to reason: at Source  demandforecastuxupload : Path /DEV/Upload/DemandForecast/1.xlsx does not resolve to any file(s). Please make sure the file/folder exists and is not hidden. At the same time, please ensure special character is not included in file/folder name, for example, name starting with _'),",
+				"     quote as string ('\\'')",
+				"}",
+				"source(output(",
+				"          id as integer,",
+				"          original_file_name as string,",
+				"          user_id as string,",
+				"          status_enum_value_id as integer,",
+				"          processed_time as timestamp,",
+				"          errors as string,",
+				"          business_unit_id as string,",
+				"          organization_id as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> importhistory",
+				"importhistory filter(id==toInteger($transaction_id)) ~> filtertransaction",
+				"filtertransaction derive(status_enum_value_id = 3,",
+				"          errors = replace(concat('{\\'error\\':[{\\'runtime_error\\':\\'',$runtime_error,'\\'}]}'),$quote,'\"'),",
+				"          errors_format2 = replace(concat('[{\\'type\\':','\\'error\\',','\\'message\\'',':\\'',$runtime_error,'\\'}]'),$quote,'\"')) ~> derivedColumn1",
+				"select1 alterRow(updateIf(true())) ~> AlterRow1",
+				"derivedColumn1 select(mapColumn(",
+				"          id,",
+				"          status_enum_value_id,",
+				"          errors = errors_format2,",
+				"          business_unit_id,",
+				"          organization_id",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"filtertransaction derive(description = original_file_name,",
+				"          run_status = 'Failed',",
+				"          notification_type = 'Pipeline Failure',",
+				"          feature_id = 32) ~> notificationdescderive",
+				"AlterRow1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          id as integer,",
+				"          original_file_name as string,",
+				"          user_id as string,",
+				"          status_enum_value_id as integer,",
+				"          processed_time as timestamp,",
+				"          errors as string,",
+				"          business_unit_id as string,",
+				"          organization_id as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:true,",
+				"     upsertable:false,",
+				"     keys:['id'],",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          id,",
+				"          status_enum_value_id,",
+				"          errors,",
+				"          business_unit_id,",
+				"          organization_id",
+				"     )) ~> importhistorysink",
+				"notificationdescderive sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          id as integer,",
+				"          run_id as integer,",
+				"          run_status as string,",
+				"          description as string,",
+				"          user_id as string,",
+				"          notification_status as string,",
+				"          notification_type as string,",
+				"          feature_id as integer,",
+				"          created_at as timestamp,",
+				"          updated_at as timestamp,",
+				"          business_unit_id as string,",
+				"          organization_id as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          run_id = id,",
+				"          run_status,",
+				"          description,",
+				"          user_id,",
+				"          notification_type,",
+				"          feature_id,",
+				"          business_unit_id,",
+				"          organization_id",
+				"     )) ~> notifications"
+			]
+		}
+	}
+}

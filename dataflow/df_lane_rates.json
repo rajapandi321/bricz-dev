@@ -1,0 +1,310 @@
+{
+	"name": "df_lane_rates",
+	"properties": {
+		"description": "Dataflow activity created for populating pfp.lane_rates table",
+		"folder": {
+			"name": "main"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "LANE_RATE_GROUND_RAW",
+						"type": "DatasetReference"
+					},
+					"name": "LaneRateForGround",
+					"description": "dataset corresponding to zonewise lane rates"
+				},
+				{
+					"dataset": {
+						"referenceName": "tenant_heirarchy_table",
+						"type": "DatasetReference"
+					},
+					"name": "HeirarchyTable",
+					"description": "Lookup table for fetching organization_id and business unit is"
+				},
+				{
+					"dataset": {
+						"referenceName": "LANE_RATE_NEXTDAY_AIR_RAW",
+						"type": "DatasetReference"
+					},
+					"name": "LaneRateForNDA"
+				},
+				{
+					"dataset": {
+						"referenceName": "LANE_RATE_2DAY_AIR_RAW",
+						"type": "DatasetReference"
+					},
+					"name": "LaneRateFor2DA",
+					"description": "2DA ratecard"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "lane_rate",
+						"type": "DatasetReference"
+					},
+					"name": "tempoutput"
+				}
+			],
+			"transformations": [
+				{
+					"name": "ExtractAttributesByUnpivot"
+				},
+				{
+					"name": "SelectRelevantColumns"
+				},
+				{
+					"name": "DerivingAttributes"
+				},
+				{
+					"name": "FinalColumnsSelect",
+					"description": "Select, rename activities to match the lane_rate table schema"
+				},
+				{
+					"name": "RemoveRowsWithNull",
+					"description": "Removing rows with null value on the column rate"
+				},
+				{
+					"name": "SelectColumnsHeirarchyTable",
+					"description": "Select specific columns that will be used in downstream activities"
+				},
+				{
+					"name": "JoinHeirarchyTable",
+					"description": "Join heirarchy table to extract business_unit_id and organization_id"
+				},
+				{
+					"name": "ExtractAttributesNDA"
+				},
+				{
+					"name": "SelectNDA"
+				},
+				{
+					"name": "RemoveLetterRates2DA"
+				},
+				{
+					"name": "JoinBranches"
+				},
+				{
+					"name": "ExtractAttributes2DA"
+				},
+				{
+					"name": "Select2DA"
+				},
+				{
+					"name": "CombineBeforeFilterLetter"
+				},
+				{
+					"name": "AlterRow1"
+				},
+				{
+					"name": "FilterBusinessUnitsRecords"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Zones as string,",
+				"          {2} as float,",
+				"          {3} as float,",
+				"          {4} as float,",
+				"          {5} as float,",
+				"          {6} as float,",
+				"          {7} as float,",
+				"          {8} as float,",
+				"          {44} as float,",
+				"          {45} as float,",
+				"          {46} as float",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: true,",
+				"     rowUrlColumn: 'file_name') ~> LaneRateForGround",
+				"source(output(",
+				"          id as string,",
+				"          tenant_hierarchy_type as integer,",
+				"          name as string,",
+				"          contact_name as string,",
+				"          email as string,",
+				"          phone as string,",
+				"          street_address_1 as string,",
+				"          street_address_2 as string,",
+				"          city as string,",
+				"          state as string,",
+				"          zip as integer,",
+				"          country as string,",
+				"          active as boolean,",
+				"          tenant_id as string,",
+				"          created_date as timestamp,",
+				"          updated_date as timestamp,",
+				"          parent_id as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> HeirarchyTable",
+				"source(output(",
+				"          Zones as string,",
+				"          {102.0} as double,",
+				"          {103.0} as double,",
+				"          {104.0} as double,",
+				"          {105.0} as double,",
+				"          {106.0} as double,",
+				"          {107.0} as double,",
+				"          {108.0} as double,",
+				"          {124.0} as double,",
+				"          {125.0} as double,",
+				"          {126} as double",
+				"     ),",
+				"     allowSchemaDrift: false,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: true,",
+				"     rowUrlColumn: 'file_name') ~> LaneRateForNDA",
+				"source(output(",
+				"          Zones as string,",
+				"          {202.0} as float,",
+				"          {203.0} as float,",
+				"          {204.0} as float,",
+				"          {205.0} as float,",
+				"          {206.0} as float,",
+				"          {207.0} as float,",
+				"          {208.0} as float,",
+				"          {224.0} as float,",
+				"          {225.0} as float,",
+				"          {226} as float",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: true,",
+				"     rowUrlColumn: 'file_name') ~> LaneRateFor2DA",
+				"LaneRateForGround unpivot(output(",
+				"          Class as string,",
+				"          {2} as float,",
+				"          {3} as float,",
+				"          {4} as float,",
+				"          {5} as float,",
+				"          {6} as float,",
+				"          {7} as float,",
+				"          {8} as float,",
+				"          {44} as float,",
+				"          {45} as float,",
+				"          {46} as float",
+				"     ),",
+				"     ungroupBy(Zones,",
+				"          file_name),",
+				"     lateral: true,",
+				"     ignoreNullPivots: false) ~> ExtractAttributesByUnpivot",
+				"ExtractAttributesByUnpivot select(mapColumn(",
+				"          weight = Zones,",
+				"          Zone = Class,",
+				"          rate = {2},",
+				"          file_name",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SelectRelevantColumns",
+				"JoinBranches derive(rate_code = split(file_name,\"/\")[4]+'-'+split(file_name,\"/\")[5]+'-'+toString(toInteger(Zone), '000'),",
+				"          break1_type = 'Weight',",
+				"          break1_start = toInteger(replace(weight, ' Lbs.', ''))-1,",
+				"          break1_end = toInteger(replace(weight, ' Lbs.', '')),",
+				"          rate_type = 'Flat',",
+				"          business_unit_name = split(split(file_name,\"/\")[6],'_')[1]) ~> DerivingAttributes",
+				"JoinHeirarchyTable select(mapColumn(",
+				"          rate_code,",
+				"          break1_type,",
+				"          break1_start,",
+				"          break1_end,",
+				"          rate_type,",
+				"          rate,",
+				"          business_unit_id = id,",
+				"          organization_id = parent_id",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> FinalColumnsSelect",
+				"FinalColumnsSelect filter(not(isNull(rate))) ~> RemoveRowsWithNull",
+				"FilterBusinessUnitsRecords select(mapColumn(",
+				"          id,",
+				"          name,",
+				"          parent_id",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SelectColumnsHeirarchyTable",
+				"DerivingAttributes, SelectColumnsHeirarchyTable join(business_unit_name == name,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> JoinHeirarchyTable",
+				"LaneRateForNDA unpivot(output(",
+				"          Class as string,",
+				"          {102.0} as double,",
+				"          {103.0} as double,",
+				"          {104.0} as double,",
+				"          {105.0} as double,",
+				"          {106.0} as double",
+				"     ),",
+				"     ungroupBy(Zones,",
+				"          file_name),",
+				"     lateral: true,",
+				"     ignoreNullPivots: false) ~> ExtractAttributesNDA",
+				"ExtractAttributesNDA select(mapColumn(",
+				"          weight = Zones,",
+				"          file_name,",
+				"          Zone = Class,",
+				"          rate = {102.0}",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SelectNDA",
+				"CombineBeforeFilterLetter filter(weight!='Letter') ~> RemoveLetterRates2DA",
+				"SelectRelevantColumns, RemoveLetterRates2DA union(byName: true)~> JoinBranches",
+				"LaneRateFor2DA unpivot(output(",
+				"          Class as string,",
+				"          {202.0} as float,",
+				"          {203.0} as float,",
+				"          {204.0} as float,",
+				"          {205.0} as float,",
+				"          {206.0} as float",
+				"     ),",
+				"     ungroupBy(Zones,",
+				"          file_name),",
+				"     lateral: true,",
+				"     ignoreNullPivots: false) ~> ExtractAttributes2DA",
+				"ExtractAttributes2DA select(mapColumn(",
+				"          weight = Zones,",
+				"          file_name,",
+				"          Zone = Class,",
+				"          rate = {202.0}",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> Select2DA",
+				"SelectNDA, Select2DA union(byName: true)~> CombineBeforeFilterLetter",
+				"RemoveRowsWithNull alterRow(upsertIf(true())) ~> AlterRow1",
+				"HeirarchyTable filter(tenant_hierarchy_type==3) ~> FilterBusinessUnitsRecords",
+				"AlterRow1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          id as integer,",
+				"          rate_code as string,",
+				"          break1_type as string,",
+				"          break1_start as integer,",
+				"          break1_end as integer,",
+				"          rate_type as string,",
+				"          rate as double,",
+				"          rate_minimum as double,",
+				"          rate_maximum as double,",
+				"          created_date as timestamp,",
+				"          updated_date as timestamp,",
+				"          business_unit_id as string,",
+				"          organization_id as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:false,",
+				"     upsertable:true,",
+				"     keys:['rate_code','break1_type','break1_start','break1_end','rate_type'],",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> tempoutput"
+			]
+		}
+	}
+}

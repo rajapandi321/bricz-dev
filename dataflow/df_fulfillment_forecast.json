@@ -1,0 +1,291 @@
+{
+	"name": "df_fulfillment_forecast",
+	"properties": {
+		"folder": {
+			"name": "main"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "FULFILLMENT_FORECAST_RAW",
+						"type": "DatasetReference"
+					},
+					"name": "fulfillmentforecast"
+				},
+				{
+					"dataset": {
+						"referenceName": "tenant_heirarchy_table",
+						"type": "DatasetReference"
+					},
+					"name": "TenantHeirarchyDetail"
+				},
+				{
+					"dataset": {
+						"referenceName": "locations",
+						"type": "DatasetReference"
+					},
+					"name": "LocationMaster"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "fulfillment_forecast",
+						"type": "DatasetReference"
+					},
+					"name": "sinkfullfillmentforecast"
+				},
+				{
+					"dataset": {
+						"referenceName": "SFTP_Failed_FulfillmentForecast",
+						"type": "DatasetReference"
+					},
+					"name": "sinkfailedftpfiles"
+				}
+			],
+			"transformations": [
+				{
+					"name": "THDSelected"
+				},
+				{
+					"name": "JoinTHDSelected"
+				},
+				{
+					"name": "LocationsSelected"
+				},
+				{
+					"name": "JoinLocations"
+				},
+				{
+					"name": "AlterRow1"
+				},
+				{
+					"name": "filterburecords"
+				},
+				{
+					"name": "filterorgrecords"
+				},
+				{
+					"name": "joinorgrecords"
+				},
+				{
+					"name": "selectorgbranch"
+				},
+				{
+					"name": "assert1"
+				},
+				{
+					"name": "derivederrors"
+				},
+				{
+					"name": "splitvalidationrows"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     filename as string ('Radial/FulfillmentForecast/sample_file_ff_20240624.csv')",
+				"}",
+				"source(output(",
+				"          {Organization ID} as string,",
+				"          {Business ID} as string,",
+				"          {Location Code} as string,",
+				"          {Fulfillment Service} as string,",
+				"          {Forecast Date} as date 'MM/dd/yyyy',",
+				"          {Locked Forecast Units} as long '000,000,000',",
+				"          {Current Forecast Units} as long '000,000,000',",
+				"          {Forecast 3 Units} as string,",
+				"          {Average Locked UPO} as string,",
+				"          {Locked Forecast Orders} as string,",
+				"          {Current Forecast Orders} as string,",
+				"          {Forecast 3 Orders} as string,",
+				"          {Forecast Locked Date} as date 'MM/dd/yyyy'",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     rowUrlColumn: 'file_name',",
+				"     wildcardPaths:[($filename)],",
+				"     mode: 'read') ~> fulfillmentforecast",
+				"source(output(",
+				"          id as string,",
+				"          tenant_hierarchy_type as integer,",
+				"          name as string,",
+				"          contact_name as string,",
+				"          email as string,",
+				"          phone as string,",
+				"          street_address_1 as string,",
+				"          street_address_2 as string,",
+				"          city as string,",
+				"          state as string,",
+				"          zip as integer,",
+				"          country as string,",
+				"          active as boolean,",
+				"          tenant_id as string,",
+				"          created_date as timestamp,",
+				"          updated_date as timestamp,",
+				"          parent_id as string,",
+				"          tenant_hierarchy_code as string,",
+				"          isdeleted as boolean,",
+				"          updated_by_user_id as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> TenantHeirarchyDetail",
+				"source(output(",
+				"          id as integer,",
+				"          location_code as string,",
+				"          name as string,",
+				"          address as string,",
+				"          city as string,",
+				"          state as string,",
+				"          zip as string,",
+				"          country as string,",
+				"          sub_type as string,",
+				"          delivery_partners as string,",
+				"          throughput as float,",
+				"          capacity as float,",
+				"          special_information as string,",
+				"          holding_cost as float,",
+				"          inbound_handling_cost as float,",
+				"          outbound_handling_cost as float,",
+				"          longitude as decimal(0,0),",
+				"          latitude as decimal(0,0),",
+				"          updated_date as date,",
+				"          created_date as date,",
+				"          status as string,",
+				"          inbound_processing_time as decimal(0,0),",
+				"          outbound_processing_time as decimal(0,0),",
+				"          type as integer,",
+				"          transfer_inbound_processing_time as double,",
+				"          transfer_outbound_processing_time as double,",
+				"          transfer_inbound_handling_cost as double,",
+				"          transfer_outbound_handling_cost as double,",
+				"          tenant_id as string,",
+				"          organization_id as string,",
+				"          business_unit_id as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> LocationMaster",
+				"joinorgrecords select(mapColumn(",
+				"          business_unit_id = id,",
+				"          tenant_id,",
+				"          organization_id = parent_id,",
+				"          bu_tenant_hierarchy_code = tenant_hierarchy_code,",
+				"          org_tenant_hierarchy_code",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> THDSelected",
+				"fulfillmentforecast, THDSelected join({Business ID} == bu_tenant_hierarchy_code",
+				"     && {Organization ID} == org_tenant_hierarchy_code,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> JoinTHDSelected",
+				"LocationMaster select(mapColumn(",
+				"          location_code,",
+				"          location_id = id,",
+				"          name,",
+				"          tenant_id,",
+				"          organization_id,",
+				"          business_unit_id",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> LocationsSelected",
+				"JoinTHDSelected, LocationsSelected join({Location Code} == location_code",
+				"     && THDSelected@business_unit_id == LocationsSelected@business_unit_id",
+				"     && THDSelected@tenant_id == LocationsSelected@tenant_id",
+				"     && THDSelected@organization_id == LocationsSelected@organization_id,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> JoinLocations",
+				"splitvalidationrows@validrows alterRow(upsertIf(true())) ~> AlterRow1",
+				"TenantHeirarchyDetail filter(tenant_hierarchy_type == 3) ~> filterburecords",
+				"TenantHeirarchyDetail filter(tenant_hierarchy_type == 2) ~> filterorgrecords",
+				"filterburecords, selectorgbranch join(parent_id == org_id,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinorgrecords",
+				"filterorgrecords select(mapColumn(",
+				"          org_id = id,",
+				"          org_tenant_id = tenant_id,",
+				"          org_parent_id = parent_id,",
+				"          org_tenant_hierarchy_code = tenant_hierarchy_code",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectorgbranch",
+				"JoinLocations assert(expectTrue(not(isNull(THDSelected@business_unit_id)) && not(isNull(THDSelected@organization_id)), false, 'assertthtd', null, 'Business Unit & Organization ID doesnot match with existing record'),",
+				"     expectTrue(not(isNull(location_id)), false, 'assertlocations', not(isNull(THDSelected@business_unit_id)) && not(isNull(THDSelected@organization_id)), 'Location ID Doesnt Exist In Database'),",
+				"     expectTrue(iif(isNull({Locked Forecast Units}),true(),not(isNull(toFloat({Locked Forecast Units})))) && iif(isNull({Current Forecast Units}),true(),not(isNull(toFloat({Current Forecast Units})))) && iif(isNull({Forecast 3 Units}),true(),not(isNull(toFloat({Forecast 3 Units})))) && iif(isNull({Average Locked UPO}),true(),not(isNull(toFloat({Average Locked UPO})))) && iif(isNull({Locked Forecast Orders}),true(),not(isNull(toFloat({Locked Forecast Orders})))) && iif(isNull({Current Forecast Orders}),true(),not(isNull(toFloat({Current Forecast Orders})))) && iif(isNull({Forecast 3 Orders}),true(),not(isNull(toFloat({Forecast 3 Orders})))), false, 'nonnumericvaluespresent', null, 'Non Numeric Values Present In Numeric Field')) ~> assert1",
+				"assert1 derive(validation_errors = assertErrorMessages(),",
+				"          failedfilename = replace($filename,'Radial','faileduploads')) ~> derivederrors",
+				"derivederrors split(isNull(validation_errors),",
+				"     disjoint: false) ~> splitvalidationrows@(validrows, validationfailedrows)",
+				"AlterRow1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          organization_id as string,",
+				"          business_unit_id as string,",
+				"          location_id as integer,",
+				"          fulfillment_service_id as integer,",
+				"          forecast_date as date,",
+				"          locked_forecast_units as long,",
+				"          current_forecast_units as long,",
+				"          average_upo as float,",
+				"          locked_forecast_orders as long,",
+				"          current_forecast_orders as long,",
+				"          forecast_locked_date as date,",
+				"          created_date as timestamp,",
+				"          updated_date as timestamp",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:false,",
+				"     upsertable:true,",
+				"     keys:['location_id','forecast_date'],",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          organization_id = splitvalidationrows@validrows@organization_id,",
+				"          business_unit_id = splitvalidationrows@validrows@business_unit_id,",
+				"          location_id,",
+				"          forecast_date = {Forecast Date},",
+				"          locked_forecast_units = {Locked Forecast Units},",
+				"          current_forecast_units = {Current Forecast Units},",
+				"          forecast_locked_date = {Forecast Locked Date},",
+				"          average_upo = {Average Locked UPO}",
+				"     )) ~> sinkfullfillmentforecast",
+				"splitvalidationrows@validationfailedrows sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     rowUrlColumn:'failedfilename',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     quoteAll: true,",
+				"     mapColumn(",
+				"          {Organization ID},",
+				"          {Business ID},",
+				"          {Location Code},",
+				"          {Fulfillment Service},",
+				"          {Forecast Date},",
+				"          {Locked Forecast Units},",
+				"          {Current Forecast Units},",
+				"          {Forecast 3 Units},",
+				"          {Average Locked UPO},",
+				"          {Locked Forecast Orders},",
+				"          {Current Forecast Orders},",
+				"          {Forecast 3 Orders},",
+				"          {Forecast Locked Date},",
+				"          file_name,",
+				"          validation_errors",
+				"     )) ~> sinkfailedftpfiles"
+			]
+		}
+	}
+}

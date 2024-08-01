@@ -1,0 +1,470 @@
+{
+	"name": "df_budget_staffing",
+	"properties": {
+		"folder": {
+			"name": "main"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "BUDGET_STAFFING_RAW",
+						"type": "DatasetReference"
+					},
+					"name": "staffing"
+				},
+				{
+					"dataset": {
+						"referenceName": "tenant_heirarchy_table",
+						"type": "DatasetReference"
+					},
+					"name": "TenantHeirarchyTable"
+				},
+				{
+					"dataset": {
+						"referenceName": "locations",
+						"type": "DatasetReference"
+					},
+					"name": "LocationsTable"
+				},
+				{
+					"dataset": {
+						"referenceName": "enum_types",
+						"type": "DatasetReference"
+					},
+					"name": "EnumTypeDB"
+				},
+				{
+					"dataset": {
+						"referenceName": "enum_values",
+						"type": "DatasetReference"
+					},
+					"name": "EnumValue"
+				},
+				{
+					"dataset": {
+						"referenceName": "operationalprofile",
+						"type": "DatasetReference"
+					},
+					"name": "operationalprofile"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "operational_calendar",
+						"type": "DatasetReference"
+					},
+					"name": "WriteToDatabase"
+				},
+				{
+					"dataset": {
+						"referenceName": "failedvalidationrowsbudgetstaffing",
+						"type": "DatasetReference"
+					},
+					"name": "sinkfailedrows"
+				}
+			],
+			"transformations": [
+				{
+					"name": "THTSelected"
+				},
+				{
+					"name": "JoinTHT"
+				},
+				{
+					"name": "AlterRow1"
+				},
+				{
+					"name": "LocationsSelected"
+				},
+				{
+					"name": "JoinLocationsTable"
+				},
+				{
+					"name": "JoinEnumLocationMetricType"
+				},
+				{
+					"name": "FilterEnumLocationMetricType"
+				},
+				{
+					"name": "JoinLocationMetricTypeEnum"
+				},
+				{
+					"name": "FilterBusinessUnit"
+				},
+				{
+					"name": "Unpivot"
+				},
+				{
+					"name": "selectoperationalprofile"
+				},
+				{
+					"name": "joinoperationalprofile"
+				},
+				{
+					"name": "FIlterOrgRecords"
+				},
+				{
+					"name": "selectOrgRecords"
+				},
+				{
+					"name": "joinORGTHTD"
+				},
+				{
+					"name": "assertBudgetStaffing"
+				},
+				{
+					"name": "selectpivotcolumns"
+				},
+				{
+					"name": "splitValidationRows"
+				},
+				{
+					"name": "deriveErrors"
+				},
+				{
+					"name": "pivot1"
+				},
+				{
+					"name": "selectvalidrowcols"
+				},
+				{
+					"name": "RenameEnumBranches"
+				},
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "MapDrifted1",
+					"description": "Creates an explicit mapping for each drifted column"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     file_path as string ('Radial/BudgetStaffing/20240718T050000-BudgetStaffingPlan.csv')",
+				"}",
+				"source(output(",
+				"          {Organization ID} as string,",
+				"          {Business ID} as string,",
+				"          {Location Code} as string,",
+				"          {Staffing Profile} as string,",
+				"          Date as date,",
+				"          {Units per Hour} as float,",
+				"          {Max FTE Regular Hours} as float,",
+				"          {Min FTE Regular Hours} as float,",
+				"          {Max Temp Regular Hours} as float,",
+				"          {Min Temp Regular Hours} as float,",
+				"          {Max FTE Overtime Hours} as float,",
+				"          {Max Temp Overtime Hours} as float,",
+				"          {Regular FTE Wage} as float,",
+				"          {Regular Temp Wage} as float,",
+				"          {Overtime FTE Wage} as float,",
+				"          {Overtime Temp Wage} as float",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: true,",
+				"     rowUrlColumn: 'file_name',",
+				"     wildcardPaths:[($file_path)],",
+				"     mode: 'read') ~> staffing",
+				"source(output(",
+				"          id as string,",
+				"          tenant_hierarchy_type as integer,",
+				"          name as string,",
+				"          contact_name as string,",
+				"          email as string,",
+				"          phone as string,",
+				"          street_address_1 as string,",
+				"          street_address_2 as string,",
+				"          city as string,",
+				"          state as string,",
+				"          zip as integer,",
+				"          country as string,",
+				"          active as boolean,",
+				"          tenant_id as string,",
+				"          created_date as timestamp,",
+				"          updated_date as timestamp,",
+				"          parent_id as string,",
+				"          tenant_hierarchy_code as string,",
+				"          isdeleted as boolean,",
+				"          updated_by_user_id as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> TenantHeirarchyTable",
+				"source(output(",
+				"          id as integer,",
+				"          location_code as string,",
+				"          name as string,",
+				"          address as string,",
+				"          city as string,",
+				"          state as string,",
+				"          zip as string,",
+				"          country as string,",
+				"          sub_type as string,",
+				"          delivery_partners as string,",
+				"          throughput as float,",
+				"          capacity as float,",
+				"          special_information as string,",
+				"          holding_cost as float,",
+				"          inbound_handling_cost as float,",
+				"          outbound_handling_cost as float,",
+				"          longitude as decimal(0,0),",
+				"          latitude as decimal(0,0),",
+				"          updated_date as date,",
+				"          created_date as date,",
+				"          status as string,",
+				"          inbound_processing_time as decimal(0,0),",
+				"          outbound_processing_time as decimal(0,0),",
+				"          type as integer,",
+				"          transfer_inbound_processing_time as double,",
+				"          transfer_outbound_processing_time as double,",
+				"          transfer_inbound_handling_cost as double,",
+				"          transfer_outbound_handling_cost as double,",
+				"          tenant_id as string,",
+				"          organization_id as string,",
+				"          business_unit_id as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> LocationsTable",
+				"source(output(",
+				"          id as integer,",
+				"          name as string,",
+				"          created_date as timestamp,",
+				"          updated_date as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> EnumTypeDB",
+				"source(output(",
+				"          id as integer,",
+				"          enum_type_id as integer,",
+				"          value_id as integer,",
+				"          value as string,",
+				"          created_date as timestamp,",
+				"          updated_date as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> EnumValue",
+				"source(output(",
+				"          id as integer,",
+				"          name as string,",
+				"          created_date as timestamp,",
+				"          updated_date as timestamp,",
+				"          business_unit_id as string,",
+				"          organization_id as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> operationalprofile",
+				"FilterBusinessUnit select(mapColumn(",
+				"          business_unit_id = id,",
+				"          tenant_id,",
+				"          organization_id = parent_id,",
+				"          bu_tenant_hierarchy_code = tenant_hierarchy_code",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> THTSelected",
+				"selectpivotcolumns, joinORGTHTD join({Business ID} == bu_tenant_hierarchy_code",
+				"     && {Organization ID} == org_tenant_hierarchy_code,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> JoinTHT",
+				"selectvalidrowcols alterRow(upsertIf(true())) ~> AlterRow1",
+				"LocationsTable select(mapColumn(",
+				"          location_id = id,",
+				"          location_code,",
+				"          name,",
+				"          business_unit_id,",
+				"          organization_id",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> LocationsSelected",
+				"JoinTHT, LocationsSelected join({Location Code} == location_code",
+				"     && THTSelected@business_unit_id == LocationsSelected@business_unit_id",
+				"     && THTSelected@organization_id == LocationsSelected@organization_id,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> JoinLocationsTable",
+				"FilterEnumLocationMetricType, EnumValue join(EnumTypeDB@id == enum_type_id,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> JoinEnumLocationMetricType",
+				"EnumTypeDB filter(name=='location_staffing') ~> FilterEnumLocationMetricType",
+				"JoinLocationsTable, RenameEnumBranches join(location_metric_type == value,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> JoinLocationMetricTypeEnum",
+				"TenantHeirarchyTable filter(tenant_hierarchy_type==3) ~> FilterBusinessUnit",
+				"staffing unpivot(output(",
+				"          location_metric_type as string,",
+				"          {Units per Hour} as float,",
+				"          {Max FTE Regular Hours} as float,",
+				"          {Min FTE Regular Hours} as float,",
+				"          {Max Temp Regular Hours} as float,",
+				"          {Min Temp Regular Hours} as float,",
+				"          {Max FTE Overtime Hours} as float,",
+				"          {Max Temp Overtime Hours} as float,",
+				"          {Regular FTE Wage} as float,",
+				"          {Regular Temp Wage} as float,",
+				"          {Overtime FTE Wage} as float,",
+				"          {Overtime Temp Wage} as float",
+				"     ),",
+				"     ungroupBy(Date,",
+				"          {Organization ID},",
+				"          {Business ID},",
+				"          {Location Code},",
+				"          {Staffing Profile},",
+				"          file_name),",
+				"     lateral: true,",
+				"     ignoreNullPivots: false) ~> Unpivot",
+				"operationalprofile select(mapColumn(",
+				"          profile_id = id,",
+				"          name,",
+				"          business_unit_id,",
+				"          organization_id",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectoperationalprofile",
+				"JoinLocationMetricTypeEnum, selectoperationalprofile join({Staffing Profile} == selectoperationalprofile@name",
+				"     && THTSelected@organization_id == selectoperationalprofile@organization_id",
+				"     && THTSelected@business_unit_id == selectoperationalprofile@business_unit_id,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinoperationalprofile",
+				"TenantHeirarchyTable filter(tenant_hierarchy_type==2) ~> FIlterOrgRecords",
+				"FIlterOrgRecords select(mapColumn(",
+				"          org_id = id,",
+				"          org_tenant_hierarchy_code = tenant_hierarchy_code",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectOrgRecords",
+				"THTSelected, selectOrgRecords join(organization_id == org_id,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinORGTHTD",
+				"joinoperationalprofile assert(expectTrue(not(isNull(THTSelected@organization_id)) && not(isNull(THTSelected@business_unit_id)), false, 'ORGBUNOTEXISTS', null, 'organization and business unit id doesnt match with existing records'),",
+				"     expectTrue(not(isNull(location_id)), false, 'LocationNotExists', not(isNull(THTSelected@business_unit_id)), 'Location Code Not Matching With Existing Records'),",
+				"     expectTrue(not(isNull(profile_id)), false, 'ProfileNotExists', not(isNull(THTSelected@business_unit_id)), 'Operational Profile DOesn'),",
+				"     expectTrue(not(isNull(enum_value_id)), false, 'EnumValueError', not(isNull(THTSelected@business_unit_id))),",
+				"     expectTrue(iif(isNull(location_metric_value),true(),not(isNull(toFloat(location_metric_value)))), false, 'NonNumericValuesFound')) ~> assertBudgetStaffing",
+				"Unpivot select(mapColumn(",
+				"          Date,",
+				"          {Organization ID},",
+				"          {Business ID},",
+				"          {Location Code},",
+				"          {Staffing Profile},",
+				"          file_name,",
+				"          location_metric_type,",
+				"          location_metric_value = {Units per Hour}",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectpivotcolumns",
+				"deriveErrors split(isNull(validation_errors),",
+				"     disjoint: false) ~> splitValidationRows@(ValidRows, ValidationFailedRows)",
+				"assertBudgetStaffing derive(validation_errors = assertErrorMessages(),",
+				"          failedfilename = replace($file_path,'Radial','faileduploads')) ~> deriveErrors",
+				"derivedColumn1 pivot(groupBy({Organization ID},",
+				"          Date,",
+				"          {Business ID},",
+				"          {Location Code},",
+				"          {Staffing Profile},",
+				"          validation_errors,",
+				"          failedfilename),",
+				"     pivotBy(value),",
+				"     {} = sum(location_metric_value),",
+				"     columnNaming: '$N$V',",
+				"     lateral: true) ~> pivot1",
+				"splitValidationRows@ValidRows select(mapColumn(",
+				"          Date,",
+				"          location_metric_type,",
+				"          location_metric_value,",
+				"          business_unit_id = splitValidationRows@ValidRows@business_unit_id,",
+				"          tenant_id,",
+				"          organization_id = splitValidationRows@ValidRows@organization_id,",
+				"          location_id,",
+				"          enum_type_id,",
+				"          operational_profile_id = profile_id,",
+				"          validation_errors,",
+				"          enum_value_id",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectvalidrowcols",
+				"JoinEnumLocationMetricType select(mapColumn(",
+				"          enum_type_id = EnumTypeDB@id,",
+				"          name,",
+				"          enum_value_id = EnumValue@id,",
+				"          value_id,",
+				"          value",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> RenameEnumBranches",
+				"splitValidationRows@ValidationFailedRows derive(validation_errors = toString(validation_errors)) ~> derivedColumn1",
+				"pivot1 derive({Max FTE Overtime Hours} = toDouble(byName('Max FTE Overtime Hours')),",
+				"          {Max FTE Regular Hours} = toDouble(byName('Max FTE Regular Hours')),",
+				"          {Max Temp Overtime Hours} = toDouble(byName('Max Temp Overtime Hours')),",
+				"          {Max Temp Regular Hours} = toDouble(byName('Max Temp Regular Hours')),",
+				"          {Min FTE Regular Hours} = toDouble(byName('Min FTE Regular Hours')),",
+				"          {Min Temp Regular Hours} = toDouble(byName('Min Temp Regular Hours')),",
+				"          {Overtime FTE Wage} = toDouble(byName('Overtime FTE Wage')),",
+				"          {Overtime Temp Wage} = toDouble(byName('Overtime Temp Wage')),",
+				"          {Regular FTE Wage} = toDouble(byName('Regular FTE Wage')),",
+				"          {Regular Temp Wage} = toDouble(byName('Regular Temp Wage')),",
+				"          {Units per Hour} = toDouble(byName('Units per Hour'))) ~> MapDrifted1",
+				"AlterRow1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          id as integer,",
+				"          business_unit_id as string,",
+				"          organization_id as string,",
+				"          location_id as integer,",
+				"          date as date,",
+				"          location_metric_value as decimal(0,0),",
+				"          created_date as timestamp,",
+				"          updated_date as timestamp,",
+				"          enum_value_id as integer,",
+				"          enum_type_id as integer,",
+				"          operational_profile_id as integer",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:false,",
+				"     upsertable:true,",
+				"     keys:['location_id','date','enum_value_id'],",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          business_unit_id,",
+				"          organization_id,",
+				"          location_id,",
+				"          date = Date,",
+				"          location_metric_value,",
+				"          enum_value_id,",
+				"          enum_type_id,",
+				"          operational_profile_id",
+				"     )) ~> WriteToDatabase",
+				"MapDrifted1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     rowUrlColumn:'failedfilename',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sinkfailedrows"
+			]
+		}
+	}
+}

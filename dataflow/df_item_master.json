@@ -1,0 +1,348 @@
+{
+	"name": "df_item_master",
+	"properties": {
+		"folder": {
+			"name": "main"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ITEM_MASTER_RAW",
+						"type": "DatasetReference"
+					},
+					"name": "ItemMasterRaw"
+				},
+				{
+					"dataset": {
+						"referenceName": "item_heirarchy_detail",
+						"type": "DatasetReference"
+					},
+					"name": "ItemHeirarchyDetail"
+				},
+				{
+					"dataset": {
+						"referenceName": "tenant_heirarchy_table",
+						"type": "DatasetReference"
+					},
+					"name": "TenantHeirarchyDetail"
+				},
+				{
+					"dataset": {
+						"referenceName": "lifecycle_status",
+						"type": "DatasetReference"
+					},
+					"name": "LifecycleStatus"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "item",
+						"type": "DatasetReference"
+					},
+					"name": "TemporaryOutput"
+				}
+			],
+			"transformations": [
+				{
+					"name": "JoinDepartment"
+				},
+				{
+					"name": "JoinSubDepartment"
+				},
+				{
+					"name": "TenantHeirarchyTableSelected"
+				},
+				{
+					"name": "JoinTenantHeirarchyTable"
+				},
+				{
+					"name": "LifecycleStatusSelected"
+				},
+				{
+					"name": "Department"
+				},
+				{
+					"name": "DepartmentSelected"
+				},
+				{
+					"name": "SubDepartmentSelected"
+				},
+				{
+					"name": "ClassSelected"
+				},
+				{
+					"name": "SubClassSelected"
+				},
+				{
+					"name": "ColorSelected"
+				},
+				{
+					"name": "SizeSelected"
+				},
+				{
+					"name": "StyleSelected"
+				},
+				{
+					"name": "JoinClass"
+				},
+				{
+					"name": "JoinSubClass"
+				},
+				{
+					"name": "AlterRow1"
+				},
+				{
+					"name": "SizeSecondSelected"
+				},
+				{
+					"name": "filter1"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     filepath as string ('Radial/ItemMaster/sample_file.csv')",
+				"}",
+				"source(output(",
+				"          {Organization ID} as string,",
+				"          {Business ID} as string,",
+				"          {Location Code} as string,",
+				"          {Item Code} as string,",
+				"          Description as string,",
+				"          {Lifecycle Status} as string,",
+				"          Department as string,",
+				"          Sub_Department as string,",
+				"          {Product Division} as string,",
+				"          {Product Category} as string,",
+				"          {Measurement Unit} as string,",
+				"          {Unit Cost} as float,",
+				"          {Unit Volume} as float,",
+				"          {Unit Weight} as float,",
+				"          {Item Unit Price} as float",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     rowUrlColumn: 'file_name',",
+				"     wildcardPaths:[($filepath)],",
+				"     mode: 'read') ~> ItemMasterRaw",
+				"source(output(",
+				"          id as string,",
+				"          description as string,",
+				"          category as string,",
+				"          record_creation_date as timestamp,",
+				"          record_updated_date as timestamp,",
+				"          business_unit_id as string,",
+				"          organization_id as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> ItemHeirarchyDetail",
+				"source(output(",
+				"          id as string,",
+				"          tenant_hierarchy_type as integer,",
+				"          name as string,",
+				"          contact_name as string,",
+				"          email as string,",
+				"          phone as string,",
+				"          street_address_1 as string,",
+				"          street_address_2 as string,",
+				"          city as string,",
+				"          state as string,",
+				"          zip as integer,",
+				"          country as string,",
+				"          active as boolean,",
+				"          tenant_id as string,",
+				"          created_date as timestamp,",
+				"          updated_date as timestamp,",
+				"          parent_id as string,",
+				"          tenant_hierarchy_code as string,",
+				"          isdeleted as boolean,",
+				"          updated_by_user_id as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> TenantHeirarchyDetail",
+				"source(output(",
+				"          id as integer,",
+				"          status as string,",
+				"          lifecycle_code as string,",
+				"          created_date as timestamp,",
+				"          updated_date as timestamp,",
+				"          business_unit_id as string,",
+				"          organization_id as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> LifecycleStatus",
+				"ItemMasterRaw, DepartmentSelected join(ItemMasterRaw@Department == DepartmentSelected@description,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> JoinDepartment",
+				"JoinDepartment, SubDepartmentSelected join(ItemMasterRaw@Sub_Department == SubDepartmentSelected@description,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> JoinSubDepartment",
+				"filter1 select(mapColumn(",
+				"          business_unit_id = id,",
+				"          name,",
+				"          organization_id = parent_id,",
+				"          tenant_hierarchy_code",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> TenantHeirarchyTableSelected",
+				"JoinSubClass, TenantHeirarchyTableSelected join({Business ID} == tenant_hierarchy_code,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> JoinTenantHeirarchyTable",
+				"LifecycleStatus select(mapColumn(",
+				"          sku_lifecycle_status = id,",
+				"          lifecycle_code",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> LifecycleStatusSelected",
+				"ItemHeirarchyDetail split(category==\"DEPARTMENT\",",
+				"     category==\"SUB_DEPARTMENT\",",
+				"     category==\"CLASS\",",
+				"     category==\"SUB_CLASS\",",
+				"     category==\"COLOR\",",
+				"     category==\"STYLE\",",
+				"     category==\"SIZE\",",
+				"     category==\"SIZE\",",
+				"     disjoint: true) ~> Department@(Department, SubDepartment, Class, SubClass, Color, Style, Size, SizeSecond)",
+				"Department@Department select(mapColumn(",
+				"          department = id,",
+				"          description",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> DepartmentSelected",
+				"Department@SubDepartment select(mapColumn(",
+				"          sub_department = id,",
+				"          description",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SubDepartmentSelected",
+				"Department@Class select(mapColumn(",
+				"          class = id,",
+				"          description",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> ClassSelected",
+				"Department@SubClass select(mapColumn(",
+				"          sub_class = id,",
+				"          description",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SubClassSelected",
+				"Department@Color select(mapColumn(",
+				"          color = id,",
+				"          description",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> ColorSelected",
+				"Department@Size select(mapColumn(",
+				"          size = id,",
+				"          description",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SizeSelected",
+				"Department@Style select(mapColumn(",
+				"          style = id,",
+				"          description",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> StyleSelected",
+				"JoinSubDepartment, ClassSelected join({Product Division} == ClassSelected@description,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> JoinClass",
+				"JoinClass, SubClassSelected join({Product Category} == SubClassSelected@description,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> JoinSubClass",
+				"JoinTenantHeirarchyTable alterRow(upsertIf(true())) ~> AlterRow1",
+				"Department@SizeSecond select(mapColumn(",
+				"          size_second = id,",
+				"          description",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SizeSecondSelected",
+				"TenantHeirarchyDetail filter(tenant_hierarchy_type==3) ~> filter1",
+				"AlterRow1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          id as integer,",
+				"          item_code as string,",
+				"          description as string,",
+				"          short_description as string,",
+				"          department as string,",
+				"          sub_department as string,",
+				"          class as string,",
+				"          sub_class as string,",
+				"          style as string,",
+				"          color as string,",
+				"          size as string,",
+				"          size_second as string,",
+				"          sku_lifecycle_status as integer,",
+				"          product_division as string,",
+				"          product_family as string,",
+				"          measurement_unit as string,",
+				"          unit_cost as float,",
+				"          unit_volume as float,",
+				"          unit_weight as float,",
+				"          unit_cube as float,",
+				"          units_per_pallet as float,",
+				"          uom_conversion_factor as float,",
+				"          distribution_channel as string,",
+				"          item_handling_type as string,",
+				"          item_unit_price as float,",
+				"          minimum_sales_qty as float,",
+				"          birth_year as short,",
+				"          birth_month as short,",
+				"          expiration_year as short,",
+				"          expiration_month as short,",
+				"          created_date as timestamp,",
+				"          updated_date as timestamp,",
+				"          business_unit_id as string,",
+				"          organization_id as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:false,",
+				"     upsertable:true,",
+				"     keys:['item_code','business_unit_id','organization_id'],",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          item_code = {Item Code},",
+				"          description = ItemMasterRaw@Description,",
+				"          short_description = ItemMasterRaw@Description,",
+				"          department = DepartmentSelected@department,",
+				"          sub_department = SubDepartmentSelected@sub_department,",
+				"          product_division = {Product Division},",
+				"          class = {Product Category},",
+				"          measurement_unit = {Measurement Unit},",
+				"          unit_cost = {Unit Cost},",
+				"          unit_volume = {Unit Volume},",
+				"          unit_weight = {Unit Weight},",
+				"          item_unit_price = {Item Unit Price},",
+				"          business_unit_id,",
+				"          organization_id",
+				"     ),",
+				"     preCommands: [],",
+				"     postCommands: []) ~> TemporaryOutput"
+			]
+		}
+	}
+}

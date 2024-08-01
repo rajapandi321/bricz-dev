@@ -1,0 +1,248 @@
+{
+	"name": "df_order_status_history",
+	"properties": {
+		"folder": {
+			"name": "main"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ORDER_HISTORY_RAW",
+						"type": "DatasetReference"
+					},
+					"name": "orderhistoryraw"
+				},
+				{
+					"dataset": {
+						"referenceName": "tenant_heirarchy_table",
+						"type": "DatasetReference"
+					},
+					"name": "TenantHeirarchyDetail"
+				},
+				{
+					"dataset": {
+						"referenceName": "order_history",
+						"type": "DatasetReference"
+					},
+					"name": "OrderHistory"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "order_status_history",
+						"type": "DatasetReference"
+					},
+					"name": "OrderStatusHistory"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "filterbusinessunits"
+				},
+				{
+					"name": "JoinTHTD"
+				},
+				{
+					"name": "RenameColumns"
+				},
+				{
+					"name": "AlterRow1"
+				},
+				{
+					"name": "SelectOrderHistory"
+				},
+				{
+					"name": "JoinOrderHistory"
+				},
+				{
+					"name": "unpivot1"
+				},
+				{
+					"name": "SelectFields"
+				},
+				{
+					"name": "RemoveDuplicates"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          {Order ID} as string,",
+				"          {Order Line ID} as string,",
+				"          Channel as string,",
+				"          {Order Date} as timestamp,",
+				"          {Order Original Ship Date} as timestamp,",
+				"          {Order Actual Ship Date} as timestamp,",
+				"          {Order Due Date} as timestamp,",
+				"          {Order Received Date And Time} as timestamp,",
+				"          {Order Completed Date and Time} as timestamp,",
+				"          {Destination Zip Code} as string,",
+				"          {Item Code} as string,",
+				"          {Order Quantity} as float,",
+				"          {Quantity (UOM) Picked} as string,",
+				"          {Order Status} as string,",
+				"          Carrier as string,",
+				"          {Service Type} as string,",
+				"          {Shipment Fees} as float,",
+				"          {Order Value} as float",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     enableCdc: true,",
+				"     mode: 'read',",
+				"     skipInitialLoad: false,",
+				"     rowUrlColumn: 'file_name') ~> orderhistoryraw",
+				"source(output(",
+				"          id as string,",
+				"          tenant_hierarchy_type as integer,",
+				"          name as string,",
+				"          contact_name as string,",
+				"          email as string,",
+				"          phone as string,",
+				"          street_address_1 as string,",
+				"          street_address_2 as string,",
+				"          city as string,",
+				"          state as string,",
+				"          zip as integer,",
+				"          country as string,",
+				"          active as boolean,",
+				"          tenant_id as string,",
+				"          created_date as timestamp,",
+				"          updated_date as timestamp,",
+				"          parent_id as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> TenantHeirarchyDetail",
+				"source(output(",
+				"          id as integer,",
+				"          order_code as string,",
+				"          channel as string,",
+				"          order_date as timestamp,",
+				"          must_ship_by_date as timestamp,",
+				"          must_deliver_by_date as timestamp,",
+				"          destination_city as string,",
+				"          destination_state as string,",
+				"          destination_postal_code as string,",
+				"          destination_country as string,",
+				"          status as string,",
+				"          delivery_partner_name as string,",
+				"          service_level_name as string,",
+				"          fulfillment_service as string,",
+				"          total_units as float,",
+				"          total_shipping_charge as float,",
+				"          total_order_value as float,",
+				"          import_date as timestamp,",
+				"          organization_id as string,",
+				"          business_unit_id as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> OrderHistory",
+				"unpivot1 derive(business_unit_name = split(split(file_name,'/')[4],'_')[2],",
+				"          status = iif(\r",
+				"    status_grp=='Order Actual Ship Date',\r",
+				"    'Shipped',\r",
+				"    iif(\r",
+				"        status_grp=='Order Received Date And Time',\r",
+				"        'Order Received (in Warehouse) Date and time',\r",
+				"        iif(\r",
+				"            status_grp=='Order Completed Date and Time',\r",
+				"            'Order Completed (in Warehouse) Date and Time',\r",
+				"            status_grp\r",
+				"        )\r",
+				"    )\r",
+				"),",
+				"          status_date = {Order Actual Ship Date}) ~> derivedColumn1",
+				"TenantHeirarchyDetail filter(tenant_hierarchy_type==3) ~> filterbusinessunits",
+				"derivedColumn1, RenameColumns join(business_unit_name == name,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> JoinTHTD",
+				"filterbusinessunits select(mapColumn(",
+				"          business_unit_id = id,",
+				"          name,",
+				"          tenant_id,",
+				"          organization_id = parent_id",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> RenameColumns",
+				"JoinOrderHistory alterRow(upsertIf(true())) ~> AlterRow1",
+				"OrderHistory select(mapColumn(",
+				"          order_id = id,",
+				"          order_code,",
+				"          organization_id,",
+				"          business_unit_id",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SelectOrderHistory",
+				"JoinTHTD, SelectOrderHistory join({Order ID} == order_code",
+				"     && RenameColumns@business_unit_id == SelectOrderHistory@business_unit_id",
+				"     && RenameColumns@organization_id == SelectOrderHistory@organization_id,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> JoinOrderHistory",
+				"SelectFields unpivot(output(",
+				"          status_grp as string,",
+				"          {Order Actual Ship Date} as timestamp,",
+				"          {Order Received Date And Time} as timestamp,",
+				"          {Order Completed Date and Time} as timestamp",
+				"     ),",
+				"     ungroupBy({Order ID},",
+				"          file_name),",
+				"     lateral: true,",
+				"     ignoreNullPivots: false) ~> unpivot1",
+				"RemoveDuplicates select(mapColumn(",
+				"          {Order ID},",
+				"          {Order Actual Ship Date},",
+				"          {Order Received Date And Time},",
+				"          {Order Completed Date and Time},",
+				"          file_name",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SelectFields",
+				"orderhistoryraw aggregate(groupBy({Order ID},",
+				"          {Order Actual Ship Date},",
+				"          {Order Received Date And Time},",
+				"          {Order Completed Date and Time},",
+				"          file_name),",
+				"     {Order Line ID} = countDistinct({Order Line ID})) ~> RemoveDuplicates",
+				"AlterRow1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          order_id as integer,",
+				"          status as string,",
+				"          status_date as timestamp,",
+				"          business_unit_id as string,",
+				"          organization_id as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:false,",
+				"     upsertable:true,",
+				"     keys:['order_id','status'],",
+				"     format: 'table',",
+				"     batchSize: 36396960,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          order_id,",
+				"          status,",
+				"          status_date,",
+				"          business_unit_id = SelectOrderHistory@business_unit_id,",
+				"          organization_id = RenameColumns@organization_id",
+				"     )) ~> OrderStatusHistory"
+			]
+		}
+	}
+}

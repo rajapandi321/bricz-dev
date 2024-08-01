@@ -1,0 +1,225 @@
+{
+	"name": "df_order_history",
+	"properties": {
+		"folder": {
+			"name": "main"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ORDER_HISTORY_RAW",
+						"type": "DatasetReference"
+					},
+					"name": "orderhistoryraw"
+				},
+				{
+					"dataset": {
+						"referenceName": "tenant_heirarchy_table",
+						"type": "DatasetReference"
+					},
+					"name": "TenantHeirarchyDetail"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "order_history",
+						"type": "DatasetReference"
+					},
+					"name": "OrderHistory"
+				}
+			],
+			"transformations": [
+				{
+					"name": "AggregationOrderLevel"
+				},
+				{
+					"name": "SelectColumns"
+				},
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "filterbusinessunits"
+				},
+				{
+					"name": "JoinTHTD"
+				},
+				{
+					"name": "RenameColumns"
+				},
+				{
+					"name": "AlterRow1"
+				},
+				{
+					"name": "derivedColumn2"
+				},
+				{
+					"name": "devfilter"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          {Order ID} as string,",
+				"          {Order Line ID} as string,",
+				"          {Location ID} as string,",
+				"          Channel as string,",
+				"          {Order Date} as timestamp,",
+				"          {Order Original Ship Date} as timestamp,",
+				"          {Order Actual Ship Date} as timestamp,",
+				"          {Order Due Date} as timestamp,",
+				"          {Order Received Date and Time} as timestamp,",
+				"          {Order Completed Date and Time} as timestamp,",
+				"          {Destination Zip Code} as string,",
+				"          {Item Code} as string,",
+				"          {Order Quantity} as float,",
+				"          {Quantity (UOM) Picked} as string,",
+				"          {Order Status} as string,",
+				"          Carrier as string,",
+				"          {Service Type} as string,",
+				"          {Shipment Fees} as float,",
+				"          {Order Value} as float",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     enableCdc: true,",
+				"     mode: 'read',",
+				"     skipInitialLoad: false,",
+				"     rowUrlColumn: 'file_name') ~> orderhistoryraw",
+				"source(output(",
+				"          id as string,",
+				"          tenant_hierarchy_type as integer,",
+				"          name as string,",
+				"          contact_name as string,",
+				"          email as string,",
+				"          phone as string,",
+				"          street_address_1 as string,",
+				"          street_address_2 as string,",
+				"          city as string,",
+				"          state as string,",
+				"          zip as integer,",
+				"          country as string,",
+				"          active as boolean,",
+				"          tenant_id as string,",
+				"          created_date as timestamp,",
+				"          updated_date as timestamp,",
+				"          parent_id as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> TenantHeirarchyDetail",
+				"SelectColumns aggregate(groupBy({Order ID},",
+				"          Channel,",
+				"          {Order Date},",
+				"          {Order Due Date},",
+				"          {Destination Zip Code},",
+				"          {Order Status},",
+				"          {Order Actual Ship Date},",
+				"          Carrier,",
+				"          {Service Type},",
+				"          {Location ID},",
+				"          business_unit_id,",
+				"          organization_id,",
+				"          import_date),",
+				"     {Shipment Fees} = toFloat(sum({Shipment Fees})),",
+				"          {Order Quantity} = toFloat(sum({Order Quantity})),",
+				"          {Order Value} = toDecimal(sum({Order Value}), 10, 2)) ~> AggregationOrderLevel",
+				"JoinTHTD select(mapColumn(",
+				"          {Order ID},",
+				"          Channel,",
+				"          {Order Date},",
+				"          {Order Due Date},",
+				"          {Destination Zip Code},",
+				"          {Order Actual Ship Date},",
+				"          {Order Status},",
+				"          Carrier,",
+				"          {Service Type},",
+				"          {Order Quantity},",
+				"          {Shipment Fees},",
+				"          {Order Value},",
+				"          business_unit_id,",
+				"          organization_id,",
+				"          import_date,",
+				"          {Location ID}",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SelectColumns",
+				"orderhistoryraw derive(business_unit_name = split(split(file_name,'/')[4],'_')[2],",
+				"          import_date = currentUTC(\"UTC\")) ~> derivedColumn1",
+				"TenantHeirarchyDetail filter(tenant_hierarchy_type==3) ~> filterbusinessunits",
+				"derivedColumn1, RenameColumns join(business_unit_name == name,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> JoinTHTD",
+				"filterbusinessunits select(mapColumn(",
+				"          business_unit_id = id,",
+				"          name,",
+				"          tenant_id,",
+				"          organization_id = parent_id",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> RenameColumns",
+				"devfilter alterRow(upsertIf(true())) ~> AlterRow1",
+				"AggregationOrderLevel derive({Order Value} = round({Order Value},2)) ~> derivedColumn2",
+				"derivedColumn2 filter(true()) ~> devfilter",
+				"AlterRow1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          id as integer,",
+				"          order_code as string,",
+				"          channel as string,",
+				"          order_date as timestamp,",
+				"          must_ship_by_date as timestamp,",
+				"          must_deliver_by_date as timestamp,",
+				"          destination_city as string,",
+				"          destination_state as string,",
+				"          destination_postal_code as string,",
+				"          destination_country as string,",
+				"          status as string,",
+				"          delivery_partner_name as string,",
+				"          service_level_name as string,",
+				"          fulfillment_service as string,",
+				"          total_units as float,",
+				"          total_shipping_charge as float,",
+				"          total_order_value as float,",
+				"          import_date as timestamp,",
+				"          organization_id as string,",
+				"          business_unit_id as string,",
+				"          location_code as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:false,",
+				"     upsertable:true,",
+				"     keys:['order_code'],",
+				"     format: 'table',",
+				"     batchSize: 9530131,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          order_code = {Order ID},",
+				"          channel = Channel,",
+				"          order_date = {Order Date},",
+				"          must_ship_by_date = {Order Actual Ship Date},",
+				"          must_deliver_by_date = {Order Due Date},",
+				"          destination_postal_code = {Destination Zip Code},",
+				"          status = {Order Status},",
+				"          delivery_partner_name = Carrier,",
+				"          service_level_name = {Service Type},",
+				"          total_units = {Order Quantity},",
+				"          total_shipping_charge = {Shipment Fees},",
+				"          total_order_value = {Order Value},",
+				"          organization_id,",
+				"          business_unit_id,",
+				"          import_date,",
+				"          location_code = {Location ID}",
+				"     )) ~> OrderHistory"
+			]
+		}
+	}
+}

@@ -1,0 +1,494 @@
+{
+	"name": "df_validation_current_backlog",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "CURRENT_BACKLOG_UX_STAGING",
+						"type": "DatasetReference"
+					},
+					"name": "currentbackloguxuploadstaging"
+				},
+				{
+					"dataset": {
+						"referenceName": "locations",
+						"type": "DatasetReference"
+					},
+					"name": "locations"
+				},
+				{
+					"dataset": {
+						"referenceName": "fulfillment_services",
+						"type": "DatasetReference"
+					},
+					"name": "fulfillmentservices",
+					"description": "Import data from fulfillment services"
+				},
+				{
+					"dataset": {
+						"referenceName": "current_backlog_table",
+						"type": "DatasetReference"
+					},
+					"name": "currentbacklog"
+				},
+				{
+					"dataset": {
+						"referenceName": "importhistory",
+						"type": "DatasetReference"
+					},
+					"name": "importhistory"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "current_backlog_table",
+						"type": "DatasetReference"
+					},
+					"name": "ValidCurrentBacklog"
+				},
+				{
+					"dataset": {
+						"referenceName": "FailedValidationRowsCurrentBacklog",
+						"type": "DatasetReference"
+					},
+					"name": "failedrows"
+				}
+			],
+			"transformations": [
+				{
+					"name": "validations"
+				},
+				{
+					"name": "reverserename"
+				},
+				{
+					"name": "deriveerrors"
+				},
+				{
+					"name": "selectmainfields"
+				},
+				{
+					"name": "aggregateerrors"
+				},
+				{
+					"name": "joinaggregaterror"
+				},
+				{
+					"name": "splitvalidatedrows"
+				},
+				{
+					"name": "derivedfilename"
+				},
+				{
+					"name": "newchangenameforassert"
+				},
+				{
+					"name": "joinlocations"
+				},
+				{
+					"name": "selectlocations"
+				},
+				{
+					"name": "selectfulfillmentservices"
+				},
+				{
+					"name": "derivepresence"
+				},
+				{
+					"name": "joinforecastservices"
+				},
+				{
+					"name": "selectexistrecordcheck"
+				},
+				{
+					"name": "joinexistrecordchech"
+				},
+				{
+					"name": "selectcolsforassert"
+				},
+				{
+					"name": "joincurrentbacklog"
+				},
+				{
+					"name": "filtertransaction"
+				},
+				{
+					"name": "joinbuorglocation"
+				},
+				{
+					"name": "joinbuorgfservice"
+				},
+				{
+					"name": "joinbuorgcbacklog"
+				},
+				{
+					"name": "recordid"
+				},
+				{
+					"name": "detectduplicates"
+				},
+				{
+					"name": "filterrowswithvalidationerrors"
+				},
+				{
+					"name": "filteremptyrows"
+				},
+				{
+					"name": "alterRow1"
+				},
+				{
+					"name": "dervietranscolumn"
+				},
+				{
+					"name": "joinimporthistory"
+				},
+				{
+					"name": "selectimporthistory"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     file_path as string ('/DEV/Upload/CurrentBacklog/580.xlsx'),",
+				"     transaction_id as string ('580')",
+				"}",
+				"source(output(",
+				"          {Fulfillment Location ID*} as string,",
+				"          {Fulfillment Service*} as string,",
+				"          {Backlog Date*} as date,",
+				"          {Backlog Units} as string,",
+				"          {Backlog Orders} as string,",
+				"          {Units per Order} as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     rowUrlColumn: 'file_name',",
+				"     wildcardPaths:[($file_path)]) ~> currentbackloguxuploadstaging",
+				"source(output(",
+				"          id as integer,",
+				"          location_code as string,",
+				"          name as string,",
+				"          address as string,",
+				"          city as string,",
+				"          state as string,",
+				"          zip as string,",
+				"          country as string,",
+				"          sub_type as string,",
+				"          delivery_partners as string,",
+				"          throughput as float,",
+				"          capacity as float,",
+				"          special_information as string,",
+				"          holding_cost as float,",
+				"          inbound_handling_cost as float,",
+				"          outbound_handling_cost as float,",
+				"          longitude as decimal(0,0),",
+				"          latitude as decimal(0,0),",
+				"          updated_date as date,",
+				"          created_date as date,",
+				"          status as string,",
+				"          inbound_processing_time as decimal(0,0),",
+				"          outbound_processing_time as decimal(0,0),",
+				"          type as integer,",
+				"          transfer_inbound_processing_time as double,",
+				"          transfer_outbound_processing_time as double,",
+				"          transfer_inbound_handling_cost as double,",
+				"          transfer_outbound_handling_cost as double,",
+				"          tenant_id as string,",
+				"          organization_id as string,",
+				"          business_unit_id as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> locations",
+				"source(output(",
+				"          id as integer,",
+				"          fulfillment_service_code as string,",
+				"          service_name as string,",
+				"          service_type as string,",
+				"          delivery_speed_value as float,",
+				"          delivery_speed_unit as string,",
+				"          service_radius_value as float,",
+				"          service_radius_unit as string,",
+				"          service_charge as float,",
+				"          deployment_type as string,",
+				"          created_date as timestamp,",
+				"          updated_date as timestamp,",
+				"          business_unit_id as string,",
+				"          organization_id as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> fulfillmentservices",
+				"source(output(",
+				"          organization_id as string,",
+				"          business_unit_id as string,",
+				"          location_id as integer,",
+				"          fulfillment_service_id as integer,",
+				"          backlog_date as date,",
+				"          open_backlog_units as long,",
+				"          open_backlog_orders as long,",
+				"          average_upo as float,",
+				"          created_date as timestamp,",
+				"          updated_date as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> currentbacklog",
+				"source(output(",
+				"          id as integer,",
+				"          original_file_name as string,",
+				"          user_id as string,",
+				"          status_enum_value_id as integer,",
+				"          processed_time as timestamp,",
+				"          errors as string,",
+				"          business_unit_id as string,",
+				"          organization_id as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> importhistory",
+				"filteremptyrows, selectlocations, selectfulfillmentservices assert(expectTrue(not(isNull(Fulfillment_Location_ID))&&not(isNull(Fulfillment_Service))&&not(isNull(Backlog_Date)), false, 'nullvalues', null, 'Null Values Found In Mandatory Fields'),",
+				"     expectExists(Fulfillment_Location_ID == location_code, false, 'locationexist', null, 'Location ID Not Found In Database'),",
+				"     expectExists(Fulfillment_Service == service_name, false, 'serviceexist', null, 'Fulfillment Service Does Not Exists In Database'),",
+				"     expectTrue(isNull(presence), false, 'checkrecordexists', null, 'Record Already Exists In DB'),",
+				"     expectTrue(iif(isNull(Backlog_Units),true(),not(isNull(toFloat(Backlog_Units))))&& iif(isNull(Backlog_Orders),true(),not(isNull(toFloat(Backlog_Orders)))) && iif(isNull(Units_per_Order),true(),not(isNull(toFloat(Units_per_Order)))), false, 'nonnumericvals', null, 'Non numeric values present in record for numeric fields'),",
+				"     expectTrue(nonduplicatedrow, false, 'duplicaterecords', null, 'Duplicate Records Found In The Upload'),",
+				"     expectTrue(iif ( (toFloat(Backlog_Units) < 0) || (toFloat(Backlog_Orders) < 0) || (toFloat(Units_per_Order) < 0), false(), true() ), false, 'negativenumbers', null, 'Negative values present in record for numeric fields')) ~> validations",
+				"validations select(mapColumn(",
+				"          {Fulfillment Location ID*} = Fulfillment_Location_ID,",
+				"          {Fulfillment Service*} = Fulfillment_Service,",
+				"          {Backlog Date*} = Backlog_Date,",
+				"          {Backlog Units} = Backlog_Units,",
+				"          {Backlog Orders} = Backlog_Orders,",
+				"          {Units per Order} = Units_per_Order,",
+				"          file_name,",
+				"          recordid,",
+				"          location_id = selectcolsforassert@location_id,",
+				"          fulfillment_service_id = selectcolsforassert@fulfillment_service_id,",
+				"          business_unit_id,",
+				"          organization_id",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> reverserename",
+				"reverserename derive(validation_errors = assertErrorMessages(),",
+				"          transaction_id = toInteger($transaction_id),",
+				"          sink_file_name = replace(file_name,'.xlsx','.txt'),",
+				"          {Backlog Units} = toLong({Backlog Units}),",
+				"          {Backlog Orders} = toLong({Backlog Orders}),",
+				"          {Units per Order} = toFloat({Units per Order})) ~> deriveerrors",
+				"joinaggregaterror select(mapColumn(",
+				"          {Fulfillment Location ID*},",
+				"          {Fulfillment Service*},",
+				"          {Backlog Date*},",
+				"          {Backlog Units},",
+				"          {Backlog Orders},",
+				"          {Units per Order},",
+				"          file_name = reverserename@file_name,",
+				"          validation_errors,",
+				"          transaction_id,",
+				"          sink_file_name,",
+				"          file_name = aggregateerrors@file_name,",
+				"          errors_count,",
+				"          recordid,",
+				"          location_id,",
+				"          fulfillment_service_id,",
+				"          business_unit_id,",
+				"          organization_id",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectmainfields",
+				"deriveerrors aggregate(groupBy(file_name),",
+				"     errors_count = countIf(not(isNull(validation_errors)))) ~> aggregateerrors",
+				"deriveerrors, aggregateerrors join(reverserename@file_name == aggregateerrors@file_name,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinaggregaterror",
+				"selectmainfields split(errors_count==0,",
+				"     disjoint: false) ~> splitvalidatedrows@(validrows, validationfailedrows)",
+				"filterrowswithvalidationerrors derive(failed_file_name = replace(replace($file_path,'/Upload/','/FailedTransactions/'),'.xlsx','.json'),",
+				"          type = 'error',",
+				"          message = concat('record number ',toString(recordid),' has following errors ',toString(validation_errors))) ~> derivedfilename",
+				"detectduplicates select(mapColumn(",
+				"          Fulfillment_Location_ID = {Fulfillment Location ID*},",
+				"          Fulfillment_Service = {Fulfillment Service*},",
+				"          Backlog_Date = {Backlog Date*},",
+				"          Backlog_Units = {Backlog Units},",
+				"          Backlog_Orders = {Backlog Orders},",
+				"          Units_per_Order = {Units per Order},",
+				"          file_name,",
+				"          recordid,",
+				"          nonduplicatedrow",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> newchangenameforassert",
+				"joinimporthistory, selectlocations join({Fulfillment Location ID*} == location_code,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinlocations",
+				"joinbuorglocation select(mapColumn(",
+				"          location_id = locations@id,",
+				"          location_code",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectlocations",
+				"joinbuorgfservice select(mapColumn(",
+				"          fulfillment_service_id = fulfillmentservices@id,",
+				"          service_name",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectfulfillmentservices",
+				"joinbuorgcbacklog derive(presence = 'true') ~> derivepresence",
+				"joinlocations, selectfulfillmentservices join({Fulfillment Service*} == service_name,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinforecastservices",
+				"joincurrentbacklog select(mapColumn(",
+				"          {Fulfillment Location ID*},",
+				"          {Fulfillment Service*},",
+				"          {Backlog Date*},",
+				"          {Backlog Units},",
+				"          {Backlog Orders},",
+				"          {Units per Order},",
+				"          file_name,",
+				"          presence,",
+				"          recordid,",
+				"          location_id = selectlocations@location_id,",
+				"          fulfillment_service_id = selectfulfillmentservices@fulfillment_service_id,",
+				"          business_unit_id = selectimporthistory@business_unit_id,",
+				"          organization_id = selectimporthistory@organization_id",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectexistrecordcheck",
+				"newchangenameforassert, selectexistrecordcheck join(newchangenameforassert@recordid == selectexistrecordcheck@recordid,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinexistrecordchech",
+				"joinexistrecordchech select(mapColumn(",
+				"          Fulfillment_Location_ID,",
+				"          Fulfillment_Service,",
+				"          Backlog_Date,",
+				"          Backlog_Units,",
+				"          Backlog_Orders,",
+				"          Units_per_Order,",
+				"          file_name = selectexistrecordcheck@file_name,",
+				"          presence,",
+				"          nonduplicatedrow,",
+				"          recordid = selectexistrecordcheck@recordid,",
+				"          location_id,",
+				"          fulfillment_service_id,",
+				"          business_unit_id,",
+				"          organization_id",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectcolsforassert",
+				"joinforecastservices, derivepresence join(selectlocations@location_id == currentbacklog@location_id",
+				"     && selectfulfillmentservices@fulfillment_service_id == currentbacklog@fulfillment_service_id",
+				"     && {Backlog Date*} == toDate(toString(backlog_date)),",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joincurrentbacklog",
+				"importhistory filter(id==toInteger($transaction_id)) ~> filtertransaction",
+				"locations, filtertransaction join(locations@business_unit_id == importhistory@business_unit_id",
+				"     && locations@organization_id == importhistory@organization_id,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinbuorglocation",
+				"fulfillmentservices, filtertransaction join(fulfillmentservices@business_unit_id == importhistory@business_unit_id",
+				"     && fulfillmentservices@organization_id == importhistory@organization_id,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinbuorgfservice",
+				"currentbacklog, filtertransaction join(currentbacklog@business_unit_id == importhistory@business_unit_id",
+				"     && currentbacklog@organization_id == importhistory@organization_id,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinbuorgcbacklog",
+				"currentbackloguxuploadstaging keyGenerate(output(recordid as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> recordid",
+				"recordid window(over({Fulfillment Location ID*},",
+				"          {Fulfillment Service*},",
+				"          {Backlog Date*},",
+				"          file_name),",
+				"     asc(recordid, true),",
+				"     nonduplicatedrow = rowNumber() == 1) ~> detectduplicates",
+				"splitvalidatedrows@validationfailedrows filter(not(isNull(validation_errors))) ~> filterrowswithvalidationerrors",
+				"selectcolsforassert filter(not(isNull(Fulfillment_Location_ID)) || not(isNull(Fulfillment_Service)) || not(isNull(Backlog_Date)) || not(isNull(Backlog_Units)) || not(isNull(Backlog_Orders)) || not(isNull(Units_per_Order))) ~> filteremptyrows",
+				"splitvalidatedrows@validrows alterRow(insertIf(true())) ~> alterRow1",
+				"recordid derive(transaction_id = toInteger($transaction_id)) ~> dervietranscolumn",
+				"dervietranscolumn, selectimporthistory join(transaction_id == id,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinimporthistory",
+				"filtertransaction select(mapColumn(",
+				"          id,",
+				"          business_unit_id,",
+				"          organization_id",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectimporthistory",
+				"alterRow1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          organization_id as string,",
+				"          business_unit_id as string,",
+				"          location_id as integer,",
+				"          fulfillment_service_id as integer,",
+				"          backlog_date as date,",
+				"          open_backlog_units as long,",
+				"          open_backlog_orders as long,",
+				"          average_upo as float,",
+				"          created_date as timestamp,",
+				"          updated_date as timestamp",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          organization_id,",
+				"          business_unit_id,",
+				"          location_id,",
+				"          fulfillment_service_id,",
+				"          backlog_date = {Backlog Date*},",
+				"          open_backlog_units = {Backlog Units},",
+				"          open_backlog_orders = {Backlog Orders},",
+				"          average_upo = {Units per Order}",
+				"     ),",
+				"     preCommands: [],",
+				"     postCommands: []) ~> ValidCurrentBacklog",
+				"derivedfilename sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     rowUrlColumn:'failed_file_name',",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          type,",
+				"          message",
+				"     )) ~> failedrows"
+			]
+		}
+	}
+}

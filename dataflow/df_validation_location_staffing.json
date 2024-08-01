@@ -1,0 +1,540 @@
+{
+	"name": "df_validation_location_staffing",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "LOCATION_STAFFING_UX",
+						"type": "DatasetReference"
+					},
+					"name": "locationstaffingux"
+				},
+				{
+					"dataset": {
+						"referenceName": "locations",
+						"type": "DatasetReference"
+					},
+					"name": "locations"
+				},
+				{
+					"dataset": {
+						"referenceName": "operationalprofile",
+						"type": "DatasetReference"
+					},
+					"name": "operationalprofile"
+				},
+				{
+					"dataset": {
+						"referenceName": "enum_values",
+						"type": "DatasetReference"
+					},
+					"name": "enumvalues"
+				},
+				{
+					"dataset": {
+						"referenceName": "operational_calendar",
+						"type": "DatasetReference"
+					},
+					"name": "operationalcalendar"
+				},
+				{
+					"dataset": {
+						"referenceName": "importhistory",
+						"type": "DatasetReference"
+					},
+					"name": "importhistory"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "operational_calendar",
+						"type": "DatasetReference"
+					},
+					"name": "ValidLocationStaffingRows"
+				},
+				{
+					"dataset": {
+						"referenceName": "FailedLocationStaffingJson",
+						"type": "DatasetReference"
+					},
+					"name": "failedrows"
+				}
+			],
+			"transformations": [
+				{
+					"name": "validations"
+				},
+				{
+					"name": "reverserename"
+				},
+				{
+					"name": "deriveerrors"
+				},
+				{
+					"name": "selectmainfields"
+				},
+				{
+					"name": "aggregateerrors"
+				},
+				{
+					"name": "joinaggregaterror"
+				},
+				{
+					"name": "splitvalidatedrows"
+				},
+				{
+					"name": "derivedfilename"
+				},
+				{
+					"name": "newchangenameforassert"
+				},
+				{
+					"name": "joinlocations"
+				},
+				{
+					"name": "selectlocations"
+				},
+				{
+					"name": "selectoperationalprofile"
+				},
+				{
+					"name": "filterenumvalues"
+				},
+				{
+					"name": "selectenumvalues"
+				},
+				{
+					"name": "derivepresence"
+				},
+				{
+					"name": "joinprofile"
+				},
+				{
+					"name": "joinenumvalues"
+				},
+				{
+					"name": "joinoperationalcalendar"
+				},
+				{
+					"name": "selectexistrecordcheck"
+				},
+				{
+					"name": "joinopcalendarcheck"
+				},
+				{
+					"name": "selectcolsforassert"
+				},
+				{
+					"name": "findduplicates"
+				},
+				{
+					"name": "selecttransaction"
+				},
+				{
+					"name": "joinimporthistoryop"
+				},
+				{
+					"name": "joinimporthistoryopcalendar"
+				},
+				{
+					"name": "jointransactionlocation"
+				},
+				{
+					"name": "appendrecordid"
+				},
+				{
+					"name": "filterrowswithvalidationerrors"
+				},
+				{
+					"name": "filteremptyrows"
+				},
+				{
+					"name": "selectopcalendarloadtable"
+				},
+				{
+					"name": "joinloadtablebranch"
+				},
+				{
+					"name": "joinihvalidation"
+				},
+				{
+					"name": "derivedColumnimphistory"
+				},
+				{
+					"name": "selectopcalendar"
+				},
+				{
+					"name": "datatypederviations"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     file_path as string ('/DEV/Upload/LocationStaffing/510.xlsx'),",
+				"     transaction_id as string ('510')",
+				"}",
+				"source(output(",
+				"          {Profile Name*} as string,",
+				"          {Location ID*} as string,",
+				"          {Date*} as date,",
+				"          {Metric Name*} as string,",
+				"          {Value*} as string",
+				"     ),",
+				"     allowSchemaDrift: false,",
+				"     validateSchema: true,",
+				"     ignoreNoFilesFound: false,",
+				"     rowUrlColumn: 'file_name',",
+				"     wildcardPaths:[($file_path)]) ~> locationstaffingux",
+				"source(output(",
+				"          id as integer,",
+				"          location_code as string,",
+				"          name as string,",
+				"          address as string,",
+				"          city as string,",
+				"          state as string,",
+				"          zip as string,",
+				"          country as string,",
+				"          sub_type as string,",
+				"          delivery_partners as string,",
+				"          throughput as float,",
+				"          capacity as float,",
+				"          special_information as string,",
+				"          holding_cost as float,",
+				"          inbound_handling_cost as float,",
+				"          outbound_handling_cost as float,",
+				"          longitude as decimal(0,0),",
+				"          latitude as decimal(0,0),",
+				"          updated_date as date,",
+				"          created_date as date,",
+				"          status as string,",
+				"          inbound_processing_time as decimal(0,0),",
+				"          outbound_processing_time as decimal(0,0),",
+				"          type as integer,",
+				"          transfer_inbound_processing_time as double,",
+				"          transfer_outbound_processing_time as double,",
+				"          transfer_inbound_handling_cost as double,",
+				"          transfer_outbound_handling_cost as double,",
+				"          tenant_id as string,",
+				"          organization_id as string,",
+				"          business_unit_id as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> locations",
+				"source(output(",
+				"          id as integer,",
+				"          name as string,",
+				"          created_date as timestamp,",
+				"          updated_date as timestamp,",
+				"          business_unit_id as string,",
+				"          organization_id as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> operationalprofile",
+				"source(output(",
+				"          id as integer,",
+				"          enum_type_id as integer,",
+				"          value_id as integer,",
+				"          value as string,",
+				"          created_date as timestamp,",
+				"          updated_date as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> enumvalues",
+				"source(output(",
+				"          id as integer,",
+				"          business_unit_id as string,",
+				"          organization_id as string,",
+				"          location_id as integer,",
+				"          date as date,",
+				"          location_metric_value as decimal(0,0),",
+				"          created_date as timestamp,",
+				"          updated_date as timestamp,",
+				"          enum_value_id as integer,",
+				"          enum_type_id as integer,",
+				"          operational_profile_id as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> operationalcalendar",
+				"source(output(",
+				"          id as integer,",
+				"          original_file_name as string,",
+				"          user_id as string,",
+				"          status_enum_value_id as integer,",
+				"          processed_time as timestamp,",
+				"          errors as string,",
+				"          business_unit_id as string,",
+				"          organization_id as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> importhistory",
+				"filteremptyrows, selectlocations, selectoperationalprofile, selectenumvalues assert(expectTrue(not(isNull(Profile_Name))&&not(isNull(selectcolsforassert@Location_ID))&&not(isNull(Date))&&not(isNull(Metric_Name))&&not(isNull(selectcolsforassert@Value)), false, 'nullvalues', null, 'Null Values Found In Mandatory Fields'),",
+				"     expectExists(selectcolsforassert@Location_ID == location_code, false, 'locationexist', null, 'Location ID Not Found In Database'),",
+				"     expectExists(Profile_Name == name, false, 'profileexist', null, 'Profile Details Not Found In Database'),",
+				"     expectExists(Metric_Name == selectenumvalues@value, false, 'metrictype', null, 'Metric Type Specified Not Found'),",
+				"     expectTrue(isNull(presence), false, 'checkrecordexists', null, 'Record Already Exists In DB'),",
+				"     expectTrue(nonduplicatedrow, false, 'duplicaterecords', null, 'Duplicate Records Uploaded'),",
+				"     expectTrue(toDecimal(selectcolsforassert@Value) >= 0, false, 'valueoutofrange', null, 'Value Out Of Range')) ~> validations",
+				"validations select(mapColumn(",
+				"          {Profile Name*} = Profile_Name,",
+				"          {Location ID*} = selectcolsforassert@Location_ID,",
+				"          {Date*} = Date,",
+				"          {Metric Name*} = Metric_Name,",
+				"          {Value*} = selectcolsforassert@Value,",
+				"          file_name,",
+				"          record_id",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> reverserename",
+				"reverserename derive(validation_errors = assertErrorMessages(),",
+				"          transaction_id = toInteger($transaction_id),",
+				"          sink_file_name = replace(file_name,'.xlsx','.txt'),",
+				"          file_name_failed_rows = replace(file_name,'/Upload/','/FailedTransactions/')) ~> deriveerrors",
+				"joinaggregaterror select(mapColumn(",
+				"          {Profile Name*},",
+				"          {Location ID*},",
+				"          {Date*},",
+				"          {Metric_Name*} = {Metric Name*},",
+				"          {Value*},",
+				"          file_name = reverserename@file_name,",
+				"          validation_errors,",
+				"          transaction_id,",
+				"          sink_file_name,",
+				"          file_name_failed_rows,",
+				"          file_name = aggregateerrors@file_name,",
+				"          errors_count,",
+				"          record_id",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectmainfields",
+				"deriveerrors aggregate(groupBy(file_name),",
+				"     errors_count = countIf(not(isNull(validation_errors)))) ~> aggregateerrors",
+				"deriveerrors, aggregateerrors join(reverserename@file_name == aggregateerrors@file_name,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinaggregaterror",
+				"selectmainfields split(errors_count==0,",
+				"     disjoint: false) ~> splitvalidatedrows@(validrows, validationfailedrows)",
+				"filterrowswithvalidationerrors derive(failed_file_name = replace(replace($file_path,'/Upload/','/FailedTransactions/'),'.xlsx','.json'),",
+				"          type = 'error',",
+				"          message = concat('record number ',toString(record_id),' has following errors ',toString(validation_errors))) ~> derivedfilename",
+				"appendrecordid select(mapColumn(",
+				"          Profile_Name = {Profile Name*},",
+				"          Location_ID = {Location ID*},",
+				"          Date = {Date*},",
+				"          Metric_Name = {Metric Name*},",
+				"          Value = {Value*},",
+				"          file_name,",
+				"          record_id",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> newchangenameforassert",
+				"joinihvalidation, selectlocations join({Location ID*} == location_code,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinlocations",
+				"jointransactionlocation select(mapColumn(",
+				"          location_id = locations@id,",
+				"          location_code",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectlocations",
+				"joinimporthistoryop select(mapColumn(",
+				"          profile_id = operationalprofile@id,",
+				"          name",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectoperationalprofile",
+				"enumvalues filter(enum_type_id==4) ~> filterenumvalues",
+				"filterenumvalues select(mapColumn(",
+				"          enum_type_id,",
+				"          value_id,",
+				"          value",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectenumvalues",
+				"joinimporthistoryopcalendar derive(presence = 'true') ~> derivepresence",
+				"joinlocations, selectoperationalprofile join({Profile Name*} == name,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinprofile",
+				"joinprofile, selectenumvalues join({Metric Name*} == value,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinenumvalues",
+				"joinenumvalues, selectopcalendar join(profile_id == operational_profile_id",
+				"     && selectlocations@location_id == selectopcalendar@location_id",
+				"     && {Date*} == toDate(toString(date))",
+				"     && value_id == enum_value_id,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinoperationalcalendar",
+				"joinoperationalcalendar select(mapColumn(",
+				"          presence,",
+				"          record_id",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectexistrecordcheck",
+				"findduplicates, selectexistrecordcheck join(newchangenameforassert@record_id == selectexistrecordcheck@record_id,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinopcalendarcheck",
+				"joinopcalendarcheck select(mapColumn(",
+				"          Profile_Name,",
+				"          Location_ID,",
+				"          Date,",
+				"          Metric_Name,",
+				"          Value,",
+				"          file_name,",
+				"          presence,",
+				"          nonduplicatedrow,",
+				"          record_id = newchangenameforassert@record_id",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectcolsforassert",
+				"newchangenameforassert window(over(Profile_Name,",
+				"          Location_ID,",
+				"          Metric_Name,",
+				"          Date),",
+				"     asc(file_name, true),",
+				"     nonduplicatedrow = rowNumber() == 1) ~> findduplicates",
+				"importhistory filter(id == toInteger($transaction_id)) ~> selecttransaction",
+				"operationalprofile, selecttransaction join(operationalprofile@business_unit_id == importhistory@business_unit_id",
+				"     && operationalprofile@organization_id == importhistory@organization_id,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinimporthistoryop",
+				"operationalcalendar, selecttransaction join(operationalcalendar@business_unit_id == importhistory@business_unit_id",
+				"     && operationalcalendar@organization_id == importhistory@organization_id,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinimporthistoryopcalendar",
+				"locations, selecttransaction join(locations@business_unit_id == importhistory@business_unit_id",
+				"     && locations@organization_id == importhistory@organization_id,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> jointransactionlocation",
+				"locationstaffingux keyGenerate(output(record_id as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> appendrecordid",
+				"splitvalidatedrows@validationfailedrows filter(not(isNull(validation_errors))) ~> filterrowswithvalidationerrors",
+				"selectcolsforassert filter(not(isNull(Profile_Name)) || not(isNull(Location_ID)) || not(isNull(Date)) || not(isNull(Metric_Name)) || not(isNull(Value))) ~> filteremptyrows",
+				"joinoperationalcalendar select(mapColumn(",
+				"          profile_id,",
+				"          location_id = selectlocations@location_id,",
+				"          {Date*},",
+				"          enum_type_id = selectenumvalues@enum_type_id,",
+				"          value_id,",
+				"          {Value*},",
+				"          file_name,",
+				"          record_id,",
+				"          original_file_name,",
+				"          business_unit_id = importhistory@business_unit_id,",
+				"          organization_id = importhistory@organization_id",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectopcalendarloadtable",
+				"splitvalidatedrows@validrows, selectopcalendarloadtable join(splitvalidatedrows@validrows@record_id == selectopcalendarloadtable@record_id,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinloadtablebranch",
+				"derivedColumnimphistory, selecttransaction join(transaction_id == id,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinihvalidation",
+				"appendrecordid derive(transaction_id = toInteger($transaction_id)) ~> derivedColumnimphistory",
+				"derivepresence select(mapColumn(",
+				"          id = operationalcalendar@id,",
+				"          business_unit_id = operationalcalendar@business_unit_id,",
+				"          organization_id = operationalcalendar@organization_id,",
+				"          location_id,",
+				"          date,",
+				"          location_metric_value,",
+				"          created_date,",
+				"          updated_date,",
+				"          enum_value_id,",
+				"          enum_type_id,",
+				"          operational_profile_id,",
+				"          id = importhistory@id,",
+				"          original_file_name,",
+				"          user_id,",
+				"          status_enum_value_id,",
+				"          processed_time,",
+				"          errors,",
+				"          presence",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectopcalendar",
+				"joinloadtablebranch derive({Value*} = toDecimal(splitvalidatedrows@validrows@{Value*})) ~> datatypederviations",
+				"datatypederviations sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          id as integer,",
+				"          business_unit_id as string,",
+				"          organization_id as string,",
+				"          location_id as integer,",
+				"          date as date,",
+				"          location_metric_value as decimal(0,0),",
+				"          created_date as timestamp,",
+				"          updated_date as timestamp,",
+				"          enum_value_id as integer,",
+				"          enum_type_id as integer,",
+				"          operational_profile_id as integer",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          business_unit_id,",
+				"          organization_id,",
+				"          location_id,",
+				"          date = splitvalidatedrows@validrows@{Date*},",
+				"          location_metric_value = {Value*},",
+				"          enum_value_id = value_id,",
+				"          enum_type_id,",
+				"          operational_profile_id = profile_id",
+				"     ),",
+				"     preCommands: [],",
+				"     postCommands: []) ~> ValidLocationStaffingRows",
+				"derivedfilename sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     rowUrlColumn:'failed_file_name',",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          type,",
+				"          message",
+				"     )) ~> failedrows"
+			]
+		}
+	}
+}

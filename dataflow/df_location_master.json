@@ -1,0 +1,318 @@
+{
+	"name": "df_location_master",
+	"properties": {
+		"folder": {
+			"name": "main"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "LOCATION_MASTER_RAW",
+						"type": "DatasetReference"
+					},
+					"name": "LocationMasterRaw"
+				},
+				{
+					"dataset": {
+						"referenceName": "tenant_heirarchy_table",
+						"type": "DatasetReference"
+					},
+					"name": "TenantHeirarchyDetail"
+				},
+				{
+					"dataset": {
+						"referenceName": "tenant_heirarchy_table",
+						"type": "DatasetReference"
+					},
+					"name": "TenantHierarchyDetail"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "locations",
+						"type": "DatasetReference"
+					},
+					"name": "WriteToLocationsTable",
+					"rejectedDataLinkedService": {
+						"referenceName": "datalakelinkedservice",
+						"type": "LinkedServiceReference"
+					}
+				},
+				{
+					"dataset": {
+						"referenceName": "FAILED_LOCATION_MASTER_ROWS_SFTP",
+						"type": "DatasetReference"
+					},
+					"name": "failedrowslocationmaster"
+				}
+			],
+			"transformations": [
+				{
+					"name": "THDBUSelected"
+				},
+				{
+					"name": "JoinTenantHeirarchyDetail"
+				},
+				{
+					"name": "AlterRow1"
+				},
+				{
+					"name": "FilterBUrecords"
+				},
+				{
+					"name": "AddDefaultedColumns",
+					"description": "Add Location Type - always 1"
+				},
+				{
+					"name": "ValidateData"
+				},
+				{
+					"name": "Pass",
+					"description": "If there are no validation errors, pass. Otherwise fail."
+				},
+				{
+					"name": "DeriveErrorsAndFileName",
+					"description": "Convert Assertions In Columns"
+				},
+				{
+					"name": "RenameColumnsForValidation"
+				},
+				{
+					"name": "FilterOrgRecords"
+				},
+				{
+					"name": "THDOrgSelected"
+				},
+				{
+					"name": "JoinBUWithOrg"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     file_path as string ('Radial/LocationMaster/data_107e2644-2ce0-4274-abb8-2ad1ea4d944d_d6b001c9-e396-41a1-ad43-b5f3d1aebeae.csv')",
+				"}",
+				"source(output(",
+				"          {Organization ID} as string,",
+				"          {Business ID} as string,",
+				"          {Location Code} as short,",
+				"          Name as string,",
+				"          Address as string,",
+				"          City as string,",
+				"          State as string,",
+				"          Zip as string,",
+				"          Country as string,",
+				"          Latitude as double,",
+				"          Longitude as double,",
+				"          {Location Status} as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     wildcardPaths:[($file_path)],",
+				"     mode: 'read') ~> LocationMasterRaw",
+				"source(output(",
+				"          id as string,",
+				"          tenant_hierarchy_type as integer,",
+				"          name as string,",
+				"          contact_name as string,",
+				"          email as string,",
+				"          phone as string,",
+				"          street_address_1 as string,",
+				"          street_address_2 as string,",
+				"          city as string,",
+				"          state as string,",
+				"          zip as integer,",
+				"          country as string,",
+				"          active as boolean,",
+				"          tenant_id as string,",
+				"          created_date as timestamp,",
+				"          updated_date as timestamp,",
+				"          parent_id as string,",
+				"          tenant_hierarchy_code as string,",
+				"          isdeleted as boolean,",
+				"          updated_by_user_id as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> TenantHeirarchyDetail",
+				"source(output(",
+				"          id as string,",
+				"          tenant_hierarchy_type as integer,",
+				"          name as string,",
+				"          contact_name as string,",
+				"          email as string,",
+				"          phone as string,",
+				"          street_address_1 as string,",
+				"          street_address_2 as string,",
+				"          city as string,",
+				"          state as string,",
+				"          zip as integer,",
+				"          country as string,",
+				"          active as boolean,",
+				"          tenant_id as string,",
+				"          created_date as timestamp,",
+				"          updated_date as timestamp,",
+				"          parent_id as string,",
+				"          tenant_hierarchy_code as string,",
+				"          isdeleted as boolean,",
+				"          updated_by_user_id as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> TenantHierarchyDetail",
+				"FilterBUrecords select(mapColumn(",
+				"          THD_BU_id = id,",
+				"          THD_BU_parent_id = parent_id,",
+				"          THD_BU_tenant_hierarchy_code = tenant_hierarchy_code",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> THDBUSelected",
+				"LocationMasterRaw, JoinBUWithOrg join({Business ID} == THD_BU_tenant_hierarchy_code",
+				"     && {Organization ID} == THD_Org_tenant_hierarchy_code,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> JoinTenantHeirarchyDetail",
+				"AddDefaultedColumns alterRow(upsertIf(true())) ~> AlterRow1",
+				"TenantHeirarchyDetail filter(tenant_hierarchy_type==3) ~> FilterBUrecords",
+				"Pass@Pass derive(Location_Type = 1) ~> AddDefaultedColumns",
+				"RenameColumnsForValidation assert(expectTrue(! isNull(Organization_ID), false, 'OrgIDNull', null, \"Organization ID is NULL\"),",
+				"     expectTrue(! isNull(Business_ID), false, 'BusIDNull', null, \"Business ID is NULL\"),",
+				"     expectTrue(! isNull(Location_Code), false, 'LocCodeNull', null, \"Location Code is NULL\"),",
+				"     expectTrue(! isNull(Name), false, 'NameNull', null, \"Name Is NULL\"),",
+				"     expectTrue(! isNull(Address), false, 'AddressIsNull', null, \"Address Is NULL\"),",
+				"     expectTrue(! isNull(City), false, 'CityIsNull', null, \"City Is NULL\"),",
+				"     expectTrue(! isNull(State), false, 'StateIsNull', null, \"State is NULL\"),",
+				"     expectTrue(! isNull(Zip), false, 'ZipIsNull', null, \"Zip is NULL\"),",
+				"     expectTrue(! isNull(Country), false, 'CountryIsNull', null, \"Country Is NULL\"),",
+				"     expectTrue(! ( Longitude < -180 ) || (Longitude > 180), false, 'LongitudeInvalid', null, \"Longitude Is Invalid\"),",
+				"     expectTrue(! ( Latitude < -180 ) || ( Latitude > 180 ), false, 'LatitudeInvalid', null, \"Latitude Is Invalid\"),",
+				"     expectTrue(! isNull(THD_Org_id), false, 'OrgIDInvalid', null, \"Organization ID Is Invalid\"),",
+				"     expectTrue(! isNull(THD_BU_id), false, 'BUInvalid', null, \"Business Unit Is Invalid\")) ~> ValidateData",
+				"DeriveErrorsAndFileName split(isNull(validation_errors),",
+				"     disjoint: false) ~> Pass@(Pass, Fail)",
+				"ValidateData derive(validation_errors = assertErrorMessages(),",
+				"          file_name = $file_path,",
+				"          failed_filename = replace($file_path,'Radial','faileduploads')) ~> DeriveErrorsAndFileName",
+				"JoinTenantHeirarchyDetail select(mapColumn(",
+				"          Organization_ID = {Organization ID},",
+				"          Business_ID = {Business ID},",
+				"          Location_Code = {Location Code},",
+				"          Name,",
+				"          Address,",
+				"          City,",
+				"          State,",
+				"          Zip,",
+				"          Country,",
+				"          Latitude,",
+				"          Longitude,",
+				"          Location_Status = {Location Status},",
+				"          THD_BU_id,",
+				"          THD_BU_parent_id,",
+				"          THD_BU_tenant_hierarchy_code,",
+				"          THD_Org_id,",
+				"          THD_Org_tenant_id,",
+				"          THD_Org_tenant_hierarchy_code",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> RenameColumnsForValidation",
+				"TenantHierarchyDetail filter(tenant_hierarchy_type == 2) ~> FilterOrgRecords",
+				"FilterOrgRecords select(mapColumn(",
+				"          THD_Org_id = id,",
+				"          THD_Org_tenant_id = tenant_id,",
+				"          THD_Org_tenant_hierarchy_code = tenant_hierarchy_code,",
+				"          THD_Org_tenant_id = tenant_id",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> THDOrgSelected",
+				"THDBUSelected, THDOrgSelected join(THD_BU_parent_id == THD_Org_id,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> JoinBUWithOrg",
+				"AlterRow1 sink(allowSchemaDrift: false,",
+				"     validateSchema: true,",
+				"     input(",
+				"          id as integer,",
+				"          location_code as string,",
+				"          name as string,",
+				"          address as string,",
+				"          city as string,",
+				"          state as string,",
+				"          zip as string,",
+				"          country as string,",
+				"          sub_type as string,",
+				"          delivery_partners as string,",
+				"          throughput as float,",
+				"          capacity as float,",
+				"          special_information as string,",
+				"          holding_cost as float,",
+				"          inbound_handling_cost as float,",
+				"          outbound_handling_cost as float,",
+				"          longitude as double,",
+				"          latitude as double,",
+				"          updated_date as date,",
+				"          created_date as date,",
+				"          status as string,",
+				"          inbound_processing_time as decimal(0,0),",
+				"          outbound_processing_time as decimal(0,0),",
+				"          type as integer,",
+				"          transfer_inbound_processing_time as double,",
+				"          transfer_outbound_processing_time as double,",
+				"          transfer_inbound_handling_cost as double,",
+				"          transfer_outbound_handling_cost as double,",
+				"          tenant_id as string,",
+				"          organization_id as string,",
+				"          business_unit_id as string,",
+				"          units_per_hour as float,",
+				"          max_fte_regular_hours as float,",
+				"          min_fte_regular_hours as float,",
+				"          max_temp_regular_hours as float,",
+				"          min_temp_regular_hours as float,",
+				"          max_fte_overtime_hours as float,",
+				"          max_temp_overtime_hours as float,",
+				"          regular_fte_wage as float,",
+				"          regular_temp_wage as float,",
+				"          overtime_fte_wage as float,",
+				"          overtime_temp_wage as float,",
+				"          fte_staff_count as integer,",
+				"          temp_staff_count as integer",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:false,",
+				"     upsertable:true,",
+				"     keys:['location_code'],",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          location_code = Location_Code,",
+				"          address = Address,",
+				"          name = Name,",
+				"          zip = Zip,",
+				"          tenant_id = THD_Org_tenant_id,",
+				"          organization_id = THD_Org_id,",
+				"          business_unit_id = THD_BU_id,",
+				"          status = Location_Status,",
+				"          type = Location_Type,",
+				"          latitude = Latitude,",
+				"          longitude = Longitude,",
+				"          city = City,",
+				"          state = State,",
+				"          zip = Zip",
+				"     )) ~> WriteToLocationsTable",
+				"Pass@Fail sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     rowUrlColumn:'failed_filename',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> failedrowslocationmaster"
+			]
+		}
+	}
+}

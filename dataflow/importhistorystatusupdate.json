@@ -1,0 +1,144 @@
+{
+	"name": "importhistorystatusupdate",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "importhistory",
+						"type": "DatasetReference"
+					},
+					"name": "importhistory"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "importhistory",
+						"type": "DatasetReference"
+					},
+					"name": "importhistorysink"
+				},
+				{
+					"dataset": {
+						"referenceName": "notification",
+						"type": "DatasetReference"
+					},
+					"name": "notification"
+				}
+			],
+			"transformations": [
+				{
+					"name": "filtertransaction"
+				},
+				{
+					"name": "derivestatus"
+				},
+				{
+					"name": "AlterRow1"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "derivednotificationattributes"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     transaction_id as string ('16'),",
+				"     quote as string ('\\''),",
+				"     status_value_id as string ('1')",
+				"}",
+				"source(output(",
+				"          id as integer,",
+				"          original_file_name as string,",
+				"          user_id as string,",
+				"          status_enum_value_id as integer,",
+				"          processed_time as timestamp,",
+				"          errors as string,",
+				"          business_unit_id as string,",
+				"          organization_id as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> importhistory",
+				"importhistory filter(id==toInteger($transaction_id) ) ~> filtertransaction",
+				"filtertransaction derive(status_enum_value_id = toInteger($status_value_id),",
+				"          errors = 'null') ~> derivestatus",
+				"select1 alterRow(updateIf(true())) ~> AlterRow1",
+				"derivestatus select(mapColumn(",
+				"          id,",
+				"          status_enum_value_id,",
+				"          errors",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"derivestatus derive(description = original_file_name,",
+				"          run_status = 'Complete',",
+				"          notification_type = 'Pipeline Status',",
+				"          feature_id = 32) ~> derivednotificationattributes",
+				"AlterRow1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          id as integer,",
+				"          original_file_name as string,",
+				"          user_id as string,",
+				"          status_enum_value_id as integer,",
+				"          processed_time as timestamp,",
+				"          errors as string,",
+				"          business_unit_id as string,",
+				"          organization_id as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:true,",
+				"     upsertable:false,",
+				"     keys:['id'],",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          id,",
+				"          status_enum_value_id,",
+				"          errors",
+				"     )) ~> importhistorysink",
+				"derivednotificationattributes sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          id as integer,",
+				"          run_id as integer,",
+				"          run_status as string,",
+				"          description as string,",
+				"          user_id as string,",
+				"          notification_status as string,",
+				"          notification_type as string,",
+				"          feature_id as integer,",
+				"          created_at as timestamp,",
+				"          updated_at as timestamp,",
+				"          business_unit_id as string,",
+				"          organization_id as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          run_id = id,",
+				"          run_status,",
+				"          description,",
+				"          user_id,",
+				"          notification_type,",
+				"          feature_id,",
+				"          business_unit_id,",
+				"          organization_id",
+				"     )) ~> notification"
+			]
+		}
+	}
+}

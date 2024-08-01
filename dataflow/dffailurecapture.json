@@ -1,0 +1,183 @@
+{
+	"name": "dffailurecapture",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "failurestringdemandforecast",
+						"type": "DatasetReference"
+					},
+					"name": "failure"
+				},
+				{
+					"dataset": {
+						"referenceName": "importhistory",
+						"type": "DatasetReference"
+					},
+					"name": "importhistorylookup"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "importhistory",
+						"type": "DatasetReference"
+					},
+					"name": "importhistory"
+				},
+				{
+					"dataset": {
+						"referenceName": "notification",
+						"type": "DatasetReference"
+					},
+					"name": "notification"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "AlterRow1"
+				},
+				{
+					"name": "parseerrrors"
+				},
+				{
+					"name": "derivenotificationerrors"
+				},
+				{
+					"name": "joinimporthistory"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "selectimporthistory"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     transaction_id as string ('646'),",
+				"     single_quote as string ('\\''),",
+				"     file_path as string ('/DEV/Upload/CurrentBacklog/646.xlsx')",
+				"}",
+				"source(output(",
+				"          Column_1 as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: true,",
+				"     purgeFiles: true,",
+				"     rowUrlColumn: 'file_name',",
+				"     wildcardPaths:[(replace(replace($file_path, '/Upload/', '/FailedTransactions/'),'.xlsx','.json'))]) ~> failure",
+				"source(output(",
+				"          id as integer,",
+				"          original_file_name as string,",
+				"          user_id as string,",
+				"          status_enum_value_id as integer,",
+				"          processed_time as timestamp,",
+				"          errors as string,",
+				"          business_unit_id as string,",
+				"          organization_id as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> importhistorylookup",
+				"failure derive(id = toInteger($transaction_id),",
+				"          errors = replace(concat('{\\'error\\':[',replace(concat(replace(Column_1,'}','},'),']'),',]',']'),'}'),$single_quote,'\"'),",
+				"          status_enum_value_id = 3,",
+				"          errors_formatted = replace(replace(concat('[',replace(Column_1,'}','},'),']'),',]',']'),'},\\n]','}]')) ~> derivedColumn1",
+				"parseerrrors alterRow(updateIf(true())) ~> AlterRow1",
+				"derivedColumn1 derive(errors = errors_formatted) ~> parseerrrors",
+				"parseerrrors derive(run_status = iif(status_enum_value_id==3,'Failed',iif(status_enum_value_id==2,'Complete','In Progress')),",
+				"          notification_type = 'Pipeline Status',",
+				"          feature_id = 32) ~> derivenotificationerrors",
+				"derivenotificationerrors, importhistorylookup join(derivedColumn1@id == importhistorylookup@id,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinimporthistory",
+				"joinimporthistory select(mapColumn(",
+				"          run_id = derivedColumn1@id,",
+				"          description = original_file_name,",
+				"          run_status,",
+				"          notification_type,",
+				"          feature_id,",
+				"          user_id,",
+				"          business_unit_id,",
+				"          organization_id",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"importhistorylookup select(mapColumn(",
+				"          id,",
+				"          original_file_name",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectimporthistory",
+				"AlterRow1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          id as integer,",
+				"          original_file_name as string,",
+				"          user_id as string,",
+				"          status_enum_value_id as integer,",
+				"          processed_time as timestamp,",
+				"          errors as string,",
+				"          business_unit_id as string,",
+				"          organization_id as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:true,",
+				"     upsertable:false,",
+				"     keys:['id'],",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          id,",
+				"          status_enum_value_id,",
+				"          errors = errors_formatted",
+				"     )) ~> importhistory",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          id as integer,",
+				"          run_id as integer,",
+				"          run_status as string,",
+				"          description as string,",
+				"          user_id as string,",
+				"          notification_status as string,",
+				"          notification_type as string,",
+				"          feature_id as integer,",
+				"          created_at as timestamp,",
+				"          updated_at as timestamp,",
+				"          business_unit_id as string,",
+				"          organization_id as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          run_id,",
+				"          run_status,",
+				"          description,",
+				"          user_id,",
+				"          notification_type,",
+				"          feature_id,",
+				"          business_unit_id,",
+				"          organization_id",
+				"     )) ~> notification"
+			]
+		}
+	}
+}

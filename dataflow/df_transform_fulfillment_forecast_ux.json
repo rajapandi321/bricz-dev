@@ -1,0 +1,245 @@
+{
+	"name": "df_transform_fulfillment_forecast_ux",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "FulfillmentForecastMain",
+						"type": "DatasetReference"
+					},
+					"name": "fulfillmentforecastmain"
+				},
+				{
+					"dataset": {
+						"referenceName": "importhistory",
+						"type": "DatasetReference"
+					},
+					"name": "importhistory"
+				},
+				{
+					"dataset": {
+						"referenceName": "locations",
+						"type": "DatasetReference"
+					},
+					"name": "locations"
+				},
+				{
+					"dataset": {
+						"referenceName": "fulfillment_services",
+						"type": "DatasetReference"
+					},
+					"name": "fulfillmentservices"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "fulfillment_forecast",
+						"type": "DatasetReference"
+					},
+					"name": "sinkfulfillmentforecast"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivecolumns"
+				},
+				{
+					"name": "selectimporthistory"
+				},
+				{
+					"name": "joinimporthistory"
+				},
+				{
+					"name": "joinlocations"
+				},
+				{
+					"name": "selectlocations"
+				},
+				{
+					"name": "fulfillmentservicesselect"
+				},
+				{
+					"name": "joinfulfillmentservices"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     file_path as string ('/DEV/Upload/FulfillmentForecast/338.txt'),",
+				"     transaction_id as string ('338')",
+				"}",
+				"source(output(",
+				"          {Fulfillment Location ID*} as string,",
+				"          {Fulfillment Service*} as string,",
+				"          {Forecast Date*} as date,",
+				"          {Forecast 1 Units} as long,",
+				"          {Forecast 1 Orders} as long,",
+				"          {Forecast 2 Units} as float,",
+				"          {Forecast 2 Orders} as long,",
+				"          {Units per Order} as long,",
+				"          {Forecast Locked Date} as string",
+				"     ),",
+				"     allowSchemaDrift: false,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     rowUrlColumn: 'file_name',",
+				"     wildcardPaths:[($file_path)]) ~> fulfillmentforecastmain",
+				"source(output(",
+				"          id as integer,",
+				"          original_file_name as string,",
+				"          user_id as string,",
+				"          status_enum_value_id as integer,",
+				"          processed_time as timestamp,",
+				"          errors as string,",
+				"          business_unit_id as string,",
+				"          organization_id as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> importhistory",
+				"source(output(",
+				"          id as integer,",
+				"          location_code as string,",
+				"          name as string,",
+				"          address as string,",
+				"          city as string,",
+				"          state as string,",
+				"          zip as string,",
+				"          country as string,",
+				"          sub_type as string,",
+				"          delivery_partners as string,",
+				"          throughput as float,",
+				"          capacity as float,",
+				"          special_information as string,",
+				"          holding_cost as float,",
+				"          inbound_handling_cost as float,",
+				"          outbound_handling_cost as float,",
+				"          longitude as decimal(0,0),",
+				"          latitude as decimal(0,0),",
+				"          updated_date as date,",
+				"          created_date as date,",
+				"          status as string,",
+				"          inbound_processing_time as decimal(0,0),",
+				"          outbound_processing_time as decimal(0,0),",
+				"          type as integer,",
+				"          transfer_inbound_processing_time as double,",
+				"          transfer_outbound_processing_time as double,",
+				"          transfer_inbound_handling_cost as double,",
+				"          transfer_outbound_handling_cost as double,",
+				"          tenant_id as string,",
+				"          organization_id as string,",
+				"          business_unit_id as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> locations",
+				"source(output(",
+				"          id as integer,",
+				"          fulfillment_service_code as string,",
+				"          service_name as string,",
+				"          service_type as string,",
+				"          delivery_speed_value as float,",
+				"          delivery_speed_unit as string,",
+				"          service_radius_value as float,",
+				"          service_radius_unit as string,",
+				"          service_charge as float,",
+				"          deployment_type as string,",
+				"          created_date as timestamp,",
+				"          updated_date as timestamp,",
+				"          business_unit_id as string,",
+				"          organization_id as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> fulfillmentservices",
+				"fulfillmentforecastmain derive(transaction_id = toInteger($transaction_id)) ~> derivecolumns",
+				"importhistory select(mapColumn(",
+				"          import_history_id = id,",
+				"          business_unit_id,",
+				"          organization_id",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectimporthistory",
+				"derivecolumns, selectimporthistory join(transaction_id == import_history_id,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinimporthistory",
+				"joinimporthistory, selectlocations join({Fulfillment Location ID*} == location_code",
+				"     && selectimporthistory@business_unit_id == selectlocations@business_unit_id",
+				"     && selectimporthistory@organization_id == selectlocations@organization_id,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinlocations",
+				"locations select(mapColumn(",
+				"          location_id = id,",
+				"          location_code,",
+				"          business_unit_id,",
+				"          organization_id",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectlocations",
+				"fulfillmentservices select(mapColumn(",
+				"          fulfillment_service_id = id,",
+				"          service_name,",
+				"          business_unit_id,",
+				"          organization_id",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> fulfillmentservicesselect",
+				"joinlocations, fulfillmentservicesselect join({Fulfillment Service*} == service_name",
+				"     && selectimporthistory@business_unit_id == fulfillmentservicesselect@business_unit_id",
+				"     && selectimporthistory@organization_id == fulfillmentservicesselect@organization_id,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinfulfillmentservices",
+				"joinfulfillmentservices sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          organization_id as string,",
+				"          business_unit_id as string,",
+				"          location_id as integer,",
+				"          fulfillment_service_id as integer,",
+				"          forecast_date as date,",
+				"          locked_forecast_units as long,",
+				"          current_forecast_units as long,",
+				"          average_upo as float,",
+				"          locked_forecast_orders as long,",
+				"          current_forecast_orders as long,",
+				"          forecast_locked_date as date,",
+				"          created_date as timestamp,",
+				"          updated_date as timestamp,",
+				"          forecast_3_units as long,",
+				"          forecast_3_orders as long",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          organization_id,",
+				"          business_unit_id,",
+				"          location_id,",
+				"          fulfillment_service_id,",
+				"          forecast_date = {Forecast Date*},",
+				"          locked_forecast_units = {Forecast 1 Units},",
+				"          current_forecast_units = {Forecast 2 Units},",
+				"          average_upo = {Units per Order},",
+				"          locked_forecast_orders = {Forecast 1 Orders},",
+				"          current_forecast_orders = {Forecast 2 Orders},",
+				"          forecast_locked_date = {Forecast Locked Date}",
+				"     )) ~> sinkfulfillmentforecast"
+			]
+		}
+	}
+}

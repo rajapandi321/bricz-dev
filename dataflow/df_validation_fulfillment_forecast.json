@@ -1,0 +1,487 @@
+{
+	"name": "df_validation_fulfillment_forecast",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "FULFILLMENT_FORECAST_UX_STAGING",
+						"type": "DatasetReference"
+					},
+					"name": "fulfillmentforecastuxstaging"
+				},
+				{
+					"dataset": {
+						"referenceName": "locations",
+						"type": "DatasetReference"
+					},
+					"name": "locations"
+				},
+				{
+					"dataset": {
+						"referenceName": "fulfillment_services",
+						"type": "DatasetReference"
+					},
+					"name": "fulfillmentservices",
+					"description": "Import data from fulfillment services"
+				},
+				{
+					"dataset": {
+						"referenceName": "fulfillment_forecast",
+						"type": "DatasetReference"
+					},
+					"name": "fulfillmentforecast"
+				},
+				{
+					"dataset": {
+						"referenceName": "importhistory",
+						"type": "DatasetReference"
+					},
+					"name": "importhistory"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "FulfillmentForecastMain",
+						"type": "DatasetReference"
+					},
+					"name": "ValidFulfillmentForecast"
+				},
+				{
+					"dataset": {
+						"referenceName": "FailedFulfillementRowsJson",
+						"type": "DatasetReference"
+					},
+					"name": "failedrows"
+				}
+			],
+			"transformations": [
+				{
+					"name": "validations"
+				},
+				{
+					"name": "reverserename"
+				},
+				{
+					"name": "deriveerrors"
+				},
+				{
+					"name": "selectmainfields"
+				},
+				{
+					"name": "aggregateerrors"
+				},
+				{
+					"name": "joinaggregaterror"
+				},
+				{
+					"name": "splitvalidatedrows"
+				},
+				{
+					"name": "derivedfilename"
+				},
+				{
+					"name": "newchangenameforassert"
+				},
+				{
+					"name": "joinlocations"
+				},
+				{
+					"name": "selectlocations"
+				},
+				{
+					"name": "selectfulfillmentservices"
+				},
+				{
+					"name": "derivepresence"
+				},
+				{
+					"name": "joinforecastservices"
+				},
+				{
+					"name": "selectexistrecordcheck"
+				},
+				{
+					"name": "joinexistrecordchech"
+				},
+				{
+					"name": "selectcolsforassert"
+				},
+				{
+					"name": "joinfulfillmentforecast"
+				},
+				{
+					"name": "numericalfieldintegritycheck"
+				},
+				{
+					"name": "appendrecordid"
+				},
+				{
+					"name": "filter1"
+				},
+				{
+					"name": "selectimporthistory"
+				},
+				{
+					"name": "jointransactionbuorglocation"
+				},
+				{
+					"name": "jointransbuorgfservice"
+				},
+				{
+					"name": "jointransbuorgfforecast"
+				},
+				{
+					"name": "detectduplicates"
+				},
+				{
+					"name": "filterrowswithvalidationerrors"
+				},
+				{
+					"name": "filteremptyrows"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     file_path as string ('/DEV/Upload/FulfillmentForecast/460.xlsx'),",
+				"     transaction_id as string ('460')",
+				"}",
+				"source(output(",
+				"          {Forecast Date*} as date,",
+				"          {Forecast 1 Units} as string,",
+				"          {Forecast 1 Orders} as string,",
+				"          {Forecast 2 Units} as string,",
+				"          {Units per Order} as string,",
+				"          {Forecast Locked Date} as date,",
+				"          {Fulfillment Service*} as string,",
+				"          {Fulfillment Location ID*} as string,",
+				"          {Forecast 2 Orders} as string",
+				"     ),",
+				"     allowSchemaDrift: false,",
+				"     validateSchema: true,",
+				"     ignoreNoFilesFound: false,",
+				"     rowUrlColumn: 'file_name',",
+				"     wildcardPaths:[($file_path)]) ~> fulfillmentforecastuxstaging",
+				"source(output(",
+				"          id as integer,",
+				"          location_code as string,",
+				"          name as string,",
+				"          address as string,",
+				"          city as string,",
+				"          state as string,",
+				"          zip as string,",
+				"          country as string,",
+				"          sub_type as string,",
+				"          delivery_partners as string,",
+				"          throughput as float,",
+				"          capacity as float,",
+				"          special_information as string,",
+				"          holding_cost as float,",
+				"          inbound_handling_cost as float,",
+				"          outbound_handling_cost as float,",
+				"          longitude as double,",
+				"          latitude as double,",
+				"          updated_date as date,",
+				"          created_date as date,",
+				"          status as string,",
+				"          inbound_processing_time as decimal(0,0),",
+				"          outbound_processing_time as decimal(0,0),",
+				"          type as integer,",
+				"          transfer_inbound_processing_time as double,",
+				"          transfer_outbound_processing_time as double,",
+				"          transfer_inbound_handling_cost as double,",
+				"          transfer_outbound_handling_cost as double,",
+				"          tenant_id as string,",
+				"          organization_id as string,",
+				"          business_unit_id as string,",
+				"          units_per_hour as float,",
+				"          max_fte_regular_hours as float,",
+				"          min_fte_regular_hours as float,",
+				"          max_temp_regular_hours as float,",
+				"          min_temp_regular_hours as float,",
+				"          max_fte_overtime_hours as float,",
+				"          max_temp_overtime_hours as float,",
+				"          regular_fte_wage as float,",
+				"          regular_temp_wage as float,",
+				"          overtime_fte_wage as float,",
+				"          overtime_temp_wage as float,",
+				"          fte_staff_count as integer,",
+				"          temp_staff_count as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> locations",
+				"source(output(",
+				"          id as integer,",
+				"          fulfillment_service_code as string,",
+				"          service_name as string,",
+				"          service_type as string,",
+				"          delivery_speed_value as float,",
+				"          delivery_speed_unit as string,",
+				"          service_radius_value as float,",
+				"          service_radius_unit as string,",
+				"          service_charge as float,",
+				"          deployment_type as string,",
+				"          created_date as timestamp,",
+				"          updated_date as timestamp,",
+				"          business_unit_id as string,",
+				"          organization_id as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> fulfillmentservices",
+				"source(output(",
+				"          organization_id as string,",
+				"          business_unit_id as string,",
+				"          location_id as integer,",
+				"          fulfillment_service_id as integer,",
+				"          forecast_date as date,",
+				"          locked_forecast_units as long,",
+				"          current_forecast_units as long,",
+				"          average_upo as float,",
+				"          locked_forecast_orders as long,",
+				"          current_forecast_orders as long,",
+				"          forecast_locked_date as date,",
+				"          created_date as timestamp,",
+				"          updated_date as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> fulfillmentforecast",
+				"source(output(",
+				"          id as integer,",
+				"          original_file_name as string,",
+				"          user_id as string,",
+				"          status_enum_value_id as integer,",
+				"          processed_time as timestamp,",
+				"          errors as string,",
+				"          business_unit_id as string,",
+				"          organization_id as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> importhistory",
+				"filteremptyrows, selectlocations, selectfulfillmentservices assert(expectTrue(not(isNull(Fulfillment_Location_ID))&&not(isNull(Fulfillment_Service))&&not(isNull(Forecast_Date)), false, 'nullvalues', null, 'Null Values Found In Mandatory Fields'),",
+				"     expectExists(Fulfillment_Location_ID == location_code, false, 'locationexist', null, 'Location ID Not Found In Database'),",
+				"     expectExists(Fulfillment_Service == service_name, false, 'profileexist', null, 'Fulfillment Service Does Not Exists In Database'),",
+				"     expectTrue(isNull(presence), false, 'checkrecordexists', null, 'Record Already Exists In DB'),",
+				"     expectTrue(numericalintegrity, false, 'numericalfieldintegrity', null, 'Numerical Fields Contains Non Numeric Values'),",
+				"     expectTrue(nonduplicatedrow, false, 'duplicateddata', null, 'Duplicate Records Found In Upload')) ~> validations",
+				"validations select(mapColumn(",
+				"          {Fulfillment Location ID*} = Fulfillment_Location_ID,",
+				"          {Fulfillment Service*} = Fulfillment_Service,",
+				"          {Forecast Date*} = Forecast_Date,",
+				"          {Forecast 1 Units} = Forecast_1_Units,",
+				"          {Forecast 1 Orders} = Forecast_1_Orders,",
+				"          {Forecast 2 Units} = Forecast_2_Units,",
+				"          {Forecast 2 Orders} = Forecast_2_Orders,",
+				"          {Units per Order} = Units_per_Order,",
+				"          {Forecast Locked Date} = Forecast_Locked_Date,",
+				"          file_name,",
+				"          record_id",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> reverserename",
+				"reverserename derive(validation_errors = assertErrorMessages(),",
+				"          transaction_id = toInteger($transaction_id),",
+				"          sink_file_name = replace(file_name,'.xlsx','.txt')) ~> deriveerrors",
+				"joinaggregaterror select(mapColumn(",
+				"          {Fulfillment Location ID*},",
+				"          {Fulfillment Service*},",
+				"          {Forecast Date*},",
+				"          {Forecast 1 Units},",
+				"          {Forecast 1 Orders},",
+				"          {Forecast 2 Units},",
+				"          {Forecast 2 Orders},",
+				"          {Units per Order},",
+				"          {Forecast Locked Date},",
+				"          file_name = reverserename@file_name,",
+				"          validation_errors,",
+				"          transaction_id,",
+				"          sink_file_name,",
+				"          errors_count,",
+				"          record_id",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectmainfields",
+				"deriveerrors aggregate(groupBy(file_name),",
+				"     errors_count = countIf(not(isNull(validation_errors)))) ~> aggregateerrors",
+				"deriveerrors, aggregateerrors join(reverserename@file_name == aggregateerrors@file_name,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinaggregaterror",
+				"selectmainfields split(errors_count==0,",
+				"     disjoint: false) ~> splitvalidatedrows@(validrows, validationfailedrows)",
+				"filterrowswithvalidationerrors derive(failed_file_name = replace(replace($file_path,'/Upload/','/FailedTransactions/'),'.xlsx','.json'),",
+				"          type = 'error',",
+				"          message = concat('record number ',toString(record_id),' has following errors ',toString(validation_errors))) ~> derivedfilename",
+				"numericalfieldintegritycheck select(mapColumn(",
+				"          Fulfillment_Location_ID = {Fulfillment Location ID*},",
+				"          Fulfillment_Service = {Fulfillment Service*},",
+				"          Forecast_Date = {Forecast Date*},",
+				"          Forecast_1_Units = {Forecast 1 Units},",
+				"          Forecast_1_Orders = {Forecast 1 Orders},",
+				"          Forecast_2_Units = {Forecast 2 Units},",
+				"          Forecast_2_Orders = {Forecast 2 Orders},",
+				"          Units_per_Order = {Units per Order},",
+				"          Forecast_Locked_Date = {Forecast Locked Date},",
+				"          file_name,",
+				"          numericalintegrity,",
+				"          record_id,",
+				"          nonduplicatedrow",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> newchangenameforassert",
+				"appendrecordid, selectlocations join({Fulfillment Location ID*} == location_code,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinlocations",
+				"jointransactionbuorglocation select(mapColumn(",
+				"          location_id = locations@id,",
+				"          location_code",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectlocations",
+				"jointransbuorgfservice select(mapColumn(",
+				"          fulfillment_service_id = fulfillmentservices@id,",
+				"          service_name",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectfulfillmentservices",
+				"jointransbuorgfforecast derive(presence = 'true') ~> derivepresence",
+				"joinlocations, selectfulfillmentservices join({Fulfillment Service*} == service_name,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinforecastservices",
+				"joinfulfillmentforecast select(mapColumn(",
+				"          file_name,",
+				"          record_id,",
+				"          presence",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectexistrecordcheck",
+				"newchangenameforassert, selectexistrecordcheck join(newchangenameforassert@record_id == selectexistrecordcheck@record_id,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinexistrecordchech",
+				"joinexistrecordchech select(mapColumn(",
+				"          Fulfillment_Location_ID,",
+				"          Fulfillment_Service,",
+				"          Forecast_Date,",
+				"          Forecast_1_Units,",
+				"          Forecast_1_Orders,",
+				"          Forecast_2_Units,",
+				"          Forecast_2_Orders,",
+				"          Units_per_Order,",
+				"          Forecast_Locked_Date,",
+				"          file_name = newchangenameforassert@file_name,",
+				"          file_name = selectexistrecordcheck@file_name,",
+				"          presence,",
+				"          numericalintegrity,",
+				"          nonduplicatedrow,",
+				"          record_id = selectexistrecordcheck@record_id",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectcolsforassert",
+				"joinforecastservices, derivepresence join(selectlocations@location_id == fulfillmentforecast@location_id",
+				"     && selectfulfillmentservices@fulfillment_service_id == fulfillmentforecast@fulfillment_service_id",
+				"     && {Forecast Date*} == toDate(toString(forecast_date)),",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinfulfillmentforecast",
+				"detectduplicates derive(numericalintegrity = iif(isNull({Forecast 1 Units}),true(),not(isNull(toFloat({Forecast 1 Units})))) && iif(isNull({Forecast 1 Orders}),true(),not(isNull(toFloat({Forecast 1 Orders})))) && iif(isNull({Forecast 2 Units}),true(),not(isNull(toFloat({Forecast 2 Units})))) && iif(isNull({Forecast 2 Orders}),true(),not(isNull(toFloat({Forecast 2 Orders})))) && iif(isNull({Units per Order}),true(),not(isNull(toFloat({Units per Order}))))) ~> numericalfieldintegritycheck",
+				"fulfillmentforecastuxstaging keyGenerate(output(record_id as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> appendrecordid",
+				"importhistory filter(id == toInteger($transaction_id)) ~> filter1",
+				"filter1 select(mapColumn(",
+				"          id,",
+				"          business_unit_id,",
+				"          organization_id",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectimporthistory",
+				"locations, selectimporthistory join(locations@business_unit_id == selectimporthistory@business_unit_id",
+				"     && locations@organization_id == selectimporthistory@organization_id,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> jointransactionbuorglocation",
+				"fulfillmentservices, selectimporthistory join(fulfillmentservices@business_unit_id == selectimporthistory@business_unit_id",
+				"     && fulfillmentservices@organization_id == selectimporthistory@organization_id,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> jointransbuorgfservice",
+				"fulfillmentforecast, selectimporthistory join(fulfillmentforecast@business_unit_id == selectimporthistory@business_unit_id",
+				"     && fulfillmentforecast@organization_id == selectimporthistory@organization_id,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> jointransbuorgfforecast",
+				"appendrecordid window(over(file_name,",
+				"          {Fulfillment Location ID*},",
+				"          {Fulfillment Service*},",
+				"          {Forecast Date*},",
+				"          {Forecast Locked Date}),",
+				"     asc(record_id, true),",
+				"     nonduplicatedrow = rowNumber() == 1) ~> detectduplicates",
+				"splitvalidatedrows@validationfailedrows filter(not(isNull(validation_errors))) ~> filterrowswithvalidationerrors",
+				"selectcolsforassert filter(not(isNull(Fulfillment_Location_ID)) || not(isNull(Fulfillment_Service)) || not(isNull(Forecast_Date)) || not(isNull(Forecast_1_Units)) || not(isNull(Forecast_1_Orders)) || not(isNull(Forecast_2_Units)) || not(isNull(Forecast_Locked_Date)) || not(isNull(Units_per_Order))) ~> filteremptyrows",
+				"splitvalidatedrows@validrows sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          {Fulfillment Location ID*} as string,",
+				"          {Fulfillment Service*} as string,",
+				"          {Forecast Date*} as string,",
+				"          {Forecast 1 Units} as string,",
+				"          {Forecast 1 Orders} as string,",
+				"          {Forecast 2 Units} as string,",
+				"          {Forecast 2 Orders} as string,",
+				"          {Units per Order} as string,",
+				"          {Forecast Locked Date} as string",
+				"     ),",
+				"     rowUrlColumn:'sink_file_name',",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          {Fulfillment Location ID*},",
+				"          {Fulfillment Service*},",
+				"          {Forecast Date*},",
+				"          {Forecast 1 Units},",
+				"          {Forecast 1 Orders},",
+				"          {Forecast 2 Units},",
+				"          {Forecast 2 Orders},",
+				"          {Units per Order},",
+				"          {Forecast Locked Date}",
+				"     )) ~> ValidFulfillmentForecast",
+				"derivedfilename sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     rowUrlColumn:'failed_file_name',",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          type,",
+				"          message",
+				"     )) ~> failedrows"
+			]
+		}
+	}
+}

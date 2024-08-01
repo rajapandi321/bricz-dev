@@ -1,0 +1,289 @@
+{
+	"name": "df_transform_location_staffing",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "LocationStaffingMain",
+						"type": "DatasetReference"
+					},
+					"name": "locationstaffingmain"
+				},
+				{
+					"dataset": {
+						"referenceName": "importhistory",
+						"type": "DatasetReference"
+					},
+					"name": "importhistory"
+				},
+				{
+					"dataset": {
+						"referenceName": "locations",
+						"type": "DatasetReference"
+					},
+					"name": "locations"
+				},
+				{
+					"dataset": {
+						"referenceName": "enum_values",
+						"type": "DatasetReference"
+					},
+					"name": "enumvalue"
+				},
+				{
+					"dataset": {
+						"referenceName": "operationalprofile",
+						"type": "DatasetReference"
+					},
+					"name": "operationalprofile"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "operational_calendar",
+						"type": "DatasetReference"
+					},
+					"name": "sinkopeartionalcalendar"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivecolumns"
+				},
+				{
+					"name": "selectimporthistory"
+				},
+				{
+					"name": "joinimporthistory"
+				},
+				{
+					"name": "joinlocations"
+				},
+				{
+					"name": "selectlocations"
+				},
+				{
+					"name": "colsselectenumvalue"
+				},
+				{
+					"name": "filterenumvalues"
+				},
+				{
+					"name": "joinenumvalues"
+				},
+				{
+					"name": "operationalprofileselect"
+				},
+				{
+					"name": "joinoperationalprofile"
+				},
+				{
+					"name": "selectcols"
+				},
+				{
+					"name": "filtertransaction"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     file_path as string ('/DEV/Upload/LocationStaffing/439.txt'),",
+				"     transaction_id as string ('439')",
+				"}",
+				"source(output(",
+				"          {Profile Name*} as string,",
+				"          {Location ID*} as string,",
+				"          {Date*} as date,",
+				"          {Metric_Name*} as string,",
+				"          {Value*} as decimal(10,0),",
+				"          validation_errors as string,",
+				"          errors_count as string",
+				"     ),",
+				"     allowSchemaDrift: false,",
+				"     validateSchema: true,",
+				"     ignoreNoFilesFound: false,",
+				"     rowUrlColumn: 'file_name',",
+				"     wildcardPaths:[($file_path)]) ~> locationstaffingmain",
+				"source(output(",
+				"          id as integer,",
+				"          original_file_name as string,",
+				"          user_id as string,",
+				"          status_enum_value_id as integer,",
+				"          processed_time as timestamp,",
+				"          errors as string,",
+				"          business_unit_id as string,",
+				"          organization_id as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> importhistory",
+				"source(output(",
+				"          id as integer,",
+				"          location_code as string,",
+				"          name as string,",
+				"          address as string,",
+				"          city as string,",
+				"          state as string,",
+				"          zip as string,",
+				"          country as string,",
+				"          sub_type as string,",
+				"          delivery_partners as string,",
+				"          throughput as float,",
+				"          capacity as float,",
+				"          special_information as string,",
+				"          holding_cost as float,",
+				"          inbound_handling_cost as float,",
+				"          outbound_handling_cost as float,",
+				"          longitude as decimal(0,0),",
+				"          latitude as decimal(0,0),",
+				"          updated_date as date,",
+				"          created_date as date,",
+				"          status as string,",
+				"          inbound_processing_time as decimal(0,0),",
+				"          outbound_processing_time as decimal(0,0),",
+				"          type as integer,",
+				"          transfer_inbound_processing_time as double,",
+				"          transfer_outbound_processing_time as double,",
+				"          transfer_inbound_handling_cost as double,",
+				"          transfer_outbound_handling_cost as double,",
+				"          tenant_id as string,",
+				"          organization_id as string,",
+				"          business_unit_id as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> locations",
+				"source(output(",
+				"          id as integer,",
+				"          enum_type_id as integer,",
+				"          value_id as integer,",
+				"          value as string,",
+				"          created_date as timestamp,",
+				"          updated_date as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> enumvalue",
+				"source(output(",
+				"          id as integer,",
+				"          name as string,",
+				"          created_date as timestamp,",
+				"          updated_date as timestamp,",
+				"          business_unit_id as string,",
+				"          organization_id as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> operationalprofile",
+				"locationstaffingmain derive(transaction_id = toInteger($transaction_id)) ~> derivecolumns",
+				"filtertransaction select(mapColumn(",
+				"          import_history_id = id,",
+				"          business_unit_id,",
+				"          organization_id",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectimporthistory",
+				"derivecolumns, selectimporthistory join(transaction_id == import_history_id,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinimporthistory",
+				"joinimporthistory, selectlocations join({Location ID*} == location_code",
+				"     && selectimporthistory@business_unit_id == selectlocations@business_unit_id",
+				"     && selectimporthistory@organization_id == selectlocations@organization_id,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinlocations",
+				"locations select(mapColumn(",
+				"          location_id = id,",
+				"          location_code,",
+				"          business_unit_id,",
+				"          organization_id",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectlocations",
+				"filterenumvalues select(mapColumn(",
+				"          enum_type_id,",
+				"          value_id,",
+				"          value",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> colsselectenumvalue",
+				"enumvalue filter(enum_type_id==4) ~> filterenumvalues",
+				"joinlocations, colsselectenumvalue join(lower({Metric_Name*}) == lower(value),",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinenumvalues",
+				"operationalprofile select(mapColumn(",
+				"          operational_profile_id = id,",
+				"          name,",
+				"          organization_id,",
+				"          business_unit_id",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> operationalprofileselect",
+				"joinenumvalues, operationalprofileselect join({Profile Name*} == name",
+				"     && selectimporthistory@business_unit_id == operationalprofileselect@business_unit_id",
+				"     && selectlocations@organization_id == operationalprofileselect@organization_id,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinoperationalprofile",
+				"joinoperationalprofile select(mapColumn(",
+				"          {Date*},",
+				"          {Value*},",
+				"          import_history_id,",
+				"          business_unit_id = selectimporthistory@business_unit_id,",
+				"          organization_id = selectimporthistory@organization_id,",
+				"          location_id,",
+				"          enum_type_id,",
+				"          value_id,",
+				"          operational_profile_id",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectcols",
+				"importhistory filter(id == toInteger($transaction_id)) ~> filtertransaction",
+				"selectcols sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          id as integer,",
+				"          business_unit_id as string,",
+				"          organization_id as string,",
+				"          location_id as integer,",
+				"          date as date,",
+				"          location_metric_value as decimal(0,0),",
+				"          created_date as timestamp,",
+				"          updated_date as timestamp,",
+				"          enum_value_id as integer,",
+				"          enum_type_id as integer,",
+				"          operational_profile_id as integer",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          business_unit_id,",
+				"          organization_id,",
+				"          location_id,",
+				"          date = {Date*},",
+				"          location_metric_value = {Value*},",
+				"          enum_value_id = value_id,",
+				"          enum_type_id,",
+				"          operational_profile_id",
+				"     )) ~> sinkopeartionalcalendar"
+			]
+		}
+	}
+}

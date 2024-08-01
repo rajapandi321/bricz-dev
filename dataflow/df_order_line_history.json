@@ -1,0 +1,220 @@
+{
+	"name": "df_order_line_history",
+	"properties": {
+		"folder": {
+			"name": "main"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ORDER_HISTORY_RAW",
+						"type": "DatasetReference"
+					},
+					"name": "orderhistoryraw"
+				},
+				{
+					"dataset": {
+						"referenceName": "tenant_heirarchy_table",
+						"type": "DatasetReference"
+					},
+					"name": "TenantHeirarchyDetail"
+				},
+				{
+					"dataset": {
+						"referenceName": "order_history",
+						"type": "DatasetReference"
+					},
+					"name": "OrderHistory"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "order_line_history",
+						"type": "DatasetReference"
+					},
+					"name": "OrderLineHistory"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "filterbusinessunits"
+				},
+				{
+					"name": "JoinTHTD"
+				},
+				{
+					"name": "RenameColumns"
+				},
+				{
+					"name": "AlterRow1"
+				},
+				{
+					"name": "filter1"
+				},
+				{
+					"name": "SelectOrderHistory"
+				},
+				{
+					"name": "JoinOrderHistory"
+				},
+				{
+					"name": "deriveSpecial"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          {Order ID} as string,",
+				"          {Order Line ID} as string,",
+				"          Channel as string,",
+				"          {Order Date} as timestamp,",
+				"          {Order Original Ship Date} as timestamp,",
+				"          {Order Actual Ship Date} as timestamp,",
+				"          {Order Due Date} as timestamp,",
+				"          {Order Received Date And Time} as timestamp,",
+				"          {Order Completed Date and Time} as timestamp,",
+				"          {Destination Zip Code} as string,",
+				"          {Item Code} as string,",
+				"          {Order Quantity} as float,",
+				"          {Quantity (UOM) Picked} as string,",
+				"          {Order Status} as string,",
+				"          Carrier as string,",
+				"          {Service Type} as string,",
+				"          {Shipment Fees} as float,",
+				"          {Order Value} as float",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     enableCdc: true,",
+				"     mode: 'read',",
+				"     skipInitialLoad: false,",
+				"     rowUrlColumn: 'file_name') ~> orderhistoryraw",
+				"source(output(",
+				"          id as string,",
+				"          tenant_hierarchy_type as integer,",
+				"          name as string,",
+				"          contact_name as string,",
+				"          email as string,",
+				"          phone as string,",
+				"          street_address_1 as string,",
+				"          street_address_2 as string,",
+				"          city as string,",
+				"          state as string,",
+				"          zip as integer,",
+				"          country as string,",
+				"          active as boolean,",
+				"          tenant_id as string,",
+				"          created_date as timestamp,",
+				"          updated_date as timestamp,",
+				"          parent_id as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> TenantHeirarchyDetail",
+				"source(output(",
+				"          id as integer,",
+				"          order_code as string,",
+				"          channel as string,",
+				"          order_date as timestamp,",
+				"          must_ship_by_date as timestamp,",
+				"          must_deliver_by_date as timestamp,",
+				"          destination_city as string,",
+				"          destination_state as string,",
+				"          destination_postal_code as string,",
+				"          destination_country as string,",
+				"          status as string,",
+				"          delivery_partner_name as string,",
+				"          service_level_name as string,",
+				"          fulfillment_service as string,",
+				"          total_units as float,",
+				"          total_shipping_charge as float,",
+				"          total_order_value as float,",
+				"          import_date as timestamp,",
+				"          organization_id as string,",
+				"          business_unit_id as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> OrderHistory",
+				"orderhistoryraw derive(business_unit_name = split(split(file_name,'/')[4],'_')[2],",
+				"          {Ship Quantity} = {Order Quantity}) ~> derivedColumn1",
+				"TenantHeirarchyDetail filter(tenant_hierarchy_type==3) ~> filterbusinessunits",
+				"derivedColumn1, RenameColumns join(business_unit_name == name,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> JoinTHTD",
+				"filterbusinessunits select(mapColumn(",
+				"          business_unit_id = id,",
+				"          name,",
+				"          tenant_id,",
+				"          organization_id = parent_id",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> RenameColumns",
+				"filter1 alterRow(upsertIf(true())) ~> AlterRow1",
+				"deriveSpecial filter(not(isNull({Order Value}))) ~> filter1",
+				"OrderHistory select(mapColumn(",
+				"          order_id = id,",
+				"          order_code,",
+				"          item_value = total_order_value,",
+				"          organization_id,",
+				"          business_unit_id",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SelectOrderHistory",
+				"JoinTHTD, SelectOrderHistory join({Order ID} == order_code",
+				"     && RenameColumns@business_unit_id == SelectOrderHistory@business_unit_id",
+				"     && RenameColumns@organization_id == SelectOrderHistory@organization_id,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> JoinOrderHistory",
+				"JoinOrderHistory derive(item_price = round(item_value*.2,2)) ~> deriveSpecial",
+				"AlterRow1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          order_id as integer,",
+				"          order_line_code as string,",
+				"          item_code as string,",
+				"          item_name as string,",
+				"          item_description as string,",
+				"          order_quantity as float,",
+				"          ship_quantity as float,",
+				"          line_status as string,",
+				"          item_price as float,",
+				"          business_unit_id as string,",
+				"          organization_id as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:false,",
+				"     upsertable:true,",
+				"     keys:['order_id','order_line_code'],",
+				"     format: 'table',",
+				"     batchSize: 57459551,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          order_id,",
+				"          order_line_code = {Order Line ID},",
+				"          item_code = {Item Code},",
+				"          order_quantity = {Order Quantity},",
+				"          line_status = {Order Status},",
+				"          item_price,",
+				"          business_unit_id,",
+				"          organization_id,",
+				"          ship_quantity = {Ship Quantity}",
+				"     )) ~> OrderLineHistory"
+			]
+		}
+	}
+}

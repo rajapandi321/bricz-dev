@@ -1,0 +1,81 @@
+{
+	"name": "dataflow_EDA",
+	"properties": {
+		"folder": {
+			"name": "main"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ORDER_HISTORY_RAW",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "EDA_Temp",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "AGGOrders"
+				},
+				{
+					"name": "sort1"
+				},
+				{
+					"name": "filter1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          {Order ID} as string,",
+				"          {Order Line ID} as string,",
+				"          Channel as string,",
+				"          {Order Date} as date,",
+				"          {Order Original Ship Date} as string,",
+				"          {Order Actual Ship Date} as string,",
+				"          {Order Due Date} as string,",
+				"          {Order Received Date And Time} as string,",
+				"          {Order Completed Date and Time} as string,",
+				"          {Destination Zip Code} as string,",
+				"          {Item Code} as string,",
+				"          {Order Quantity} as float,",
+				"          {Quantity (UOM) Picked} as string,",
+				"          {Order Status} as string,",
+				"          Carrier as string,",
+				"          {Service Type} as string,",
+				"          {Shipment Fees} as string,",
+				"          {Order Value} as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     enableCdc: true,",
+				"     mode: 'read',",
+				"     skipInitialLoad: true) ~> source1",
+				"filter1 aggregate(groupBy({Order Date}),",
+				"     Orders = count({Order ID}),",
+				"          {Order Quantity} = sum({Order Quantity})) ~> AGGOrders",
+				"AGGOrders sort(asc({Order Date}, true)) ~> sort1",
+				"source1 filter({Order Date}>=toDate('2023-01-01')) ~> filter1",
+				"sort1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     umask: 0777,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     saveOrder: 1) ~> sink1"
+			]
+		}
+	}
+}

@@ -1,0 +1,164 @@
+{
+	"name": "df_zone",
+	"properties": {
+		"description": "Data flow edited on 2023-08-08 on bringing in attributes from filename and using lookup to fetch organization_id and business_unit_id",
+		"folder": {
+			"name": "main"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ZONE_RAW",
+						"type": "DatasetReference"
+					},
+					"name": "RawDataForZone",
+					"description": "source data stored in datalake-\"radial-demo-data\" for populating pfp.zone table\n"
+				},
+				{
+					"dataset": {
+						"referenceName": "tenant_heirarchy_table",
+						"type": "DatasetReference"
+					},
+					"name": "TenantHeirarchyTable",
+					"description": "Data from tenant_heirarchy_table"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "zone",
+						"type": "DatasetReference"
+					},
+					"name": "WriteToDatabase",
+					"description": "Write transformed data to pfp.zone table"
+				}
+			],
+			"transformations": [
+				{
+					"name": "DerivingAttributes",
+					"description": "Deriving attributes for fields like origin_start, origin_end, business_unit_name from filename, static value for delivery_partner_id"
+				},
+				{
+					"name": "MappingColumns",
+					"description": "Final step in data transformation to select specific columns, renaming certain columns to match the zone table schema"
+				},
+				{
+					"name": "SelectColumnsHeirarchy",
+					"description": "Selecting specific columns required for downstream actviities"
+				},
+				{
+					"name": "JoinHeirarchyTable",
+					"description": "Joins heirarchy table for extracting business_unit_id and organization_id"
+				},
+				{
+					"name": "AlterRow1"
+				},
+				{
+					"name": "filter1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          {Dest. ZIP} as string,",
+				"          {Ground - ZONE} as string,",
+				"          {3 Day Select} as string,",
+				"          {2nd Day Air} as string,",
+				"          {2nd Day Air A.M.} as string,",
+				"          {Next Day Air Saver} as string,",
+				"          {Next Day Air} as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     enableCdc: true,",
+				"     mode: 'read',",
+				"     skipInitialLoad: true,",
+				"     rowUrlColumn: 'file_name') ~> RawDataForZone",
+				"source(output(",
+				"          id as string,",
+				"          tenant_hierarchy_type as integer,",
+				"          name as string,",
+				"          contact_name as string,",
+				"          email as string,",
+				"          phone as string,",
+				"          street_address_1 as string,",
+				"          street_address_2 as string,",
+				"          city as string,",
+				"          state as string,",
+				"          zip as integer,",
+				"          country as string,",
+				"          active as boolean,",
+				"          tenant_id as string,",
+				"          created_date as timestamp,",
+				"          updated_date as timestamp,",
+				"          parent_id as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> TenantHeirarchyTable",
+				"RawDataForZone derive(origin_start = split(split(file_name,\"/\")[4],\"_\")[2],",
+				"          origin_end = split(split(file_name,\"/\")[4],\"_\")[2],",
+				"          delivery_partner_id = 2,",
+				"          destination_end = {Dest. ZIP},",
+				"          business_unit_name = split(split(file_name,\"/\")[4],\"_\")[1],",
+				"          organization_id := \"8078acfb-eca6-4708-b197-694f50a24c92\",",
+				"          business_unit_id := \"994dc35f-7eba-4f6e-918b-7bd311482d7b\",",
+				"          local1 := \"8078acfb-eca6-4708-b197-694f50a24c92\") ~> DerivingAttributes",
+				"JoinHeirarchyTable select(mapColumn(",
+				"          zone = {Ground - ZONE},",
+				"          delivery_partner_id,",
+				"          origin_start,",
+				"          origin_end,",
+				"          destination_start = {Dest. ZIP},",
+				"          destination_end,",
+				"          business_unit_id = id,",
+				"          organization_id = parent_id",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> MappingColumns",
+				"filter1 select(mapColumn(",
+				"          id,",
+				"          name,",
+				"          parent_id",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SelectColumnsHeirarchy",
+				"DerivingAttributes, SelectColumnsHeirarchy join(business_unit_name == name,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> JoinHeirarchyTable",
+				"MappingColumns alterRow(upsertIf(true())) ~> AlterRow1",
+				"TenantHeirarchyTable filter(tenant_hierarchy_type==3) ~> filter1",
+				"AlterRow1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          id as integer,",
+				"          zone as string,",
+				"          delivery_partner_id as integer,",
+				"          origin_start as string,",
+				"          origin_end as string,",
+				"          destination_start as string,",
+				"          destination_end as string,",
+				"          created_date as timestamp,",
+				"          updated_date as timestamp,",
+				"          business_unit_id as string,",
+				"          organization_id as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:false,",
+				"     upsertable:true,",
+				"     keys:['zone','origin_start','destination_start'],",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     preCommands: [],",
+				"     postCommands: []) ~> WriteToDatabase"
+			]
+		}
+	}
+}

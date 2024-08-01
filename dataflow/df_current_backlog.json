@@ -1,0 +1,260 @@
+{
+	"name": "df_current_backlog",
+	"properties": {
+		"folder": {
+			"name": "main"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "CURRENT_BACKLOG_RAW",
+						"type": "DatasetReference"
+					},
+					"name": "currentbacklog"
+				},
+				{
+					"dataset": {
+						"referenceName": "tenant_heirarchy_table",
+						"type": "DatasetReference"
+					},
+					"name": "tenantheirarchydetail"
+				},
+				{
+					"dataset": {
+						"referenceName": "locations",
+						"type": "DatasetReference"
+					},
+					"name": "locationsjoin"
+				},
+				{
+					"dataset": {
+						"referenceName": "fulfillment_services",
+						"type": "DatasetReference"
+					},
+					"name": "fulfillmentservices"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "current_backlog_table",
+						"type": "DatasetReference"
+					},
+					"name": "currentbacklogtable"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivebuname"
+				},
+				{
+					"name": "filteractiverows"
+				},
+				{
+					"name": "selectthd"
+				},
+				{
+					"name": "jointhdselect"
+				},
+				{
+					"name": "selectlocations"
+				},
+				{
+					"name": "joinlocationsselected"
+				},
+				{
+					"name": "fulfillmentserviceselected"
+				},
+				{
+					"name": "joinfulfillmentservicesselected"
+				},
+				{
+					"name": "AlterRow1"
+				},
+				{
+					"name": "FilterActive"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Brand as string,",
+				"          {Fulfillment Location} as string,",
+				"          {Backlog Date} as date,",
+				"          {Open Backlog Units} as long,",
+				"          {Open Backlog Orders} as long,",
+				"          {Average UPO} as float,",
+				"          {Ship Via} as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     enableCdc: true,",
+				"     mode: 'read',",
+				"     skipInitialLoad: false,",
+				"     rowUrlColumn: 'file_name') ~> currentbacklog",
+				"source(output(",
+				"          id as string,",
+				"          tenant_hierarchy_type as integer,",
+				"          name as string,",
+				"          contact_name as string,",
+				"          email as string,",
+				"          phone as string,",
+				"          street_address_1 as string,",
+				"          street_address_2 as string,",
+				"          city as string,",
+				"          state as string,",
+				"          zip as integer,",
+				"          country as string,",
+				"          active as boolean,",
+				"          tenant_id as string,",
+				"          created_date as timestamp,",
+				"          updated_date as timestamp,",
+				"          parent_id as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> tenantheirarchydetail",
+				"source(output(",
+				"          id as integer,",
+				"          location_code as string,",
+				"          name as string,",
+				"          address as string,",
+				"          city as string,",
+				"          state as string,",
+				"          zip as string,",
+				"          country as string,",
+				"          sub_type as string,",
+				"          delivery_partners as string,",
+				"          throughput as float,",
+				"          capacity as float,",
+				"          special_information as string,",
+				"          holding_cost as float,",
+				"          inbound_handling_cost as float,",
+				"          outbound_handling_cost as float,",
+				"          longitude as decimal(0,0),",
+				"          latitude as decimal(0,0),",
+				"          updated_date as date,",
+				"          created_date as date,",
+				"          status as string,",
+				"          inbound_processing_time as decimal(0,0),",
+				"          outbound_processing_time as decimal(0,0),",
+				"          type as integer,",
+				"          transfer_inbound_processing_time as double,",
+				"          transfer_outbound_processing_time as double,",
+				"          transfer_inbound_handling_cost as double,",
+				"          transfer_outbound_handling_cost as double,",
+				"          tenant_id as string,",
+				"          organization_id as string,",
+				"          business_unit_id as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> locationsjoin",
+				"source(output(",
+				"          id as integer,",
+				"          fulfillment_service_code as string,",
+				"          service_name as string,",
+				"          service_type as string,",
+				"          delivery_speed_value as float,",
+				"          delivery_speed_unit as string,",
+				"          service_radius_value as float,",
+				"          service_radius_unit as string,",
+				"          service_charge as float,",
+				"          deployment_type as string,",
+				"          created_date as timestamp,",
+				"          updated_date as timestamp,",
+				"          business_unit_id as string,",
+				"          organization_id as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> fulfillmentservices",
+				"currentbacklog derive(business_unit_name = split(split(split(file_name,'/')[4],'.')[1],'_')[1],",
+				"          testregex = regexReplace(upper({Fulfillment Location}),'[^0-9A-Z]','')) ~> derivebuname",
+				"tenantheirarchydetail filter(tenant_hierarchy_type==3) ~> filteractiverows",
+				"filteractiverows select(mapColumn(",
+				"          business_unit_id = id,",
+				"          name,",
+				"          tenant_id,",
+				"          organization_id = parent_id",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectthd",
+				"derivebuname, selectthd join(business_unit_name == name,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> jointhdselect",
+				"FilterActive select(mapColumn(",
+				"          location_id = id,",
+				"          location_code,",
+				"          name,",
+				"          tenant_id,",
+				"          organization_id,",
+				"          business_unit_id",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectlocations",
+				"jointhdselect, selectlocations join(regexReplace(upper({Fulfillment Location}), '[^A-Z0-9]','') == regexReplace(upper(selectlocations@name),'[^0-9A-Z]','')",
+				"     && selectthd@business_unit_id == selectlocations@business_unit_id",
+				"     && selectthd@organization_id == selectlocations@organization_id,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinlocationsselected",
+				"fulfillmentservices select(mapColumn(",
+				"          fulfillment_service_id = id,",
+				"          service_name,",
+				"          business_unit_id,",
+				"          organization_id",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> fulfillmentserviceselected",
+				"joinlocationsselected, fulfillmentserviceselected join(concat(upper({Ship Via}),'_RADIAL') == upper(service_name),",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinfulfillmentservicesselected",
+				"joinfulfillmentservicesselected alterRow(upsertIf(true())) ~> AlterRow1",
+				"locationsjoin filter(status=='Active') ~> FilterActive",
+				"AlterRow1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          organization_id as string,",
+				"          business_unit_id as string,",
+				"          location_id as integer,",
+				"          fulfillment_service_id as integer,",
+				"          backlog_date as date,",
+				"          open_backlog_units as long,",
+				"          open_backlog_orders as long,",
+				"          average_upo as float,",
+				"          created_date as timestamp,",
+				"          updated_date as timestamp",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:false,",
+				"     upsertable:true,",
+				"     keys:['location_id','backlog_date','fulfillment_service_id'],",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          organization_id = selectthd@organization_id,",
+				"          business_unit_id = selectthd@business_unit_id,",
+				"          location_id,",
+				"          fulfillment_service_id,",
+				"          backlog_date = {Backlog Date},",
+				"          open_backlog_units = {Open Backlog Units},",
+				"          open_backlog_orders = {Open Backlog Orders},",
+				"          average_upo = {Average UPO}",
+				"     )) ~> currentbacklogtable"
+			]
+		}
+	}
+}

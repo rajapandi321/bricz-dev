@@ -1,0 +1,282 @@
+{
+	"name": "df_transportation_lane",
+	"properties": {
+		"description": "Data flow edited on 2023-08-08 on bringing in attributes from filename and using lookup to fetch organization_id and business_unit_id",
+		"folder": {
+			"name": "main"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ZONE_RAW",
+						"type": "DatasetReference"
+					},
+					"name": "RawDataForZone",
+					"description": "source data stored in datalake-\"radial-demo-data\" for populating pfp.zone table\n"
+				},
+				{
+					"dataset": {
+						"referenceName": "tenant_heirarchy_table",
+						"type": "DatasetReference"
+					},
+					"name": "TenantHeirarchyTable",
+					"description": "Data from tenant_heirarchy_table"
+				},
+				{
+					"dataset": {
+						"referenceName": "TRANSIT_TIME_RAW",
+						"type": "DatasetReference"
+					},
+					"name": "TransitTimeTable",
+					"description": "Transit time table data"
+				},
+				{
+					"dataset": {
+						"referenceName": "locations",
+						"type": "DatasetReference"
+					},
+					"name": "LocationsTable"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "transportation_lane",
+						"type": "DatasetReference"
+					},
+					"name": "WriteToDatabase",
+					"description": "Write Records To transportation_lanes table"
+				}
+			],
+			"transformations": [
+				{
+					"name": "DerivingAttributes",
+					"description": "Deriving attributes for fields like origin_start, origin_end, business_unit_name from filename, static value for delivery_partner_id"
+				},
+				{
+					"name": "MappingColumns",
+					"description": "Final step in data transformation to select specific columns, renaming certain columns to match the zone table schema"
+				},
+				{
+					"name": "JoinHeirarchyTable"
+				},
+				{
+					"name": "JoinTransitTime"
+				},
+				{
+					"name": "DeriveAttributesTransitTable"
+				},
+				{
+					"name": "JoinLocations"
+				},
+				{
+					"name": "SelectColumnsHeirarchyTable",
+					"description": "Select columns relevant for downstream actviites"
+				},
+				{
+					"name": "SelectColumnsRawData",
+					"description": "select the relevant columns alone from RawDataZone"
+				},
+				{
+					"name": "SelectColumnsLocationTable",
+					"description": "Select relavant columns"
+				},
+				{
+					"name": "AlterRow1"
+				},
+				{
+					"name": "FilterBUrecords"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          {Dest. ZIP} as string,",
+				"          {Ground - ZONE} as string,",
+				"          {3 Day Select} as string,",
+				"          {2nd Day Air} as string,",
+				"          {2nd Day Air A.M.} as string,",
+				"          {Next Day Air Saver} as string,",
+				"          {Next Day Air} as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     enableCdc: true,",
+				"     mode: 'read',",
+				"     skipInitialLoad: true,",
+				"     rowUrlColumn: 'file_name') ~> RawDataForZone",
+				"source(output(",
+				"          id as string,",
+				"          tenant_hierarchy_type as integer,",
+				"          name as string,",
+				"          contact_name as string,",
+				"          email as string,",
+				"          phone as string,",
+				"          street_address_1 as string,",
+				"          street_address_2 as string,",
+				"          city as string,",
+				"          state as string,",
+				"          zip as integer,",
+				"          country as string,",
+				"          active as boolean,",
+				"          tenant_id as string,",
+				"          created_date as timestamp,",
+				"          updated_date as timestamp,",
+				"          parent_id as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> TenantHeirarchyTable",
+				"source(output(",
+				"          Zones as string,",
+				"          {Transit Time} as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     rowUrlColumn: 'file_name_transit') ~> TransitTimeTable",
+				"source(output(",
+				"          id as integer,",
+				"          location_code as string,",
+				"          name as string,",
+				"          address as string,",
+				"          city as string,",
+				"          state as string,",
+				"          zip as string,",
+				"          country as string,",
+				"          sub_type as string,",
+				"          delivery_partners as string,",
+				"          throughput as float,",
+				"          capacity as float,",
+				"          special_information as string,",
+				"          holding_cost as float,",
+				"          inbound_handling_cost as float,",
+				"          outbound_handling_cost as float,",
+				"          longitude as decimal(0,0),",
+				"          latitude as decimal(0,0),",
+				"          updated_date as date,",
+				"          created_date as date,",
+				"          status as string,",
+				"          inbound_processing_time as decimal(0,0),",
+				"          outbound_processing_time as decimal(0,0),",
+				"          type as integer,",
+				"          transfer_inbound_processing_time as double,",
+				"          transfer_outbound_processing_time as double,",
+				"          transfer_inbound_handling_cost as double,",
+				"          transfer_outbound_handling_cost as double,",
+				"          tenant_id as string,",
+				"          organization_id as string,",
+				"          business_unit_id as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> LocationsTable",
+				"SelectColumnsRawData derive(origin_zip = split(split(file_name,\"/\")[4],\"_\")[2],",
+				"          business_unit_name = split(split(file_name,\"/\")[4],\"_\")[1],",
+				"          origin_country = 'US',",
+				"          destination_country = 'US',",
+				"          zone = toInteger({Ground - ZONE}),",
+				"          organization_id := \"8078acfb-eca6-4708-b197-694f50a24c92\",",
+				"          business_unit_id := \"994dc35f-7eba-4f6e-918b-7bd311482d7b\",",
+				"          local1 := \"8078acfb-eca6-4708-b197-694f50a24c92\") ~> DerivingAttributes",
+				"JoinLocations select(mapColumn(",
+				"          delivery_partner_id,",
+				"          rate_code,",
+				"          service_type,",
+				"          origin_location_code = location_code,",
+				"          origin_zip,",
+				"          origin_country,",
+				"          destination_zip = {Dest. ZIP},",
+				"          destination_country,",
+				"          transit_time = {Transit Time},",
+				"          zone,",
+				"          business_unit_id = id,",
+				"          organization_id = parent_id",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> MappingColumns",
+				"DerivingAttributes, SelectColumnsHeirarchyTable join(business_unit_name == name,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> JoinHeirarchyTable",
+				"JoinHeirarchyTable, DeriveAttributesTransitTable join({Ground - ZONE} == Zones,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> JoinTransitTime",
+				"TransitTimeTable derive(delivery_partner_id = split(split(file_name_transit,\"/\")[4],\"_\")[2],",
+				"          service_type = split(split(file_name_transit,\"/\")[4],\"_\")[3],",
+				"          rate_code = split(split(file_name_transit,\"/\")[4],\"_\")[2]+'-'+split(split(file_name_transit,\"/\")[4],\"_\")[3]+\"-\"+Zones) ~> DeriveAttributesTransitTable",
+				"JoinTransitTime, SelectColumnsLocationTable join(origin_zip == toString(zip_code),",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> JoinLocations",
+				"FilterBUrecords select(mapColumn(",
+				"          id,",
+				"          name,",
+				"          parent_id",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SelectColumnsHeirarchyTable",
+				"RawDataForZone select(mapColumn(",
+				"          {Dest. ZIP},",
+				"          {Ground - ZONE},",
+				"          file_name",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SelectColumnsRawData",
+				"LocationsTable select(mapColumn(",
+				"          zip_code = id,",
+				"          location_code",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SelectColumnsLocationTable",
+				"MappingColumns alterRow(upsertIf(true())) ~> AlterRow1",
+				"TenantHeirarchyTable filter(tenant_hierarchy_type==3) ~> FilterBUrecords",
+				"AlterRow1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          id as integer,",
+				"          delivery_partner_id as string,",
+				"          rate_code as string,",
+				"          fulfillment_service_type as string,",
+				"          service_type as string,",
+				"          origin_location_code as integer,",
+				"          origin_address as string,",
+				"          origin_city as string,",
+				"          origin_state as string,",
+				"          origin_zip as string,",
+				"          origin_country as string,",
+				"          destination_location_code as integer,",
+				"          destination_address as string,",
+				"          destination_city as string,",
+				"          destination_state as string,",
+				"          destination_zip as string,",
+				"          destination_country as string,",
+				"          transit_time as integer,",
+				"          zone as string,",
+				"          created_date as timestamp,",
+				"          updated_date as timestamp,",
+				"          business_unit_id as string,",
+				"          organization_id as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:false,",
+				"     upsertable:true,",
+				"     keys:['rate_code','origin_zip','destination_zip'],",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     preCommands: [],",
+				"     postCommands: []) ~> WriteToDatabase"
+			]
+		}
+	}
+}
