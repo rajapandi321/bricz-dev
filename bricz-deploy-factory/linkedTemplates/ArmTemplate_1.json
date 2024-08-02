@@ -1,0 +1,806 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "bricz-deploy-factory"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/DelimitedText1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "datalakelinkedservice",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "Radial/LocationMaster",
+						"fileSystem": "main"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "Location Code",
+						"type": "String"
+					},
+					{
+						"name": "Name",
+						"type": "String"
+					},
+					{
+						"name": "Address",
+						"type": "String"
+					},
+					{
+						"name": "Zip",
+						"type": "String"
+					},
+					{
+						"name": "Throughput",
+						"type": "String"
+					},
+					{
+						"name": "Capacity",
+						"type": "String"
+					},
+					{
+						"name": "Inbound Handling Cost",
+						"type": "String"
+					},
+					{
+						"name": "Outbound Handling Cost",
+						"type": "String"
+					},
+					{
+						"name": "Status",
+						"type": "String"
+					},
+					{
+						"name": "Inbound Processing Time",
+						"type": "String"
+					},
+					{
+						"name": "Outbound Processing Time",
+						"type": "String"
+					},
+					{
+						"name": "Type",
+						"type": "String"
+					},
+					{
+						"name": "Transfer Inbound Processing Time",
+						"type": "String"
+					},
+					{
+						"name": "Transfer Outbound Processing Time",
+						"type": "String"
+					},
+					{
+						"name": "Transfer Inbound Handling Cost",
+						"type": "String"
+					},
+					{
+						"name": "Transfer Outbound Handling Cost",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/EDA_Temp')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "datalakelinkedservice",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "Radial/EDA_RADIAL",
+						"fileSystem": "main"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Error_Json')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "datalakelinkedservice",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "DEV/FailedTransactions/FulfillmentForecast",
+						"fileSystem": "main"
+					}
+				},
+				"schema": {}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/FAILED_LOCATION_MASTER_ROWS_SFTP')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "SFTP_RADIAL_STORAGE",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "SftpLocation",
+						"folderPath": "/faileduploads/LocationMaster"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/FTP_FILES')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "QA_Datalake",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "Radial",
+						"fileSystem": "staging"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/FULFILLMENT_FORECAST_RAW')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "datalakelinkedservice",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "src_files"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "sample_file.csv",
+						"folderPath": "Radial/FulfillmentForecast",
+						"fileSystem": "main"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "Organization ID",
+						"type": "String"
+					},
+					{
+						"name": "Business ID",
+						"type": "String"
+					},
+					{
+						"name": "Location Code",
+						"type": "String"
+					},
+					{
+						"name": "Fulfillment Service",
+						"type": "String"
+					},
+					{
+						"name": "Forecast Date",
+						"type": "String"
+					},
+					{
+						"name": "Locked Forecast Units",
+						"type": "String"
+					},
+					{
+						"name": "Current Forecast Units",
+						"type": "String"
+					},
+					{
+						"name": "Forecast 3 Units",
+						"type": "String"
+					},
+					{
+						"name": "Average Locked UPO",
+						"type": "String"
+					},
+					{
+						"name": "Locked Forecast Orders",
+						"type": "String"
+					},
+					{
+						"name": "Current Forecast Orders",
+						"type": "String"
+					},
+					{
+						"name": "Forecast 3 Orders",
+						"type": "String"
+					},
+					{
+						"name": "Forecast Locked Date",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/FULFILLMENT_FORECAST_UX_STAGING')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "datalakelinkedservice",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Excel",
+				"typeProperties": {
+					"sheetName": "Fulfillment Forecast Import Tem",
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "338.xlsx",
+						"folderPath": "DEV/Upload/FulfillmentForecast",
+						"fileSystem": "staging"
+					},
+					"firstRowAsHeader": true
+				},
+				"schema": [
+					{
+						"name": "Forecast Date*",
+						"type": "String"
+					},
+					{
+						"name": "Forecast 1 Units",
+						"type": "String"
+					},
+					{
+						"name": "Forecast 1 Orders",
+						"type": "String"
+					},
+					{
+						"name": "Forecast 2 Units",
+						"type": "String"
+					},
+					{
+						"name": "Units per Order",
+						"type": "String"
+					},
+					{
+						"name": "Forecast Locked Date",
+						"type": "String"
+					},
+					{
+						"name": "Fulfillment Service*",
+						"type": "String"
+					},
+					{
+						"name": "Fulfillment Location ID*",
+						"type": "String"
+					},
+					{
+						"name": "Forecast 2 Orders",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/FailedDemandForecastRows')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "datalakelinkedservice",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"filename": {
+						"type": "string",
+						"defaultValue": "sample"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@dataset().filename",
+							"type": "Expression"
+						},
+						"folderPath": "FailedTransactions/DemandForecast",
+						"fileSystem": "main"
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/FailedFulfillementRowsJson')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "datalakelinkedservice",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "DEV/FailedTransactions/FulfillmentForecast",
+						"fileSystem": "main"
+					}
+				},
+				"schema": {}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/FailedInventoryRows')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "datalakelinkedservice",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "DEV/FailedTransactions/Inventory",
+						"fileSystem": "main"
+					}
+				},
+				"schema": {}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/FailedLocationMasterRows')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "datalakelinkedservice",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "FailedTransactions/LocationMaster",
+						"fileSystem": "main"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/FailedLocationStaffing')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "datalakelinkedservice",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "DEV/FailedTransactions/LocationStaffing",
+						"fileSystem": "main"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/FailedLocationStaffingJson')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "datalakelinkedservice",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "DEV/FailedTransactions/LocationStaffing",
+						"fileSystem": "main"
+					}
+				},
+				"schema": {}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/FailedRowsItemMaster')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "datalakelinkedservice",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "FailedTransactions/ItemMaster",
+						"fileSystem": "main"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/FailedRowsLocation')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "datalakelinkedservice",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "DEV/FailedTransactions/Location",
+						"fileSystem": "main"
+					}
+				},
+				"schema": {}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/FailedUXUploadDemandForecast')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "datalakelinkedservice",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "FailedTransactions/DemandForecast",
+						"fileSystem": "main"
+					}
+				},
+				"schema": {}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/FailedValidationRowsCurrentBacklog')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "datalakelinkedservice",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "DEV/FailedTransactions/CurrentBacklog",
+						"fileSystem": "main"
+					}
+				},
+				"schema": {}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/FulfillmentForecastMain')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "datalakelinkedservice",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "338.txt",
+						"folderPath": "DEV/Upload/FulfillmentForecast",
+						"fileSystem": "main"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "Fulfillment Location ID*",
+						"type": "String"
+					},
+					{
+						"name": "Fulfillment Service*",
+						"type": "String"
+					},
+					{
+						"name": "Forecast Date*",
+						"type": "String"
+					},
+					{
+						"name": "Forecast 1 Units",
+						"type": "String"
+					},
+					{
+						"name": "Forecast 1 Orders",
+						"type": "String"
+					},
+					{
+						"name": "Forecast 2 Units",
+						"type": "String"
+					},
+					{
+						"name": "Forecast 2 Orders",
+						"type": "String"
+					},
+					{
+						"name": "Units per Order",
+						"type": "String"
+					},
+					{
+						"name": "Forecast Locked Date",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/INVENTORY_MAIN_UX')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "datalakelinkedservice",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "DEV/Upload/Inventory",
+						"fileSystem": "main"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "Item ID",
+						"type": "String"
+					},
+					{
+						"name": "Location ID",
+						"type": "String"
+					},
+					{
+						"name": "Stock Date",
+						"type": "String"
+					},
+					{
+						"name": "Stock Quantity",
+						"type": "String"
+					},
+					{
+						"name": "Reserved Quantity",
+						"type": "String"
+					},
+					{
+						"name": "Available Quantity",
+						"type": "String"
+					},
+					{
+						"name": "On Order ID",
+						"type": "String"
+					},
+					{
+						"name": "On Order Due Date",
+						"type": "String"
+					},
+					{
+						"name": "On Order Supplier Shipping Date",
+						"type": "String"
+					},
+					{
+						"name": "On Order Promised Delivery Date",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/INVENTORY_RAW')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "datalakelinkedservice",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "src_files"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "Radial/Inventory",
+						"fileSystem": "main"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "Item ID",
+						"type": "String"
+					},
+					{
+						"name": "Location ID",
+						"type": "String"
+					},
+					{
+						"name": "On Hand Stock Date",
+						"type": "String"
+					},
+					{
+						"name": "On Hand Stock Quantity",
+						"type": "String"
+					},
+					{
+						"name": "Reserved On Hold Stock",
+						"type": "String"
+					},
+					{
+						"name": "Available Stock",
+						"type": "String"
+					},
+					{
+						"name": "Lot ID",
+						"type": "String"
+					},
+					{
+						"name": "On Order Due Date",
+						"type": "String"
+					},
+					{
+						"name": "On Order Quantity",
+						"type": "String"
+					},
+					{
+						"name": "Purchase Order Status",
+						"type": "String"
+					},
+					{
+						"name": "On Order Supplier Shipping Date",
+						"type": "String"
+					},
+					{
+						"name": "On Order Promised Delivery Date",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		}
+	]
+}

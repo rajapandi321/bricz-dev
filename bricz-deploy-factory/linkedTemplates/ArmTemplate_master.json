@@ -1,0 +1,852 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "bricz-deploy-factory"
+		},
+		"PgSQL_LinkedService3_properties_typeProperties_connectionString_secretName": {
+			"type": "string",
+			"defaultValue": "ADF-DB-CONNECTIONSTRING"
+		},
+		"QA_Datalake_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://stqadatapipe001.dfs.core.windows.net/"
+		},
+		"SFTP_RADIAL_STORAGE_properties_typeProperties_host": {
+			"type": "string",
+			"defaultValue": "ftp.gsipartners.com"
+		},
+		"SFTP_RADIAL_STORAGE_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "bricz"
+		},
+		"briczkeyvault_properties_typeProperties_baseUrl": {
+			"type": "string",
+			"defaultValue": "https://keyvault-bricz-dev-001.vault.azure.net/"
+		},
+		"datalakelinkedservice_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://stdevdatapipe001.dfs.core.windows.net/"
+		},
+		"import_manager_current_backlog_properties_CURRENT_BACKLOG_UX_parameters_quote": {
+			"type": "string",
+			"defaultValue": "'"
+		},
+		"import_manager_current_backlog_properties_CURRENT_BACKLOG_UX_parameters_folder_path": {
+			"type": "string",
+			"defaultValue": "@triggerBody().folderPath"
+		},
+		"import_manager_current_backlog_properties_CURRENT_BACKLOG_UX_parameters_file_name": {
+			"type": "string",
+			"defaultValue": "@triggerBody().fileName"
+		},
+		"import_manager_current_backlog_properties_CURRENT_BACKLOG_UX_parameters_next_line": {
+			"type": "string",
+			"defaultValue": "\\n"
+		},
+		"import_manager_current_backlog_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/c061dde2-a728-4240-8f3d-15ccff95ec4d/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Storage/storageAccounts/stdevdatapipe001"
+		},
+		"import_manager_demand_forecast_properties_DEMAND_FORECAST_UX_parameters_quote": {
+			"type": "string",
+			"defaultValue": "'"
+		},
+		"import_manager_demand_forecast_properties_DEMAND_FORECAST_UX_parameters_folder_path": {
+			"type": "string",
+			"defaultValue": "@triggerBody().folderPath"
+		},
+		"import_manager_demand_forecast_properties_DEMAND_FORECAST_UX_parameters_file_name": {
+			"type": "string",
+			"defaultValue": "@triggerBody().fileName"
+		},
+		"import_manager_demand_forecast_properties_DEMAND_FORECAST_UX_parameters_next_line": {
+			"type": "string",
+			"defaultValue": "\\n"
+		},
+		"import_manager_demand_forecast_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/c061dde2-a728-4240-8f3d-15ccff95ec4d/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Storage/storageAccounts/stdevdatapipe001"
+		},
+		"import_manager_fulfillment_forecast_properties_FULFILLMENT_FORECAST_UX_parameters_quote": {
+			"type": "string",
+			"defaultValue": "'"
+		},
+		"import_manager_fulfillment_forecast_properties_FULFILLMENT_FORECAST_UX_parameters_folder_path": {
+			"type": "string",
+			"defaultValue": "@triggerBody().folderPath"
+		},
+		"import_manager_fulfillment_forecast_properties_FULFILLMENT_FORECAST_UX_parameters_file_name": {
+			"type": "string",
+			"defaultValue": "@triggerBody().fileName"
+		},
+		"import_manager_fulfillment_forecast_properties_FULFILLMENT_FORECAST_UX_parameters_next_line": {
+			"type": "string",
+			"defaultValue": "\\n"
+		},
+		"import_manager_fulfillment_forecast_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/c061dde2-a728-4240-8f3d-15ccff95ec4d/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Storage/storageAccounts/stdevdatapipe001"
+		},
+		"import_manager_inventory_properties_INVENTORY_UX_parameters_quote": {
+			"type": "string",
+			"defaultValue": "'"
+		},
+		"import_manager_inventory_properties_INVENTORY_UX_parameters_folder_path": {
+			"type": "string",
+			"defaultValue": "@triggerBody().folderPath"
+		},
+		"import_manager_inventory_properties_INVENTORY_UX_parameters_file_name": {
+			"type": "string",
+			"defaultValue": "@triggerBody().fileName"
+		},
+		"import_manager_inventory_properties_INVENTORY_UX_parameters_next_line": {
+			"type": "string",
+			"defaultValue": "\\n"
+		},
+		"import_manager_inventory_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/c061dde2-a728-4240-8f3d-15ccff95ec4d/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Storage/storageAccounts/stdevdatapipe001"
+		},
+		"import_manager_location_properties_LOCATION_UX_parameters_quote": {
+			"type": "string",
+			"defaultValue": "'"
+		},
+		"import_manager_location_properties_LOCATION_UX_parameters_folder_path": {
+			"type": "string",
+			"defaultValue": "@triggerBody().folderPath"
+		},
+		"import_manager_location_properties_LOCATION_UX_parameters_file_name": {
+			"type": "string",
+			"defaultValue": "@triggerBody().fileName"
+		},
+		"import_manager_location_properties_LOCATION_UX_parameters_next_line": {
+			"type": "string",
+			"defaultValue": "\\n"
+		},
+		"import_manager_location_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/c061dde2-a728-4240-8f3d-15ccff95ec4d/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Storage/storageAccounts/stdevdatapipe001"
+		},
+		"import_manager_location_staffing_properties_LOCATION_STAFFING_parameters_quote": {
+			"type": "string",
+			"defaultValue": "'"
+		},
+		"import_manager_location_staffing_properties_LOCATION_STAFFING_parameters_folder_path": {
+			"type": "string",
+			"defaultValue": "@triggerBody().folderPath"
+		},
+		"import_manager_location_staffing_properties_LOCATION_STAFFING_parameters_file_name": {
+			"type": "string",
+			"defaultValue": "@triggerBody().fileName"
+		},
+		"import_manager_location_staffing_properties_LOCATION_STAFFING_parameters_next_line": {
+			"type": "string",
+			"defaultValue": "\\n"
+		},
+		"import_manager_location_staffing_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/c061dde2-a728-4240-8f3d-15ccff95ec4d/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Storage/storageAccounts/stdevdatapipe001"
+		},
+		"sftp_schedule_file_ingest_shipment_history_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Location": {
+			"type": "string",
+			"defaultValue": "outbound"
+		},
+		"sftp_schedule_file_ingest_shipment_history_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Directory": {
+			"type": "string",
+			"defaultValue": "ShipmentHistory"
+		},
+		"sftp_schedule_file_ingest_shipment_history_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Location": {
+			"type": "string",
+			"defaultValue": "main"
+		},
+		"sftp_schedule_file_ingest_shipment_history_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Directory": {
+			"type": "string",
+			"defaultValue": "Radial/ShipmentHistory"
+		},
+		"sftp_scheduled_file_ingest_budget_staffing_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Location": {
+			"type": "string",
+			"defaultValue": "outbound"
+		},
+		"sftp_scheduled_file_ingest_budget_staffing_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Directory": {
+			"type": "string",
+			"defaultValue": "BudgetStaffing"
+		},
+		"sftp_scheduled_file_ingest_budget_staffing_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Location": {
+			"type": "string",
+			"defaultValue": "main/Radial/"
+		},
+		"sftp_scheduled_file_ingest_budget_staffing_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Directory": {
+			"type": "string",
+			"defaultValue": "BudgetStaffing"
+		},
+		"sftp_scheduled_file_ingest_daily_actuals_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Location": {
+			"type": "string",
+			"defaultValue": "outbound"
+		},
+		"sftp_scheduled_file_ingest_daily_actuals_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Directory": {
+			"type": "string",
+			"defaultValue": "DailyActuals"
+		},
+		"sftp_scheduled_file_ingest_daily_actuals_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Location": {
+			"type": "string",
+			"defaultValue": "main/Radial/"
+		},
+		"sftp_scheduled_file_ingest_daily_actuals_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Directory": {
+			"type": "string",
+			"defaultValue": "DailyActuals"
+		},
+		"sftp_scheduled_file_ingest_fulfillment_forecasts_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Location": {
+			"type": "string",
+			"defaultValue": "outbound"
+		},
+		"sftp_scheduled_file_ingest_fulfillment_forecasts_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Directory": {
+			"type": "string",
+			"defaultValue": "FulfillmentForecast"
+		},
+		"sftp_scheduled_file_ingest_fulfillment_forecasts_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Location": {
+			"type": "string",
+			"defaultValue": "main/Radial/"
+		},
+		"sftp_scheduled_file_ingest_fulfillment_forecasts_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Directory": {
+			"type": "string",
+			"defaultValue": "FulfillmentForecast"
+		},
+		"sftp_scheduled_file_ingest_item_master_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Location": {
+			"type": "string",
+			"defaultValue": "outbound"
+		},
+		"sftp_scheduled_file_ingest_item_master_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Directory": {
+			"type": "string",
+			"defaultValue": "ItemMaster"
+		},
+		"sftp_scheduled_file_ingest_item_master_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Location": {
+			"type": "string",
+			"defaultValue": "main/Radial/"
+		},
+		"sftp_scheduled_file_ingest_item_master_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Directory": {
+			"type": "string",
+			"defaultValue": "ItemMaster"
+		},
+		"sftp_scheduled_file_ingest_location_master_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Location": {
+			"type": "string",
+			"defaultValue": "outbound"
+		},
+		"sftp_scheduled_file_ingest_location_master_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Directory": {
+			"type": "string",
+			"defaultValue": "LocationMaster"
+		},
+		"sftp_scheduled_file_ingest_location_master_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Location": {
+			"type": "string",
+			"defaultValue": "main/Radial/"
+		},
+		"sftp_scheduled_file_ingest_location_master_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Directory": {
+			"type": "string",
+			"defaultValue": "LocationMaster"
+		},
+		"sftp_scheduled_file_ingest_order_history_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Location": {
+			"type": "string",
+			"defaultValue": "outbound"
+		},
+		"sftp_scheduled_file_ingest_order_history_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Directory": {
+			"type": "string",
+			"defaultValue": "OrderHistory"
+		},
+		"sftp_scheduled_file_ingest_order_history_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Location": {
+			"type": "string",
+			"defaultValue": "main"
+		},
+		"sftp_scheduled_file_ingest_order_history_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Directory": {
+			"type": "string",
+			"defaultValue": "Radial/OrderHistory"
+		},
+		"sftp_scheduled_file_ingest_staffing_history_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Location": {
+			"type": "string",
+			"defaultValue": "outbound"
+		},
+		"sftp_scheduled_file_ingest_staffing_history_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Directory": {
+			"type": "string",
+			"defaultValue": "StaffingHistory"
+		},
+		"sftp_scheduled_file_ingest_staffing_history_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Location": {
+			"type": "string",
+			"defaultValue": "main"
+		},
+		"sftp_scheduled_file_ingest_staffing_history_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Directory": {
+			"type": "string",
+			"defaultValue": "Radial/StaffingHistory"
+		},
+		"sftp_upload_budget_staffing_properties_BUDGET_STAFFING_parameters_folder_path": {
+			"type": "string",
+			"defaultValue": "@triggerBody().folderPath"
+		},
+		"sftp_upload_budget_staffing_properties_BUDGET_STAFFING_parameters_file_name": {
+			"type": "string",
+			"defaultValue": "@triggerBody().fileName"
+		},
+		"sftp_upload_budget_staffing_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/c061dde2-a728-4240-8f3d-15ccff95ec4d/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Storage/storageAccounts/stdevdatapipe001"
+		},
+		"sftp_upload_daily_actuals_properties_DAILY_ACTUALS_parameters_folder_path": {
+			"type": "string",
+			"defaultValue": "@triggerBody().folderPath"
+		},
+		"sftp_upload_daily_actuals_properties_DAILY_ACTUALS_parameters_file_name": {
+			"type": "string",
+			"defaultValue": "@triggerBody().fileName"
+		},
+		"sftp_upload_daily_actuals_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/c061dde2-a728-4240-8f3d-15ccff95ec4d/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Storage/storageAccounts/stdevdatapipe001"
+		},
+		"sftp_upload_file_ingest_all_pipelines_properties_SFTP_REDIRECT_BLOB_SINGLE_parameters_folder_path": {
+			"type": "string",
+			"defaultValue": "outbound"
+		},
+		"sftp_upload_file_ingest_all_pipelines_properties_SFTP_REDIRECT_BLOB_SINGLE_parameters_container": {
+			"type": "string",
+			"defaultValue": "main"
+		},
+		"sftp_upload_fulfillment_forecast_properties_FULFILLMENT_FORECAST_parameters_folder_path": {
+			"type": "string",
+			"defaultValue": "@triggerBody().folderPath"
+		},
+		"sftp_upload_fulfillment_forecast_properties_FULFILLMENT_FORECAST_parameters_file_name": {
+			"type": "string",
+			"defaultValue": "@triggerBody().fileName"
+		},
+		"sftp_upload_fulfillment_forecast_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/c061dde2-a728-4240-8f3d-15ccff95ec4d/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Storage/storageAccounts/stdevdatapipe001"
+		},
+		"sftp_upload_item_master_properties_ITEM_MASTER_DATALAKE_parameters_filename": {
+			"type": "string",
+			"defaultValue": "@triggerBody().fileName"
+		},
+		"sftp_upload_item_master_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/c061dde2-a728-4240-8f3d-15ccff95ec4d/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Storage/storageAccounts/stdevdatapipe001"
+		},
+		"sftp_upload_location_master_properties_LOCATION_MASTER_parameters_folder_path": {
+			"type": "string",
+			"defaultValue": "@triggerBody().folderPath"
+		},
+		"sftp_upload_location_master_properties_LOCATION_MASTER_parameters_file_name": {
+			"type": "string",
+			"defaultValue": "@triggerBody().fileName"
+		},
+		"sftp_upload_location_master_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/c061dde2-a728-4240-8f3d-15ccff95ec4d/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Storage/storageAccounts/stdevdatapipe001"
+		},
+		"sftp_upload_order_history_properties_ORDER_HISTORY_COPY_parameters_filename": {
+			"type": "string",
+			"defaultValue": "@triggerBody().filename"
+		},
+		"sftp_upload_order_history_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/c061dde2-a728-4240-8f3d-15ccff95ec4d/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Storage/storageAccounts/stdevdatapipe001"
+		},
+		"sftp_upload_shipment_history_properties_SHIPMENT_HISTORY_COPY_parameters_filename": {
+			"type": "string",
+			"defaultValue": "@triggerBody().filename"
+		},
+		"sftp_upload_shipment_history_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/c061dde2-a728-4240-8f3d-15ccff95ec4d/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Storage/storageAccounts/stdevdatapipe001"
+		},
+		"sftp_upload_staffing_history_properties_STAFFING_HISTORY_parameters_file_name": {
+			"type": "string",
+			"defaultValue": "@triggerBody().fileName"
+		},
+		"sftp_upload_staffing_history_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/c061dde2-a728-4240-8f3d-15ccff95ec4d/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Storage/storageAccounts/stdevdatapipe001"
+		},
+		"containerUri": {
+			"type": "string",
+			"metadata": "URI to storage account containing linked ARM templates"
+		},
+		"containerSasToken": {
+			"type": "string",
+			"metadata": "Sas token to storage account containing linked ARM templates"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "bricz-deploy-factory_ArmTemplate_0",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_0.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"briczkeyvault_properties_typeProperties_baseUrl": {
+						"value": "[parameters('briczkeyvault_properties_typeProperties_baseUrl')]"
+					},
+					"PgSQL_LinkedService3_properties_typeProperties_connectionString_secretName": {
+						"value": "[parameters('PgSQL_LinkedService3_properties_typeProperties_connectionString_secretName')]"
+					},
+					"QA_Datalake_properties_typeProperties_url": {
+						"value": "[parameters('QA_Datalake_properties_typeProperties_url')]"
+					},
+					"SFTP_RADIAL_STORAGE_properties_typeProperties_host": {
+						"value": "[parameters('SFTP_RADIAL_STORAGE_properties_typeProperties_host')]"
+					},
+					"SFTP_RADIAL_STORAGE_properties_typeProperties_userName": {
+						"value": "[parameters('SFTP_RADIAL_STORAGE_properties_typeProperties_userName')]"
+					},
+					"datalakelinkedservice_properties_typeProperties_url": {
+						"value": "[parameters('datalakelinkedservice_properties_typeProperties_url')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "bricz-deploy-factory_ArmTemplate_1",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_1.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'bricz-deploy-factory_ArmTemplate_0')]"
+			]
+		},
+		{
+			"name": "bricz-deploy-factory_ArmTemplate_2",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_2.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'bricz-deploy-factory_ArmTemplate_1')]"
+			]
+		},
+		{
+			"name": "bricz-deploy-factory_ArmTemplate_3",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_3.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'bricz-deploy-factory_ArmTemplate_2')]"
+			]
+		},
+		{
+			"name": "bricz-deploy-factory_ArmTemplate_4",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_4.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'bricz-deploy-factory_ArmTemplate_3')]"
+			]
+		},
+		{
+			"name": "bricz-deploy-factory_ArmTemplate_5",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_5.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'bricz-deploy-factory_ArmTemplate_4')]"
+			]
+		},
+		{
+			"name": "bricz-deploy-factory_ArmTemplate_6",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_6.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'bricz-deploy-factory_ArmTemplate_5')]"
+			]
+		},
+		{
+			"name": "bricz-deploy-factory_ArmTemplate_7",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_7.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'bricz-deploy-factory_ArmTemplate_6')]"
+			]
+		},
+		{
+			"name": "bricz-deploy-factory_ArmTemplate_8",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_8.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"sftp_schedule_file_ingest_shipment_history_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Location": {
+						"value": "[parameters('sftp_schedule_file_ingest_shipment_history_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Location')]"
+					},
+					"sftp_schedule_file_ingest_shipment_history_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Directory": {
+						"value": "[parameters('sftp_schedule_file_ingest_shipment_history_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Directory')]"
+					},
+					"sftp_schedule_file_ingest_shipment_history_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Location": {
+						"value": "[parameters('sftp_schedule_file_ingest_shipment_history_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Location')]"
+					},
+					"sftp_schedule_file_ingest_shipment_history_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Directory": {
+						"value": "[parameters('sftp_schedule_file_ingest_shipment_history_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Directory')]"
+					},
+					"sftp_scheduled_file_ingest_budget_staffing_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Location": {
+						"value": "[parameters('sftp_scheduled_file_ingest_budget_staffing_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Location')]"
+					},
+					"sftp_scheduled_file_ingest_budget_staffing_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Directory": {
+						"value": "[parameters('sftp_scheduled_file_ingest_budget_staffing_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Directory')]"
+					},
+					"sftp_scheduled_file_ingest_budget_staffing_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Location": {
+						"value": "[parameters('sftp_scheduled_file_ingest_budget_staffing_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Location')]"
+					},
+					"sftp_scheduled_file_ingest_budget_staffing_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Directory": {
+						"value": "[parameters('sftp_scheduled_file_ingest_budget_staffing_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Directory')]"
+					},
+					"sftp_scheduled_file_ingest_daily_actuals_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Location": {
+						"value": "[parameters('sftp_scheduled_file_ingest_daily_actuals_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Location')]"
+					},
+					"sftp_scheduled_file_ingest_daily_actuals_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Directory": {
+						"value": "[parameters('sftp_scheduled_file_ingest_daily_actuals_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Directory')]"
+					},
+					"sftp_scheduled_file_ingest_daily_actuals_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Location": {
+						"value": "[parameters('sftp_scheduled_file_ingest_daily_actuals_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Location')]"
+					},
+					"sftp_scheduled_file_ingest_daily_actuals_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Directory": {
+						"value": "[parameters('sftp_scheduled_file_ingest_daily_actuals_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Directory')]"
+					},
+					"sftp_scheduled_file_ingest_fulfillment_forecasts_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Location": {
+						"value": "[parameters('sftp_scheduled_file_ingest_fulfillment_forecasts_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Location')]"
+					},
+					"sftp_scheduled_file_ingest_fulfillment_forecasts_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Directory": {
+						"value": "[parameters('sftp_scheduled_file_ingest_fulfillment_forecasts_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Directory')]"
+					},
+					"sftp_scheduled_file_ingest_fulfillment_forecasts_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Location": {
+						"value": "[parameters('sftp_scheduled_file_ingest_fulfillment_forecasts_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Location')]"
+					},
+					"sftp_scheduled_file_ingest_fulfillment_forecasts_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Directory": {
+						"value": "[parameters('sftp_scheduled_file_ingest_fulfillment_forecasts_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Directory')]"
+					},
+					"sftp_scheduled_file_ingest_item_master_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Location": {
+						"value": "[parameters('sftp_scheduled_file_ingest_item_master_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Location')]"
+					},
+					"sftp_scheduled_file_ingest_item_master_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Directory": {
+						"value": "[parameters('sftp_scheduled_file_ingest_item_master_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Directory')]"
+					},
+					"sftp_scheduled_file_ingest_item_master_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Location": {
+						"value": "[parameters('sftp_scheduled_file_ingest_item_master_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Location')]"
+					},
+					"sftp_scheduled_file_ingest_item_master_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Directory": {
+						"value": "[parameters('sftp_scheduled_file_ingest_item_master_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Directory')]"
+					},
+					"sftp_scheduled_file_ingest_location_master_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Location": {
+						"value": "[parameters('sftp_scheduled_file_ingest_location_master_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Location')]"
+					},
+					"sftp_scheduled_file_ingest_location_master_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Directory": {
+						"value": "[parameters('sftp_scheduled_file_ingest_location_master_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Directory')]"
+					},
+					"sftp_scheduled_file_ingest_location_master_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Location": {
+						"value": "[parameters('sftp_scheduled_file_ingest_location_master_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Location')]"
+					},
+					"sftp_scheduled_file_ingest_location_master_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Directory": {
+						"value": "[parameters('sftp_scheduled_file_ingest_location_master_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Directory')]"
+					},
+					"sftp_scheduled_file_ingest_order_history_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Location": {
+						"value": "[parameters('sftp_scheduled_file_ingest_order_history_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Location')]"
+					},
+					"sftp_scheduled_file_ingest_order_history_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Directory": {
+						"value": "[parameters('sftp_scheduled_file_ingest_order_history_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Directory')]"
+					},
+					"sftp_scheduled_file_ingest_order_history_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Location": {
+						"value": "[parameters('sftp_scheduled_file_ingest_order_history_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Location')]"
+					},
+					"sftp_scheduled_file_ingest_order_history_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Directory": {
+						"value": "[parameters('sftp_scheduled_file_ingest_order_history_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Directory')]"
+					},
+					"sftp_scheduled_file_ingest_staffing_history_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Location": {
+						"value": "[parameters('sftp_scheduled_file_ingest_staffing_history_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Location')]"
+					},
+					"sftp_scheduled_file_ingest_staffing_history_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Directory": {
+						"value": "[parameters('sftp_scheduled_file_ingest_staffing_history_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Directory')]"
+					},
+					"sftp_scheduled_file_ingest_staffing_history_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Location": {
+						"value": "[parameters('sftp_scheduled_file_ingest_staffing_history_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Location')]"
+					},
+					"sftp_scheduled_file_ingest_staffing_history_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Directory": {
+						"value": "[parameters('sftp_scheduled_file_ingest_staffing_history_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Directory')]"
+					},
+					"sftp_upload_file_ingest_all_pipelines_properties_SFTP_REDIRECT_BLOB_SINGLE_parameters_folder_path": {
+						"value": "[parameters('sftp_upload_file_ingest_all_pipelines_properties_SFTP_REDIRECT_BLOB_SINGLE_parameters_folder_path')]"
+					},
+					"sftp_upload_file_ingest_all_pipelines_properties_SFTP_REDIRECT_BLOB_SINGLE_parameters_container": {
+						"value": "[parameters('sftp_upload_file_ingest_all_pipelines_properties_SFTP_REDIRECT_BLOB_SINGLE_parameters_container')]"
+					},
+					"sftp_upload_item_master_properties_ITEM_MASTER_DATALAKE_parameters_filename": {
+						"value": "[parameters('sftp_upload_item_master_properties_ITEM_MASTER_DATALAKE_parameters_filename')]"
+					},
+					"sftp_upload_item_master_properties_typeProperties_scope": {
+						"value": "[parameters('sftp_upload_item_master_properties_typeProperties_scope')]"
+					},
+					"sftp_upload_order_history_properties_ORDER_HISTORY_COPY_parameters_filename": {
+						"value": "[parameters('sftp_upload_order_history_properties_ORDER_HISTORY_COPY_parameters_filename')]"
+					},
+					"sftp_upload_order_history_properties_typeProperties_scope": {
+						"value": "[parameters('sftp_upload_order_history_properties_typeProperties_scope')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'bricz-deploy-factory_ArmTemplate_7')]"
+			]
+		},
+		{
+			"name": "bricz-deploy-factory_ArmTemplate_9",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_9.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"sftp_upload_shipment_history_properties_SHIPMENT_HISTORY_COPY_parameters_filename": {
+						"value": "[parameters('sftp_upload_shipment_history_properties_SHIPMENT_HISTORY_COPY_parameters_filename')]"
+					},
+					"sftp_upload_shipment_history_properties_typeProperties_scope": {
+						"value": "[parameters('sftp_upload_shipment_history_properties_typeProperties_scope')]"
+					},
+					"sftp_upload_staffing_history_properties_STAFFING_HISTORY_parameters_file_name": {
+						"value": "[parameters('sftp_upload_staffing_history_properties_STAFFING_HISTORY_parameters_file_name')]"
+					},
+					"sftp_upload_staffing_history_properties_typeProperties_scope": {
+						"value": "[parameters('sftp_upload_staffing_history_properties_typeProperties_scope')]"
+					},
+					"import_manager_current_backlog_properties_CURRENT_BACKLOG_UX_parameters_quote": {
+						"value": "[parameters('import_manager_current_backlog_properties_CURRENT_BACKLOG_UX_parameters_quote')]"
+					},
+					"import_manager_current_backlog_properties_CURRENT_BACKLOG_UX_parameters_folder_path": {
+						"value": "[parameters('import_manager_current_backlog_properties_CURRENT_BACKLOG_UX_parameters_folder_path')]"
+					},
+					"import_manager_current_backlog_properties_CURRENT_BACKLOG_UX_parameters_file_name": {
+						"value": "[parameters('import_manager_current_backlog_properties_CURRENT_BACKLOG_UX_parameters_file_name')]"
+					},
+					"import_manager_current_backlog_properties_CURRENT_BACKLOG_UX_parameters_next_line": {
+						"value": "[parameters('import_manager_current_backlog_properties_CURRENT_BACKLOG_UX_parameters_next_line')]"
+					},
+					"import_manager_current_backlog_properties_typeProperties_scope": {
+						"value": "[parameters('import_manager_current_backlog_properties_typeProperties_scope')]"
+					},
+					"import_manager_demand_forecast_properties_DEMAND_FORECAST_UX_parameters_quote": {
+						"value": "[parameters('import_manager_demand_forecast_properties_DEMAND_FORECAST_UX_parameters_quote')]"
+					},
+					"import_manager_demand_forecast_properties_DEMAND_FORECAST_UX_parameters_folder_path": {
+						"value": "[parameters('import_manager_demand_forecast_properties_DEMAND_FORECAST_UX_parameters_folder_path')]"
+					},
+					"import_manager_demand_forecast_properties_DEMAND_FORECAST_UX_parameters_file_name": {
+						"value": "[parameters('import_manager_demand_forecast_properties_DEMAND_FORECAST_UX_parameters_file_name')]"
+					},
+					"import_manager_demand_forecast_properties_DEMAND_FORECAST_UX_parameters_next_line": {
+						"value": "[parameters('import_manager_demand_forecast_properties_DEMAND_FORECAST_UX_parameters_next_line')]"
+					},
+					"import_manager_demand_forecast_properties_typeProperties_scope": {
+						"value": "[parameters('import_manager_demand_forecast_properties_typeProperties_scope')]"
+					},
+					"import_manager_fulfillment_forecast_properties_FULFILLMENT_FORECAST_UX_parameters_quote": {
+						"value": "[parameters('import_manager_fulfillment_forecast_properties_FULFILLMENT_FORECAST_UX_parameters_quote')]"
+					},
+					"import_manager_fulfillment_forecast_properties_FULFILLMENT_FORECAST_UX_parameters_folder_path": {
+						"value": "[parameters('import_manager_fulfillment_forecast_properties_FULFILLMENT_FORECAST_UX_parameters_folder_path')]"
+					},
+					"import_manager_fulfillment_forecast_properties_FULFILLMENT_FORECAST_UX_parameters_file_name": {
+						"value": "[parameters('import_manager_fulfillment_forecast_properties_FULFILLMENT_FORECAST_UX_parameters_file_name')]"
+					},
+					"import_manager_fulfillment_forecast_properties_FULFILLMENT_FORECAST_UX_parameters_next_line": {
+						"value": "[parameters('import_manager_fulfillment_forecast_properties_FULFILLMENT_FORECAST_UX_parameters_next_line')]"
+					},
+					"import_manager_fulfillment_forecast_properties_typeProperties_scope": {
+						"value": "[parameters('import_manager_fulfillment_forecast_properties_typeProperties_scope')]"
+					},
+					"import_manager_inventory_properties_INVENTORY_UX_parameters_quote": {
+						"value": "[parameters('import_manager_inventory_properties_INVENTORY_UX_parameters_quote')]"
+					},
+					"import_manager_inventory_properties_INVENTORY_UX_parameters_folder_path": {
+						"value": "[parameters('import_manager_inventory_properties_INVENTORY_UX_parameters_folder_path')]"
+					},
+					"import_manager_inventory_properties_INVENTORY_UX_parameters_file_name": {
+						"value": "[parameters('import_manager_inventory_properties_INVENTORY_UX_parameters_file_name')]"
+					},
+					"import_manager_inventory_properties_INVENTORY_UX_parameters_next_line": {
+						"value": "[parameters('import_manager_inventory_properties_INVENTORY_UX_parameters_next_line')]"
+					},
+					"import_manager_inventory_properties_typeProperties_scope": {
+						"value": "[parameters('import_manager_inventory_properties_typeProperties_scope')]"
+					},
+					"import_manager_location_properties_LOCATION_UX_parameters_quote": {
+						"value": "[parameters('import_manager_location_properties_LOCATION_UX_parameters_quote')]"
+					},
+					"import_manager_location_properties_LOCATION_UX_parameters_folder_path": {
+						"value": "[parameters('import_manager_location_properties_LOCATION_UX_parameters_folder_path')]"
+					},
+					"import_manager_location_properties_LOCATION_UX_parameters_file_name": {
+						"value": "[parameters('import_manager_location_properties_LOCATION_UX_parameters_file_name')]"
+					},
+					"import_manager_location_properties_LOCATION_UX_parameters_next_line": {
+						"value": "[parameters('import_manager_location_properties_LOCATION_UX_parameters_next_line')]"
+					},
+					"import_manager_location_properties_typeProperties_scope": {
+						"value": "[parameters('import_manager_location_properties_typeProperties_scope')]"
+					},
+					"import_manager_location_staffing_properties_LOCATION_STAFFING_parameters_quote": {
+						"value": "[parameters('import_manager_location_staffing_properties_LOCATION_STAFFING_parameters_quote')]"
+					},
+					"import_manager_location_staffing_properties_LOCATION_STAFFING_parameters_folder_path": {
+						"value": "[parameters('import_manager_location_staffing_properties_LOCATION_STAFFING_parameters_folder_path')]"
+					},
+					"import_manager_location_staffing_properties_LOCATION_STAFFING_parameters_file_name": {
+						"value": "[parameters('import_manager_location_staffing_properties_LOCATION_STAFFING_parameters_file_name')]"
+					},
+					"import_manager_location_staffing_properties_LOCATION_STAFFING_parameters_next_line": {
+						"value": "[parameters('import_manager_location_staffing_properties_LOCATION_STAFFING_parameters_next_line')]"
+					},
+					"import_manager_location_staffing_properties_typeProperties_scope": {
+						"value": "[parameters('import_manager_location_staffing_properties_typeProperties_scope')]"
+					},
+					"sftp_upload_budget_staffing_properties_BUDGET_STAFFING_parameters_folder_path": {
+						"value": "[parameters('sftp_upload_budget_staffing_properties_BUDGET_STAFFING_parameters_folder_path')]"
+					},
+					"sftp_upload_budget_staffing_properties_BUDGET_STAFFING_parameters_file_name": {
+						"value": "[parameters('sftp_upload_budget_staffing_properties_BUDGET_STAFFING_parameters_file_name')]"
+					},
+					"sftp_upload_budget_staffing_properties_typeProperties_scope": {
+						"value": "[parameters('sftp_upload_budget_staffing_properties_typeProperties_scope')]"
+					},
+					"sftp_upload_daily_actuals_properties_DAILY_ACTUALS_parameters_folder_path": {
+						"value": "[parameters('sftp_upload_daily_actuals_properties_DAILY_ACTUALS_parameters_folder_path')]"
+					},
+					"sftp_upload_daily_actuals_properties_DAILY_ACTUALS_parameters_file_name": {
+						"value": "[parameters('sftp_upload_daily_actuals_properties_DAILY_ACTUALS_parameters_file_name')]"
+					},
+					"sftp_upload_daily_actuals_properties_typeProperties_scope": {
+						"value": "[parameters('sftp_upload_daily_actuals_properties_typeProperties_scope')]"
+					},
+					"sftp_upload_fulfillment_forecast_properties_FULFILLMENT_FORECAST_parameters_folder_path": {
+						"value": "[parameters('sftp_upload_fulfillment_forecast_properties_FULFILLMENT_FORECAST_parameters_folder_path')]"
+					},
+					"sftp_upload_fulfillment_forecast_properties_FULFILLMENT_FORECAST_parameters_file_name": {
+						"value": "[parameters('sftp_upload_fulfillment_forecast_properties_FULFILLMENT_FORECAST_parameters_file_name')]"
+					},
+					"sftp_upload_fulfillment_forecast_properties_typeProperties_scope": {
+						"value": "[parameters('sftp_upload_fulfillment_forecast_properties_typeProperties_scope')]"
+					},
+					"sftp_upload_location_master_properties_LOCATION_MASTER_parameters_folder_path": {
+						"value": "[parameters('sftp_upload_location_master_properties_LOCATION_MASTER_parameters_folder_path')]"
+					},
+					"sftp_upload_location_master_properties_LOCATION_MASTER_parameters_file_name": {
+						"value": "[parameters('sftp_upload_location_master_properties_LOCATION_MASTER_parameters_file_name')]"
+					},
+					"sftp_upload_location_master_properties_typeProperties_scope": {
+						"value": "[parameters('sftp_upload_location_master_properties_typeProperties_scope')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'bricz-deploy-factory_ArmTemplate_8')]"
+			]
+		}
+	]
+}

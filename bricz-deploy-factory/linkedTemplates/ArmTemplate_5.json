@@ -1,0 +1,5010 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "bricz-deploy-factory"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/zone')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "PgSQL_LinkedService3",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "db_tables"
+				},
+				"annotations": [],
+				"type": "AzurePostgreSqlTable",
+				"schema": [
+					{
+						"name": "id",
+						"type": "integer",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "zone",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "delivery_partner_id",
+						"type": "integer",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "origin_start",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "origin_end",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "destination_start",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "destination_end",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "created_date",
+						"type": "timestamp with time zone",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "updated_date",
+						"type": "timestamp with time zone",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "business_unit_id",
+						"type": "uuid",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "organization_id",
+						"type": "uuid",
+						"precision": 0,
+						"scale": 0
+					}
+				],
+				"typeProperties": {
+					"schema": "pfp",
+					"table": "zone"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/CSV2TSV')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "copy_csv2tsv",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"wildcardFolderPath": "LocationMaster",
+									"wildcardFileName": "*",
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings",
+									"copyBehavior": "PreserveHierarchy"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".tsv"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "Location Code",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Location Code",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "name",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Name",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "address",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Address",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "zip",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Zip",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "inbound_handling_cost",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Inbound Handling Cost",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "outbound_handling_cost",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Outbound Handling Cost",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "status",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Status",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "inbound_processing_time",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Inbound Processing Time",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "outbound_processing_time",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Outbound Processing Time",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "type",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Type",
+											"physicalType": "String"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "CSVFILE",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "TSVFILE",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"folder": {
+					"name": "UTILITY_PIPELINES"
+				},
+				"annotations": [],
+				"lastPublishTime": "2023-10-16T10:33:14Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ITEM_MASTER_DATALAKE')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Item Master Files Copy To Datalake",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"wildcardFolderPath": "Radial/ItemMaster",
+									"wildcardFileName": {
+										"value": "@pipeline().parameters.filename",
+										"type": "Expression"
+									},
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings",
+									"copyBehavior": "PreserveHierarchy"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ITEM_MASTER_RAW",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ITEM_MASTER_DL_STORE",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"parameters": {
+					"filename": {
+						"type": "string",
+						"defaultValue": "sample_file.csv"
+					}
+				},
+				"folder": {
+					"name": "FTP"
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MOVE_FILES_FOR_PROCESSING')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "SFTP2STAGING",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "BinarySource",
+								"storeSettings": {
+									"type": "SftpReadSettings",
+									"recursive": true,
+									"wildcardFolderPath": "outbound",
+									"wildcardFileName": "*.csv",
+									"deleteFilesAfterCompletion": true,
+									"disableChunking": false
+								},
+								"formatSettings": {
+									"type": "BinaryReadSettings"
+								}
+							},
+							"sink": {
+								"type": "BinarySink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings",
+									"copyBehavior": "PreserveHierarchy"
+								}
+							},
+							"enableStaging": false
+						},
+						"inputs": [
+							{
+								"referenceName": "sftp_files_binary",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "STAGING_BINARY_FILES",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"folder": {
+					"name": "REMOTE"
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ORDER_HISTORY_COPY')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "orderhistorycopy2datalake",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"wildcardFolderPath": "Radial/OrderHistory",
+									"wildcardFileName": {
+										"value": "@pipeline().parameters.filename",
+										"type": "Expression"
+									},
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings",
+									"copyBehavior": "PreserveHierarchy"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ORDER_HISTORY_RAW",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "orderhistory_mllake",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"parameters": {
+					"filename": {
+						"type": "string",
+						"defaultValue": "2021B1_WMS_ORDER_HISTORY.csv"
+					}
+				},
+				"folder": {
+					"name": "FTP"
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SAMPLE_SFTP_PUSH')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "samplefilepush",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "BinarySource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"modifiedDatetimeStart": "2024-06-23T00:00:00.000Z",
+									"deleteFilesAfterCompletion": false
+								},
+								"formatSettings": {
+									"type": "BinaryReadSettings"
+								}
+							},
+							"sink": {
+								"type": "BinarySink",
+								"storeSettings": {
+									"type": "SftpWriteSettings",
+									"copyBehavior": "PreserveHierarchy",
+									"operationTimeout": "01:00:00",
+									"useTempFileRename": true
+								}
+							},
+							"enableStaging": false
+						},
+						"inputs": [
+							{
+								"referenceName": "temp_binary_sample_files",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "sftp_files_binary",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"folder": {
+					"name": "UTILITY_PIPELINES"
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SFTP_REDIRECT_BLOB_SINGLE')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Fetchallrecords",
+						"type": "GetMetadata",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataset": {
+								"referenceName": "BinaryOutbound",
+								"type": "DatasetReference",
+								"parameters": {
+									"folder_name": {
+										"value": "@pipeline().parameters.folder_path",
+										"type": "Expression"
+									}
+								}
+							},
+							"fieldList": [
+								"childItems"
+							],
+							"storeSettings": {
+								"type": "SftpReadSettings",
+								"recursive": true,
+								"enablePartitionDiscovery": false,
+								"disableChunking": false
+							},
+							"formatSettings": {
+								"type": "BinaryReadSettings"
+							}
+						}
+					},
+					{
+						"name": "Filter1",
+						"type": "Filter",
+						"dependsOn": [
+							{
+								"activity": "Fetchallrecords",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('Fetchallrecords').output.childItems",
+								"type": "Expression"
+							},
+							"condition": {
+								"value": "@equals(item().type,'File')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "ForEach1",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "Filter1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('Filter1').output.Value",
+								"type": "Expression"
+							},
+							"isSequential": true,
+							"activities": [
+								{
+									"name": "copymultiplefiles",
+									"type": "Copy",
+									"dependsOn": [
+										{
+											"activity": "Set variable1",
+											"dependencyConditions": [
+												"Completed"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "BinarySource",
+											"storeSettings": {
+												"type": "SftpReadSettings",
+												"recursive": true,
+												"deleteFilesAfterCompletion": false,
+												"disableChunking": false
+											},
+											"formatSettings": {
+												"type": "BinaryReadSettings"
+											}
+										},
+										"sink": {
+											"type": "BinarySink",
+											"storeSettings": {
+												"type": "AzureBlobFSWriteSettings",
+												"copyBehavior": "PreserveHierarchy"
+											}
+										},
+										"enableStaging": false
+									},
+									"inputs": [
+										{
+											"referenceName": "BinaryOutbound_FetchFiles",
+											"type": "DatasetReference",
+											"parameters": {
+												"folder_name": {
+													"value": "@pipeline().parameters.folder_path",
+													"type": "Expression"
+												},
+												"file_name": {
+													"value": "@item().name",
+													"type": "Expression"
+												}
+											}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "BinaryDataDestination",
+											"type": "DatasetReference",
+											"parameters": {
+												"Container": {
+													"value": "@pipeline().parameters.container",
+													"type": "Expression"
+												},
+												"Directory": {
+													"value": "@variables('output_path')[0]",
+													"type": "Expression"
+												},
+												"filename": {
+													"value": "@item().name",
+													"type": "Expression"
+												}
+											}
+										}
+									]
+								},
+								{
+									"name": "deletemultiplefiles",
+									"type": "Delete",
+									"dependsOn": [
+										{
+											"activity": "copymultiplefiles",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataset": {
+											"referenceName": "BinaryOutbound_FetchFiles",
+											"type": "DatasetReference",
+											"parameters": {
+												"folder_name": {
+													"value": "@pipeline().parameters.folder_path",
+													"type": "Expression"
+												},
+												"file_name": {
+													"value": "@item().name",
+													"type": "Expression"
+												}
+											}
+										},
+										"enableLogging": false,
+										"storeSettings": {
+											"type": "SftpReadSettings",
+											"recursive": true,
+											"enablePartitionDiscovery": false,
+											"disableChunking": false
+										}
+									}
+								},
+								{
+									"name": "Set variable1",
+									"type": "SetVariable",
+									"dependsOn": [],
+									"policy": {
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "output_path",
+										"value": {
+											"value": "@if(\n    contains(toLower(item().name), 'order'),\n    json('[\"Radial/OrderHistory\"]'),\n    if(\n        contains(toLower(item().name), 'shipment'),\n        json('[\"Radial/ShipmentHistory\"]'),\n        if(\n            contains(toLower(item().name), 'budget'),\n            json('[\"Radial/BudgetStaffing\"]'),\n            if(\n                contains(toLower(item().name), 'daily'),\n                json('[\"Radial/DailyActuals\"]'),\n                if(\n                    contains(toLower(item().name), 'fulfillment'),\n                    json('[\"Radial/FulfillmentForecast\"]'),\n                    if(\n                        contains(toLower(item().name), 'item'),\n                        json('[\"Radial/ItemMaster\"]'),\n                        if(\n                            contains(toLower(item().name), 'location'),\n                            json('[\"Radial/LocationMaster\"]'),\n                            if(\n                                contains(toLower(item().name), 'staffing'),\n                                json('[\"Radial/StaffingHistory\"]'),\n                                json('[\"C\"]')\n                            )\n                        )\n                    )\n                )\n            )\n        )\n    )\n)",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"parameters": {
+					"folder_path": {
+						"type": "string",
+						"defaultValue": "outbound"
+					},
+					"container": {
+						"type": "string",
+						"defaultValue": "main"
+					}
+				},
+				"variables": {
+					"file_path": {
+						"type": "Array"
+					},
+					"output_path": {
+						"type": "Array"
+					}
+				},
+				"folder": {
+					"name": "FTP"
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SFTP_TO_MAIN_FOR_PROCESSING')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Move files from one folder to another folder",
+				"activities": [
+					{
+						"name": "GetFileList",
+						"description": "Get the list of file",
+						"type": "GetMetadata",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataset": {
+								"referenceName": "BinaryDataSource_Folder",
+								"type": "DatasetReference",
+								"parameters": {
+									"FolderPath": {
+										"value": "@pipeline().parameters.SourceStore_Location",
+										"type": "Expression"
+									},
+									"Directory": {
+										"value": "@pipeline().parameters.SourceStore_Directory",
+										"type": "Expression"
+									}
+								}
+							},
+							"fieldList": [
+								"childItems"
+							],
+							"storeSettings": {
+								"type": "SftpReadSettings",
+								"recursive": true
+							},
+							"formatSettings": {
+								"type": "BinaryReadSettings"
+							}
+						}
+					},
+					{
+						"name": "ForEachFile",
+						"description": "Iterate each file, and move them one by one.",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "FilterFiles",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('FilterFiles').output.value",
+								"type": "Expression"
+							},
+							"batchCount": 20,
+							"activities": [
+								{
+									"name": "CopyAFile",
+									"description": "Copy a file from the source store to the destination store.",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "BinarySource",
+											"storeSettings": {
+												"type": "SftpReadSettings",
+												"recursive": true
+											},
+											"formatSettings": {
+												"type": "BinaryReadSettings"
+											},
+											"recursive": false
+										},
+										"sink": {
+											"type": "BinarySink",
+											"storeSettings": {
+												"type": "AzureBlobFSWriteSettings",
+												"copyBehavior": "PreserveHierarchy"
+											}
+										},
+										"enableStaging": false,
+										"dataIntegrationUnits": 0
+									},
+									"inputs": [
+										{
+											"referenceName": "BinaryDataSource_File",
+											"type": "DatasetReference",
+											"parameters": {
+												"FolderPath": {
+													"value": "@pipeline().parameters.SourceStore_Location",
+													"type": "Expression"
+												},
+												"Directory": {
+													"value": "@pipeline().parameters.SourceStore_Directory",
+													"type": "Expression"
+												},
+												"filename": {
+													"value": "@item().name",
+													"type": "Expression"
+												}
+											}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "BinaryDataDestination",
+											"type": "DatasetReference",
+											"parameters": {
+												"Container": {
+													"value": "@pipeline().parameters.DestinationStore_Location",
+													"type": "Expression"
+												},
+												"Directory": {
+													"value": "@pipeline().parameters.DestinationStore_Directory",
+													"type": "Expression"
+												},
+												"filename": {
+													"value": "@item().name",
+													"type": "Expression"
+												}
+											}
+										}
+									]
+								},
+								{
+									"name": "DeleteAFile",
+									"description": "Delete a file from the source store",
+									"type": "Delete",
+									"dependsOn": [
+										{
+											"activity": "CopyAFile",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataset": {
+											"referenceName": "BinaryDataSource_File",
+											"type": "DatasetReference",
+											"parameters": {
+												"FolderPath": {
+													"value": "@pipeline().parameters.SourceStore_Location",
+													"type": "Expression"
+												},
+												"Directory": {
+													"value": "@pipeline().parameters.SourceStore_Directory",
+													"type": "Expression"
+												},
+												"filename": {
+													"value": "@item().name",
+													"type": "Expression"
+												}
+											}
+										},
+										"enableLogging": false,
+										"storeSettings": {
+											"type": "SftpReadSettings",
+											"recursive": true
+										}
+									}
+								}
+							]
+						}
+					},
+					{
+						"name": "FilterFiles",
+						"description": "Only files will be selected, the source-folders will not be selected.",
+						"type": "Filter",
+						"dependsOn": [
+							{
+								"activity": "GetFileList",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('GetFileList').output.childItems",
+								"type": "Expression"
+							},
+							"condition": {
+								"value": "@equals(item().type, 'File')",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"parameters": {
+					"SourceStore_Location": {
+						"type": "String",
+						"defaultValue": "outbound"
+					},
+					"SourceStore_Directory": {
+						"type": "String",
+						"defaultValue": "StaffingHistory"
+					},
+					"DestinationStore_Location": {
+						"type": "String",
+						"defaultValue": "main"
+					},
+					"DestinationStore_Directory": {
+						"type": "String",
+						"defaultValue": "Radial/StaffingHistory"
+					}
+				},
+				"folder": {
+					"name": "FTP"
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SFTP_TO_STORAGE')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"wildcardFolderPath": "Radial/OrderHistory/OH",
+									"wildcardFileName": "2021B*",
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings",
+									"copyBehavior": "PreserveHierarchy"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".csv"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "Order ID",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Order ID",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Order Line ID",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Order Line ID",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Location ID",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Location ID",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Channel",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Channel",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Order date",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Order Date",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Order Original Ship date",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Order Original Ship Date",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Order Actual Ship date",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Order Actual Ship Date",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Order due date",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Order Due Date",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Order Received (in Warehouse) Date and time",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Order Received Date and Time",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Order Completed (in Warehouse) Date and time",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Order Completed Date and Time",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Destination zip code (Ship to)",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Destination Zip Code",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Item code",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Item Code",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Order quantity",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Order Quantity",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Quantity (UOM) Picked",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Quantity (UOM) Picked",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Order Status",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Order Status",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Carrier",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Carrier",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Service Type",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Service Type",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Shipment Fees",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Shipment Fees",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Order Value",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Order Value",
+											"type": "String",
+											"physicalType": "String"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ORDER_HISTORY_SFTP",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ORDER_HISTORY_RAW",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"folder": {
+					"name": "REMOTE"
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SHIPMENT_HISTORY_COPY')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "loadtodatalakeshipmenthistory",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"wildcardFolderPath": "Radial/ShipmentHistory",
+									"wildcardFileName": {
+										"value": "@pipeline().parameters.filename",
+										"type": "Expression"
+									},
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings",
+									"copyBehavior": "PreserveHierarchy"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "SHIPMENT_HISTORY_RAW",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "shipment_history_mldatalake",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"parameters": {
+					"filename": {
+						"type": "string",
+						"defaultValue": "2021B1_WMS_SHIPMENT_HISTORY.csv"
+					}
+				},
+				"folder": {
+					"name": "FTP"
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SHIPMENT_HISTORY_STAGING_TO_MAIN')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "SFTP_TO_MAIN",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"wildcardFolderPath": "Radial/OrderHistory/SH",
+									"wildcardFileName": "*SHIPMENT_HISTORY.csv",
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings",
+									"copyBehavior": "PreserveHierarchy"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".csv"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "Shipment ID",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Shipment ID",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Order Line ID",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Order Line ID",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Location ID",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Location ID",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Carrier Name",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Carrier Name",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Mode",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Mode",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Total Units",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Total Units",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Total Shipment Weight",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Total Shipment Weight",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Total Shipment Volume",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Total Shipment Volume",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Total Shipment Cost",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Total Shipment Cost",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Total Shipment Value",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Total Shipment Value",
+											"type": "String",
+											"physicalType": "String"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "SHIPMENT_HISTORY_STAGING",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "SHIPMENT_HISTORY_RAW",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"folder": {
+					"name": "REMOTE"
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/STAFFING_HISTORY')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "CopyingStaffingHistory",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": false,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings",
+									"copyBehavior": "PreserveHierarchy"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "STAFFING_HISTORY_RAW",
+								"type": "DatasetReference",
+								"parameters": {
+									"file_name": {
+										"value": "@pipeline().parameters.file_name",
+										"type": "Expression"
+									}
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "staffing_history_mldatalake",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"parameters": {
+					"file_name": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "FTP"
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dataflow_EDA')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "main"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ORDER_HISTORY_RAW",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "EDA_Temp",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "AGGOrders"
+						},
+						{
+							"name": "sort1"
+						},
+						{
+							"name": "filter1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          {Order ID} as string,",
+						"          {Order Line ID} as string,",
+						"          Channel as string,",
+						"          {Order Date} as date,",
+						"          {Order Original Ship Date} as string,",
+						"          {Order Actual Ship Date} as string,",
+						"          {Order Due Date} as string,",
+						"          {Order Received Date And Time} as string,",
+						"          {Order Completed Date and Time} as string,",
+						"          {Destination Zip Code} as string,",
+						"          {Item Code} as string,",
+						"          {Order Quantity} as float,",
+						"          {Quantity (UOM) Picked} as string,",
+						"          {Order Status} as string,",
+						"          Carrier as string,",
+						"          {Service Type} as string,",
+						"          {Shipment Fees} as string,",
+						"          {Order Value} as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     enableCdc: true,",
+						"     mode: 'read',",
+						"     skipInitialLoad: true) ~> source1",
+						"filter1 aggregate(groupBy({Order Date}),",
+						"     Orders = count({Order ID}),",
+						"          {Order Quantity} = sum({Order Quantity})) ~> AGGOrders",
+						"AGGOrders sort(asc({Order Date}, true)) ~> sort1",
+						"source1 filter({Order Date}>=toDate('2023-01-01')) ~> filter1",
+						"sort1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     umask: 0777,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     saveOrder: 1) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_budget_staffing')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "main"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "BUDGET_STAFFING_RAW",
+								"type": "DatasetReference"
+							},
+							"name": "staffing"
+						},
+						{
+							"dataset": {
+								"referenceName": "tenant_heirarchy_table",
+								"type": "DatasetReference"
+							},
+							"name": "TenantHeirarchyTable"
+						},
+						{
+							"dataset": {
+								"referenceName": "locations",
+								"type": "DatasetReference"
+							},
+							"name": "LocationsTable"
+						},
+						{
+							"dataset": {
+								"referenceName": "enum_types",
+								"type": "DatasetReference"
+							},
+							"name": "EnumTypeDB"
+						},
+						{
+							"dataset": {
+								"referenceName": "enum_values",
+								"type": "DatasetReference"
+							},
+							"name": "EnumValue"
+						},
+						{
+							"dataset": {
+								"referenceName": "operationalprofile",
+								"type": "DatasetReference"
+							},
+							"name": "operationalprofile"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "operational_calendar",
+								"type": "DatasetReference"
+							},
+							"name": "WriteToDatabase"
+						},
+						{
+							"dataset": {
+								"referenceName": "failedvalidationrowsbudgetstaffing",
+								"type": "DatasetReference"
+							},
+							"name": "sinkfailedrows"
+						}
+					],
+					"transformations": [
+						{
+							"name": "THTSelected"
+						},
+						{
+							"name": "JoinTHT"
+						},
+						{
+							"name": "AlterRow1"
+						},
+						{
+							"name": "LocationsSelected"
+						},
+						{
+							"name": "JoinLocationsTable"
+						},
+						{
+							"name": "JoinEnumLocationMetricType"
+						},
+						{
+							"name": "FilterEnumLocationMetricType"
+						},
+						{
+							"name": "JoinLocationMetricTypeEnum"
+						},
+						{
+							"name": "FilterBusinessUnit"
+						},
+						{
+							"name": "Unpivot"
+						},
+						{
+							"name": "selectoperationalprofile"
+						},
+						{
+							"name": "joinoperationalprofile"
+						},
+						{
+							"name": "FIlterOrgRecords"
+						},
+						{
+							"name": "selectOrgRecords"
+						},
+						{
+							"name": "joinORGTHTD"
+						},
+						{
+							"name": "assertBudgetStaffing"
+						},
+						{
+							"name": "selectpivotcolumns"
+						},
+						{
+							"name": "splitValidationRows"
+						},
+						{
+							"name": "deriveErrors"
+						},
+						{
+							"name": "pivot1"
+						},
+						{
+							"name": "selectvalidrowcols"
+						},
+						{
+							"name": "RenameEnumBranches"
+						},
+						{
+							"name": "derivedColumn1"
+						},
+						{
+							"name": "MapDrifted1",
+							"description": "Creates an explicit mapping for each drifted column"
+						}
+					],
+					"scriptLines": [
+						"parameters{",
+						"     file_path as string ('Radial/BudgetStaffing/20240718T050000-BudgetStaffingPlan.csv')",
+						"}",
+						"source(output(",
+						"          {Organization ID} as string,",
+						"          {Business ID} as string,",
+						"          {Location Code} as string,",
+						"          {Staffing Profile} as string,",
+						"          Date as date,",
+						"          {Units per Hour} as float,",
+						"          {Max FTE Regular Hours} as float,",
+						"          {Min FTE Regular Hours} as float,",
+						"          {Max Temp Regular Hours} as float,",
+						"          {Min Temp Regular Hours} as float,",
+						"          {Max FTE Overtime Hours} as float,",
+						"          {Max Temp Overtime Hours} as float,",
+						"          {Regular FTE Wage} as float,",
+						"          {Regular Temp Wage} as float,",
+						"          {Overtime FTE Wage} as float,",
+						"          {Overtime Temp Wage} as float",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: true,",
+						"     rowUrlColumn: 'file_name',",
+						"     wildcardPaths:[($file_path)],",
+						"     mode: 'read') ~> staffing",
+						"source(output(",
+						"          id as string,",
+						"          tenant_hierarchy_type as integer,",
+						"          name as string,",
+						"          contact_name as string,",
+						"          email as string,",
+						"          phone as string,",
+						"          street_address_1 as string,",
+						"          street_address_2 as string,",
+						"          city as string,",
+						"          state as string,",
+						"          zip as integer,",
+						"          country as string,",
+						"          active as boolean,",
+						"          tenant_id as string,",
+						"          created_date as timestamp,",
+						"          updated_date as timestamp,",
+						"          parent_id as string,",
+						"          tenant_hierarchy_code as string,",
+						"          isdeleted as boolean,",
+						"          updated_by_user_id as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> TenantHeirarchyTable",
+						"source(output(",
+						"          id as integer,",
+						"          location_code as string,",
+						"          name as string,",
+						"          address as string,",
+						"          city as string,",
+						"          state as string,",
+						"          zip as string,",
+						"          country as string,",
+						"          sub_type as string,",
+						"          delivery_partners as string,",
+						"          throughput as float,",
+						"          capacity as float,",
+						"          special_information as string,",
+						"          holding_cost as float,",
+						"          inbound_handling_cost as float,",
+						"          outbound_handling_cost as float,",
+						"          longitude as decimal(0,0),",
+						"          latitude as decimal(0,0),",
+						"          updated_date as date,",
+						"          created_date as date,",
+						"          status as string,",
+						"          inbound_processing_time as decimal(0,0),",
+						"          outbound_processing_time as decimal(0,0),",
+						"          type as integer,",
+						"          transfer_inbound_processing_time as double,",
+						"          transfer_outbound_processing_time as double,",
+						"          transfer_inbound_handling_cost as double,",
+						"          transfer_outbound_handling_cost as double,",
+						"          tenant_id as string,",
+						"          organization_id as string,",
+						"          business_unit_id as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> LocationsTable",
+						"source(output(",
+						"          id as integer,",
+						"          name as string,",
+						"          created_date as timestamp,",
+						"          updated_date as timestamp",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> EnumTypeDB",
+						"source(output(",
+						"          id as integer,",
+						"          enum_type_id as integer,",
+						"          value_id as integer,",
+						"          value as string,",
+						"          created_date as timestamp,",
+						"          updated_date as timestamp",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> EnumValue",
+						"source(output(",
+						"          id as integer,",
+						"          name as string,",
+						"          created_date as timestamp,",
+						"          updated_date as timestamp,",
+						"          business_unit_id as string,",
+						"          organization_id as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> operationalprofile",
+						"FilterBusinessUnit select(mapColumn(",
+						"          business_unit_id = id,",
+						"          tenant_id,",
+						"          organization_id = parent_id,",
+						"          bu_tenant_hierarchy_code = tenant_hierarchy_code",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> THTSelected",
+						"selectpivotcolumns, joinORGTHTD join({Business ID} == bu_tenant_hierarchy_code",
+						"     && {Organization ID} == org_tenant_hierarchy_code,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> JoinTHT",
+						"selectvalidrowcols alterRow(upsertIf(true())) ~> AlterRow1",
+						"LocationsTable select(mapColumn(",
+						"          location_id = id,",
+						"          location_code,",
+						"          name,",
+						"          business_unit_id,",
+						"          organization_id",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> LocationsSelected",
+						"JoinTHT, LocationsSelected join({Location Code} == location_code",
+						"     && THTSelected@business_unit_id == LocationsSelected@business_unit_id",
+						"     && THTSelected@organization_id == LocationsSelected@organization_id,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> JoinLocationsTable",
+						"FilterEnumLocationMetricType, EnumValue join(EnumTypeDB@id == enum_type_id,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> JoinEnumLocationMetricType",
+						"EnumTypeDB filter(name=='location_staffing') ~> FilterEnumLocationMetricType",
+						"JoinLocationsTable, RenameEnumBranches join(location_metric_type == value,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> JoinLocationMetricTypeEnum",
+						"TenantHeirarchyTable filter(tenant_hierarchy_type==3) ~> FilterBusinessUnit",
+						"staffing unpivot(output(",
+						"          location_metric_type as string,",
+						"          {Units per Hour} as float,",
+						"          {Max FTE Regular Hours} as float,",
+						"          {Min FTE Regular Hours} as float,",
+						"          {Max Temp Regular Hours} as float,",
+						"          {Min Temp Regular Hours} as float,",
+						"          {Max FTE Overtime Hours} as float,",
+						"          {Max Temp Overtime Hours} as float,",
+						"          {Regular FTE Wage} as float,",
+						"          {Regular Temp Wage} as float,",
+						"          {Overtime FTE Wage} as float,",
+						"          {Overtime Temp Wage} as float",
+						"     ),",
+						"     ungroupBy(Date,",
+						"          {Organization ID},",
+						"          {Business ID},",
+						"          {Location Code},",
+						"          {Staffing Profile},",
+						"          file_name),",
+						"     lateral: true,",
+						"     ignoreNullPivots: false) ~> Unpivot",
+						"operationalprofile select(mapColumn(",
+						"          profile_id = id,",
+						"          name,",
+						"          business_unit_id,",
+						"          organization_id",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectoperationalprofile",
+						"JoinLocationMetricTypeEnum, selectoperationalprofile join({Staffing Profile} == selectoperationalprofile@name",
+						"     && THTSelected@organization_id == selectoperationalprofile@organization_id",
+						"     && THTSelected@business_unit_id == selectoperationalprofile@business_unit_id,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> joinoperationalprofile",
+						"TenantHeirarchyTable filter(tenant_hierarchy_type==2) ~> FIlterOrgRecords",
+						"FIlterOrgRecords select(mapColumn(",
+						"          org_id = id,",
+						"          org_tenant_hierarchy_code = tenant_hierarchy_code",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectOrgRecords",
+						"THTSelected, selectOrgRecords join(organization_id == org_id,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> joinORGTHTD",
+						"joinoperationalprofile assert(expectTrue(not(isNull(THTSelected@organization_id)) && not(isNull(THTSelected@business_unit_id)), false, 'ORGBUNOTEXISTS', null, 'organization and business unit id doesnt match with existing records'),",
+						"     expectTrue(not(isNull(location_id)), false, 'LocationNotExists', not(isNull(THTSelected@business_unit_id)), 'Location Code Not Matching With Existing Records'),",
+						"     expectTrue(not(isNull(profile_id)), false, 'ProfileNotExists', not(isNull(THTSelected@business_unit_id)), 'Operational Profile DOesn'),",
+						"     expectTrue(not(isNull(enum_value_id)), false, 'EnumValueError', not(isNull(THTSelected@business_unit_id))),",
+						"     expectTrue(iif(isNull(location_metric_value),true(),not(isNull(toFloat(location_metric_value)))), false, 'NonNumericValuesFound')) ~> assertBudgetStaffing",
+						"Unpivot select(mapColumn(",
+						"          Date,",
+						"          {Organization ID},",
+						"          {Business ID},",
+						"          {Location Code},",
+						"          {Staffing Profile},",
+						"          file_name,",
+						"          location_metric_type,",
+						"          location_metric_value = {Units per Hour}",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectpivotcolumns",
+						"deriveErrors split(isNull(validation_errors),",
+						"     disjoint: false) ~> splitValidationRows@(ValidRows, ValidationFailedRows)",
+						"assertBudgetStaffing derive(validation_errors = assertErrorMessages(),",
+						"          failedfilename = replace($file_path,'Radial','faileduploads')) ~> deriveErrors",
+						"derivedColumn1 pivot(groupBy({Organization ID},",
+						"          Date,",
+						"          {Business ID},",
+						"          {Location Code},",
+						"          {Staffing Profile},",
+						"          validation_errors,",
+						"          failedfilename),",
+						"     pivotBy(value),",
+						"     {} = sum(location_metric_value),",
+						"     columnNaming: '$N$V',",
+						"     lateral: true) ~> pivot1",
+						"splitValidationRows@ValidRows select(mapColumn(",
+						"          Date,",
+						"          location_metric_type,",
+						"          location_metric_value,",
+						"          business_unit_id = splitValidationRows@ValidRows@business_unit_id,",
+						"          tenant_id,",
+						"          organization_id = splitValidationRows@ValidRows@organization_id,",
+						"          location_id,",
+						"          enum_type_id,",
+						"          operational_profile_id = profile_id,",
+						"          validation_errors,",
+						"          enum_value_id",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectvalidrowcols",
+						"JoinEnumLocationMetricType select(mapColumn(",
+						"          enum_type_id = EnumTypeDB@id,",
+						"          name,",
+						"          enum_value_id = EnumValue@id,",
+						"          value_id,",
+						"          value",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> RenameEnumBranches",
+						"splitValidationRows@ValidationFailedRows derive(validation_errors = toString(validation_errors)) ~> derivedColumn1",
+						"pivot1 derive({Max FTE Overtime Hours} = toDouble(byName('Max FTE Overtime Hours')),",
+						"          {Max FTE Regular Hours} = toDouble(byName('Max FTE Regular Hours')),",
+						"          {Max Temp Overtime Hours} = toDouble(byName('Max Temp Overtime Hours')),",
+						"          {Max Temp Regular Hours} = toDouble(byName('Max Temp Regular Hours')),",
+						"          {Min FTE Regular Hours} = toDouble(byName('Min FTE Regular Hours')),",
+						"          {Min Temp Regular Hours} = toDouble(byName('Min Temp Regular Hours')),",
+						"          {Overtime FTE Wage} = toDouble(byName('Overtime FTE Wage')),",
+						"          {Overtime Temp Wage} = toDouble(byName('Overtime Temp Wage')),",
+						"          {Regular FTE Wage} = toDouble(byName('Regular FTE Wage')),",
+						"          {Regular Temp Wage} = toDouble(byName('Regular Temp Wage')),",
+						"          {Units per Hour} = toDouble(byName('Units per Hour'))) ~> MapDrifted1",
+						"AlterRow1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          id as integer,",
+						"          business_unit_id as string,",
+						"          organization_id as string,",
+						"          location_id as integer,",
+						"          date as date,",
+						"          location_metric_value as decimal(0,0),",
+						"          created_date as timestamp,",
+						"          updated_date as timestamp,",
+						"          enum_value_id as integer,",
+						"          enum_type_id as integer,",
+						"          operational_profile_id as integer",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:false,",
+						"     updateable:false,",
+						"     upsertable:true,",
+						"     keys:['location_id','date','enum_value_id'],",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          business_unit_id,",
+						"          organization_id,",
+						"          location_id,",
+						"          date = Date,",
+						"          location_metric_value,",
+						"          enum_value_id,",
+						"          enum_type_id,",
+						"          operational_profile_id",
+						"     )) ~> WriteToDatabase",
+						"MapDrifted1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     rowUrlColumn:'failedfilename',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> sinkfailedrows"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_current_backlog')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "main"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "CURRENT_BACKLOG_RAW",
+								"type": "DatasetReference"
+							},
+							"name": "currentbacklog"
+						},
+						{
+							"dataset": {
+								"referenceName": "tenant_heirarchy_table",
+								"type": "DatasetReference"
+							},
+							"name": "tenantheirarchydetail"
+						},
+						{
+							"dataset": {
+								"referenceName": "locations",
+								"type": "DatasetReference"
+							},
+							"name": "locationsjoin"
+						},
+						{
+							"dataset": {
+								"referenceName": "fulfillment_services",
+								"type": "DatasetReference"
+							},
+							"name": "fulfillmentservices"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "current_backlog_table",
+								"type": "DatasetReference"
+							},
+							"name": "currentbacklogtable"
+						}
+					],
+					"transformations": [
+						{
+							"name": "derivebuname"
+						},
+						{
+							"name": "filteractiverows"
+						},
+						{
+							"name": "selectthd"
+						},
+						{
+							"name": "jointhdselect"
+						},
+						{
+							"name": "selectlocations"
+						},
+						{
+							"name": "joinlocationsselected"
+						},
+						{
+							"name": "fulfillmentserviceselected"
+						},
+						{
+							"name": "joinfulfillmentservicesselected"
+						},
+						{
+							"name": "AlterRow1"
+						},
+						{
+							"name": "FilterActive"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          Brand as string,",
+						"          {Fulfillment Location} as string,",
+						"          {Backlog Date} as date,",
+						"          {Open Backlog Units} as long,",
+						"          {Open Backlog Orders} as long,",
+						"          {Average UPO} as float,",
+						"          {Ship Via} as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     enableCdc: true,",
+						"     mode: 'read',",
+						"     skipInitialLoad: false,",
+						"     rowUrlColumn: 'file_name') ~> currentbacklog",
+						"source(output(",
+						"          id as string,",
+						"          tenant_hierarchy_type as integer,",
+						"          name as string,",
+						"          contact_name as string,",
+						"          email as string,",
+						"          phone as string,",
+						"          street_address_1 as string,",
+						"          street_address_2 as string,",
+						"          city as string,",
+						"          state as string,",
+						"          zip as integer,",
+						"          country as string,",
+						"          active as boolean,",
+						"          tenant_id as string,",
+						"          created_date as timestamp,",
+						"          updated_date as timestamp,",
+						"          parent_id as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> tenantheirarchydetail",
+						"source(output(",
+						"          id as integer,",
+						"          location_code as string,",
+						"          name as string,",
+						"          address as string,",
+						"          city as string,",
+						"          state as string,",
+						"          zip as string,",
+						"          country as string,",
+						"          sub_type as string,",
+						"          delivery_partners as string,",
+						"          throughput as float,",
+						"          capacity as float,",
+						"          special_information as string,",
+						"          holding_cost as float,",
+						"          inbound_handling_cost as float,",
+						"          outbound_handling_cost as float,",
+						"          longitude as decimal(0,0),",
+						"          latitude as decimal(0,0),",
+						"          updated_date as date,",
+						"          created_date as date,",
+						"          status as string,",
+						"          inbound_processing_time as decimal(0,0),",
+						"          outbound_processing_time as decimal(0,0),",
+						"          type as integer,",
+						"          transfer_inbound_processing_time as double,",
+						"          transfer_outbound_processing_time as double,",
+						"          transfer_inbound_handling_cost as double,",
+						"          transfer_outbound_handling_cost as double,",
+						"          tenant_id as string,",
+						"          organization_id as string,",
+						"          business_unit_id as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> locationsjoin",
+						"source(output(",
+						"          id as integer,",
+						"          fulfillment_service_code as string,",
+						"          service_name as string,",
+						"          service_type as string,",
+						"          delivery_speed_value as float,",
+						"          delivery_speed_unit as string,",
+						"          service_radius_value as float,",
+						"          service_radius_unit as string,",
+						"          service_charge as float,",
+						"          deployment_type as string,",
+						"          created_date as timestamp,",
+						"          updated_date as timestamp,",
+						"          business_unit_id as string,",
+						"          organization_id as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> fulfillmentservices",
+						"currentbacklog derive(business_unit_name = split(split(split(file_name,'/')[4],'.')[1],'_')[1],",
+						"          testregex = regexReplace(upper({Fulfillment Location}),'[^0-9A-Z]','')) ~> derivebuname",
+						"tenantheirarchydetail filter(tenant_hierarchy_type==3) ~> filteractiverows",
+						"filteractiverows select(mapColumn(",
+						"          business_unit_id = id,",
+						"          name,",
+						"          tenant_id,",
+						"          organization_id = parent_id",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectthd",
+						"derivebuname, selectthd join(business_unit_name == name,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> jointhdselect",
+						"FilterActive select(mapColumn(",
+						"          location_id = id,",
+						"          location_code,",
+						"          name,",
+						"          tenant_id,",
+						"          organization_id,",
+						"          business_unit_id",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectlocations",
+						"jointhdselect, selectlocations join(regexReplace(upper({Fulfillment Location}), '[^A-Z0-9]','') == regexReplace(upper(selectlocations@name),'[^0-9A-Z]','')",
+						"     && selectthd@business_unit_id == selectlocations@business_unit_id",
+						"     && selectthd@organization_id == selectlocations@organization_id,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> joinlocationsselected",
+						"fulfillmentservices select(mapColumn(",
+						"          fulfillment_service_id = id,",
+						"          service_name,",
+						"          business_unit_id,",
+						"          organization_id",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> fulfillmentserviceselected",
+						"joinlocationsselected, fulfillmentserviceselected join(concat(upper({Ship Via}),'_RADIAL') == upper(service_name),",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> joinfulfillmentservicesselected",
+						"joinfulfillmentservicesselected alterRow(upsertIf(true())) ~> AlterRow1",
+						"locationsjoin filter(status=='Active') ~> FilterActive",
+						"AlterRow1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          organization_id as string,",
+						"          business_unit_id as string,",
+						"          location_id as integer,",
+						"          fulfillment_service_id as integer,",
+						"          backlog_date as date,",
+						"          open_backlog_units as long,",
+						"          open_backlog_orders as long,",
+						"          average_upo as float,",
+						"          created_date as timestamp,",
+						"          updated_date as timestamp",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:false,",
+						"     updateable:false,",
+						"     upsertable:true,",
+						"     keys:['location_id','backlog_date','fulfillment_service_id'],",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          organization_id = selectthd@organization_id,",
+						"          business_unit_id = selectthd@business_unit_id,",
+						"          location_id,",
+						"          fulfillment_service_id,",
+						"          backlog_date = {Backlog Date},",
+						"          open_backlog_units = {Open Backlog Units},",
+						"          open_backlog_orders = {Open Backlog Orders},",
+						"          average_upo = {Average UPO}",
+						"     )) ~> currentbacklogtable"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_daily_actuals')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "main"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "DAILY_ACTUALS_RAW",
+								"type": "DatasetReference"
+							},
+							"name": "dailyactuals"
+						},
+						{
+							"dataset": {
+								"referenceName": "tenant_heirarchy_table",
+								"type": "DatasetReference"
+							},
+							"name": "tenantheirarchydetail"
+						},
+						{
+							"dataset": {
+								"referenceName": "locations",
+								"type": "DatasetReference"
+							},
+							"name": "locationsjoin"
+						},
+						{
+							"dataset": {
+								"referenceName": "fulfillment_services",
+								"type": "DatasetReference"
+							},
+							"name": "fulfillmentservices"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "current_backlog_table",
+								"type": "DatasetReference"
+							},
+							"name": "currentbacklogtable"
+						},
+						{
+							"dataset": {
+								"referenceName": "failedrowsdailyactualssftp",
+								"type": "DatasetReference"
+							},
+							"name": "failedrowssinkdailyactuals"
+						}
+					],
+					"transformations": [
+						{
+							"name": "filteractiverows"
+						},
+						{
+							"name": "selectthd"
+						},
+						{
+							"name": "jointhdselect"
+						},
+						{
+							"name": "selectlocations"
+						},
+						{
+							"name": "joinlocationsselected"
+						},
+						{
+							"name": "fulfillmentserviceselected"
+						},
+						{
+							"name": "joinfulfillmentservicesselected"
+						},
+						{
+							"name": "AlterRow1"
+						},
+						{
+							"name": "filterordrecords"
+						},
+						{
+							"name": "selectorgcols"
+						},
+						{
+							"name": "joinTHTDBranches"
+						},
+						{
+							"name": "validationrows"
+						},
+						{
+							"name": "derivedColumn1"
+						},
+						{
+							"name": "splitvalidationrows"
+						},
+						{
+							"name": "select2"
+						}
+					],
+					"scriptLines": [
+						"parameters{",
+						"     file_path as string ('Radial/DailyActuals/sample_file.csv')",
+						"}",
+						"source(output(",
+						"          {Organization ID} as string,",
+						"          {Business ID} as string,",
+						"          {Location Code} as string,",
+						"          {Fulfillment Service} as string,",
+						"          Date as date 'MM/dd/yyyy',",
+						"          {Actual Units Received} as string,",
+						"          {Actual Orders Received} as string,",
+						"          {Actual Units Shipped} as string,",
+						"          {Actual Orders Shipped} as string,",
+						"          {Actual Packages Shipped} as string,",
+						"          {Open Backlog Units} as double '###,###,000.###',",
+						"          {Open Backlog Orders} as double '###,###,000.###',",
+						"          {Average Open UPO} as float",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     rowUrlColumn: 'file_name',",
+						"     wildcardPaths:[($file_path)],",
+						"     mode: 'read') ~> dailyactuals",
+						"source(output(",
+						"          id as string,",
+						"          tenant_hierarchy_type as integer,",
+						"          name as string,",
+						"          contact_name as string,",
+						"          email as string,",
+						"          phone as string,",
+						"          street_address_1 as string,",
+						"          street_address_2 as string,",
+						"          city as string,",
+						"          state as string,",
+						"          zip as integer,",
+						"          country as string,",
+						"          active as boolean,",
+						"          tenant_id as string,",
+						"          created_date as timestamp,",
+						"          updated_date as timestamp,",
+						"          parent_id as string,",
+						"          tenant_hierarchy_code as string,",
+						"          isdeleted as boolean,",
+						"          updated_by_user_id as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> tenantheirarchydetail",
+						"source(output(",
+						"          id as integer,",
+						"          location_code as string,",
+						"          name as string,",
+						"          address as string,",
+						"          city as string,",
+						"          state as string,",
+						"          zip as string,",
+						"          country as string,",
+						"          sub_type as string,",
+						"          delivery_partners as string,",
+						"          throughput as float,",
+						"          capacity as float,",
+						"          special_information as string,",
+						"          holding_cost as float,",
+						"          inbound_handling_cost as float,",
+						"          outbound_handling_cost as float,",
+						"          longitude as decimal(0,0),",
+						"          latitude as decimal(0,0),",
+						"          updated_date as date,",
+						"          created_date as date,",
+						"          status as string,",
+						"          inbound_processing_time as decimal(0,0),",
+						"          outbound_processing_time as decimal(0,0),",
+						"          type as integer,",
+						"          transfer_inbound_processing_time as double,",
+						"          transfer_outbound_processing_time as double,",
+						"          transfer_inbound_handling_cost as double,",
+						"          transfer_outbound_handling_cost as double,",
+						"          tenant_id as string,",
+						"          organization_id as string,",
+						"          business_unit_id as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> locationsjoin",
+						"source(output(",
+						"          id as integer,",
+						"          fulfillment_service_code as string,",
+						"          service_name as string,",
+						"          service_type as string,",
+						"          delivery_speed_value as float,",
+						"          delivery_speed_unit as string,",
+						"          service_radius_value as float,",
+						"          service_radius_unit as string,",
+						"          service_charge as float,",
+						"          deployment_type as string,",
+						"          created_date as timestamp,",
+						"          updated_date as timestamp,",
+						"          business_unit_id as string,",
+						"          organization_id as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> fulfillmentservices",
+						"tenantheirarchydetail filter(tenant_hierarchy_type==3) ~> filteractiverows",
+						"filteractiverows select(mapColumn(",
+						"          business_unit_id = id,",
+						"          name,",
+						"          tenant_id,",
+						"          parent_id,",
+						"          bu_tenant_hierarchy_code = tenant_hierarchy_code",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectthd",
+						"dailyactuals, joinTHTDBranches join({Business ID} == bu_tenant_hierarchy_code",
+						"     && {Organization ID} == org_tenant_hierarchy_code,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> jointhdselect",
+						"locationsjoin select(mapColumn(",
+						"          location_id = id,",
+						"          location_code,",
+						"          name,",
+						"          tenant_id,",
+						"          organization_id,",
+						"          business_unit_id",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectlocations",
+						"jointhdselect, selectlocations join({Location Code} == location_code",
+						"     && selectthd@business_unit_id == selectlocations@business_unit_id",
+						"     && parent_id == selectlocations@organization_id,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> joinlocationsselected",
+						"fulfillmentservices select(mapColumn(",
+						"          fulfillment_service_id = id,",
+						"          service_name,",
+						"          business_unit_id,",
+						"          organization_id",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> fulfillmentserviceselected",
+						"joinlocationsselected, fulfillmentserviceselected join({Fulfillment Service} == service_name",
+						"     && selectlocations@business_unit_id == fulfillmentserviceselected@business_unit_id",
+						"     && parent_id == fulfillmentserviceselected@organization_id,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> joinfulfillmentservicesselected",
+						"splitvalidationrows@validrows alterRow(upsertIf(true())) ~> AlterRow1",
+						"tenantheirarchydetail filter(tenant_hierarchy_type ==2) ~> filterordrecords",
+						"filterordrecords select(mapColumn(",
+						"          organization_id = id,",
+						"          contact_name,",
+						"          tenant_id,",
+						"          org_tenant_hierarchy_code = tenant_hierarchy_code",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectorgcols",
+						"selectthd, selectorgcols join(parent_id == organization_id,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> joinTHTDBranches",
+						"joinfulfillmentservicesselected assert(expectTrue(not(isNull(selectthd@business_unit_id)) && not(isNull(selectorgcols@organization_id)), false, 'buordnotexists', null, 'Business Unit ID and Org ID doesnot match with existing records'),",
+						"     expectTrue(not(isNull(location_id)), false, 'locationnotexists', not(isNull(selectthd@business_unit_id)) && not(isNull(selectorgcols@organization_id)), 'location code doesnt match with existing records'),",
+						"     expectTrue(not(isNull(fulfillment_service_id)), false, 'fulfillmentservicenotexists', not(isNull(selectthd@business_unit_id)) && not(isNull(selectorgcols@organization_id)), 'fulfillment services doesnt exist')) ~> validationrows",
+						"validationrows derive(validation_errors = assertErrorMessages(),",
+						"          failed_file_name = replace($file_path,'Radial','faileduploads')) ~> derivedColumn1",
+						"select2 split(isNull(validation_errors),",
+						"     disjoint: false) ~> splitvalidationrows@(validrows, validationfailedrows)",
+						"derivedColumn1 select(mapColumn(",
+						"          {Organization ID},",
+						"          {Business ID},",
+						"          {Location Code},",
+						"          {Fulfillment Service},",
+						"          Date,",
+						"          {Actual Units Received},",
+						"          {Actual Orders Received},",
+						"          {Actual Units Shipped},",
+						"          {Actual Orders Shipped},",
+						"          {Actual Packages Shipped},",
+						"          {Open Backlog Units},",
+						"          {Open Backlog Orders},",
+						"          {Average Open UPO},",
+						"          file_name,",
+						"          business_unit_id = selectthd@business_unit_id,",
+						"          tenant_id = selectthd@tenant_id,",
+						"          organization_id = selectorgcols@organization_id,",
+						"          location_id,",
+						"          fulfillment_service_id,",
+						"          validation_errors,",
+						"          failed_file_name",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select2",
+						"AlterRow1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          organization_id as string,",
+						"          business_unit_id as string,",
+						"          location_id as integer,",
+						"          fulfillment_service_id as integer,",
+						"          backlog_date as date,",
+						"          open_backlog_units as long,",
+						"          open_backlog_orders as long,",
+						"          average_upo as float,",
+						"          created_date as timestamp,",
+						"          updated_date as timestamp",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:false,",
+						"     updateable:false,",
+						"     upsertable:true,",
+						"     keys:['location_id','backlog_date','fulfillment_service_id'],",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          organization_id,",
+						"          business_unit_id,",
+						"          location_id,",
+						"          fulfillment_service_id,",
+						"          backlog_date = Date,",
+						"          open_backlog_units = {Open Backlog Units},",
+						"          open_backlog_orders = {Open Backlog Orders},",
+						"          average_upo = {Average Open UPO}",
+						"     )) ~> currentbacklogtable",
+						"splitvalidationrows@validationfailedrows sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     rowUrlColumn:'failed_file_name',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> failedrowssinkdailyactuals"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_demand_forecast_core')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "DEMAND_FORECAST_RAW",
+								"type": "DatasetReference"
+							},
+							"name": "demandforecastraw"
+						},
+						{
+							"dataset": {
+								"referenceName": "item",
+								"type": "DatasetReference"
+							},
+							"name": "item"
+						},
+						{
+							"dataset": {
+								"referenceName": "locations",
+								"type": "DatasetReference"
+							},
+							"name": "locations"
+						},
+						{
+							"dataset": {
+								"referenceName": "micro_area",
+								"type": "DatasetReference"
+							},
+							"name": "microarea"
+						},
+						{
+							"dataset": {
+								"referenceName": "customertypes",
+								"type": "DatasetReference"
+							},
+							"name": "customertype"
+						},
+						{
+							"dataset": {
+								"referenceName": "fulfillment_services",
+								"type": "DatasetReference"
+							},
+							"name": "fulfillmentservices"
+						},
+						{
+							"dataset": {
+								"referenceName": "tenant_heirarchy_table",
+								"type": "DatasetReference"
+							},
+							"name": "tenantheirarchydetail"
+						},
+						{
+							"dataset": {
+								"referenceName": "importhistory",
+								"type": "DatasetReference"
+							},
+							"name": "importhistory"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "forecast",
+								"type": "DatasetReference"
+							},
+							"name": "forecast"
+						}
+					],
+					"transformations": [
+						{
+							"name": "derivebu"
+						},
+						{
+							"name": "joinitems"
+						},
+						{
+							"name": "selectitems"
+						},
+						{
+							"name": "selectlocations"
+						},
+						{
+							"name": "selectmicroarea"
+						},
+						{
+							"name": "selectcustomertype"
+						},
+						{
+							"name": "selectfulfillmentservicetype"
+						},
+						{
+							"name": "joinlocations"
+						},
+						{
+							"name": "joinmicroarea"
+						},
+						{
+							"name": "joincustomertypes"
+						},
+						{
+							"name": "joinfulfillmentservice"
+						},
+						{
+							"name": "jointhtd"
+						},
+						{
+							"name": "selectTHTD"
+						},
+						{
+							"name": "filterbu"
+						},
+						{
+							"name": "selectimporthistory"
+						},
+						{
+							"name": "joinimporthistory"
+						},
+						{
+							"name": "derivebuandorg"
+						},
+						{
+							"name": "filtertransaction"
+						}
+					],
+					"scriptLines": [
+						"parameters{",
+						"     file_path as string ('/DEV/Upload/DemandForecast/10.txt'),",
+						"     mode as string ('UX-Upload'),",
+						"     transaction_id as string ('10')",
+						"}",
+						"source(output(",
+						"          {Item ID*} as string,",
+						"          {Area ID (3 Digit Zip Code)*} as string,",
+						"          {Customer Type} as string,",
+						"          {Fulfillment Service*} as string,",
+						"          {Forecast Start Date*} as date 'yyyy-MM-dd',",
+						"          {Forecast End Date*} as date 'yyyy-MM-dd',",
+						"          {Low Demand Quantity} as string,",
+						"          {Consensus Demand Quantity} as string,",
+						"          {High Demand Quantity} as string,",
+						"          {Fulfillment Location ID} as string,",
+						"          {Fixed Fulfillment} as string",
+						"     ),",
+						"     allowSchemaDrift: false,",
+						"     validateSchema: true,",
+						"     ignoreNoFilesFound: false,",
+						"     rowUrlColumn: 'file_name',",
+						"     wildcardPaths:[($file_path)]) ~> demandforecastraw",
+						"source(output(",
+						"          id as integer,",
+						"          item_code as string,",
+						"          description as string,",
+						"          short_description as string,",
+						"          department as string,",
+						"          sub_department as string,",
+						"          class as string,",
+						"          sub_class as string,",
+						"          style as string,",
+						"          color as string,",
+						"          size as string,",
+						"          size_second as string,",
+						"          sku_lifecycle_status as integer,",
+						"          product_division as string,",
+						"          product_family as string,",
+						"          measurement_unit as string,",
+						"          unit_cost as float,",
+						"          unit_volume as float,",
+						"          unit_weight as float,",
+						"          unit_cube as float,",
+						"          units_per_pallet as float,",
+						"          uom_conversion_factor as float,",
+						"          distribution_channel as string,",
+						"          item_handling_type as string,",
+						"          item_unit_price as float,",
+						"          minimum_sales_qty as float,",
+						"          birth_year as short,",
+						"          birth_month as short,",
+						"          expiration_year as short,",
+						"          expiration_month as short,",
+						"          created_date as timestamp,",
+						"          updated_date as timestamp,",
+						"          business_unit_id as string,",
+						"          organization_id as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> item",
+						"source(output(",
+						"          id as integer,",
+						"          location_code as string,",
+						"          name as string,",
+						"          address as string,",
+						"          city as string,",
+						"          state as string,",
+						"          zip as string,",
+						"          country as string,",
+						"          sub_type as string,",
+						"          delivery_partners as string,",
+						"          throughput as float,",
+						"          capacity as float,",
+						"          special_information as string,",
+						"          holding_cost as float,",
+						"          inbound_handling_cost as float,",
+						"          outbound_handling_cost as float,",
+						"          longitude as decimal(0,0),",
+						"          latitude as decimal(0,0),",
+						"          updated_date as date,",
+						"          created_date as date,",
+						"          status as string,",
+						"          inbound_processing_time as decimal(0,0),",
+						"          outbound_processing_time as decimal(0,0),",
+						"          type as integer,",
+						"          transfer_inbound_processing_time as double,",
+						"          transfer_outbound_processing_time as double,",
+						"          transfer_inbound_handling_cost as double,",
+						"          transfer_outbound_handling_cost as double,",
+						"          tenant_id as string,",
+						"          organization_id as string,",
+						"          business_unit_id as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> locations",
+						"source(output(",
+						"          id as integer,",
+						"          micro_area_code as string,",
+						"          description as string,",
+						"          primary_fulfillment_location as integer,",
+						"          attribute_1 as string,",
+						"          attribute_2 as string,",
+						"          created_date as timestamp,",
+						"          updated_date as timestamp",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> microarea",
+						"source(output(",
+						"          id as integer,",
+						"          customer_type_code as string,",
+						"          type as string,",
+						"          description as string,",
+						"          created_date as timestamp,",
+						"          updated_date as timestamp,",
+						"          business_unit_id as string,",
+						"          organization_id as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> customertype",
+						"source(output(",
+						"          id as integer,",
+						"          fulfillment_service_code as string,",
+						"          service_name as string,",
+						"          service_type as string,",
+						"          delivery_speed_value as float,",
+						"          delivery_speed_unit as string,",
+						"          service_radius_value as float,",
+						"          service_radius_unit as string,",
+						"          service_charge as float,",
+						"          deployment_type as string,",
+						"          created_date as timestamp,",
+						"          updated_date as timestamp,",
+						"          business_unit_id as string,",
+						"          organization_id as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> fulfillmentservices",
+						"source(output(",
+						"          id as string,",
+						"          tenant_hierarchy_type as integer,",
+						"          name as string,",
+						"          contact_name as string,",
+						"          email as string,",
+						"          phone as string,",
+						"          street_address_1 as string,",
+						"          street_address_2 as string,",
+						"          city as string,",
+						"          state as string,",
+						"          zip as integer,",
+						"          country as string,",
+						"          active as boolean,",
+						"          tenant_id as string,",
+						"          created_date as timestamp,",
+						"          updated_date as timestamp,",
+						"          parent_id as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> tenantheirarchydetail",
+						"source(output(",
+						"          id as integer,",
+						"          original_file_name as string,",
+						"          user_id as string,",
+						"          status_enum_value_id as integer,",
+						"          processed_time as timestamp,",
+						"          errors as string,",
+						"          business_unit_id as string,",
+						"          organization_id as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> importhistory",
+						"demandforecastraw derive(business_unit_name = split(split($file_path,\"/\")[5],'_')[1],",
+						"          fixed_fulfillment = 12,",
+						"          transaction_id = iif($mode=='UX-Upload', toInteger(split(split($file_path,'/')[5],'.')[1]), 0)) ~> derivebu",
+						"derivebuandorg, selectitems join({Item ID*} == item_code",
+						"     && derivebuandorg@business_unit_id == selectitems@business_unit_id",
+						"     && derivebuandorg@organization_id == selectitems@organization_id,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> joinitems",
+						"item select(mapColumn(",
+						"          item_id = id,",
+						"          item_code,",
+						"          business_unit_id,",
+						"          organization_id",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectitems",
+						"locations select(mapColumn(",
+						"          fulfillment_location = id,",
+						"          location_code,",
+						"          business_unit_id,",
+						"          organization_id",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectlocations",
+						"microarea select(mapColumn(",
+						"          area_id = id,",
+						"          micro_area_code",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectmicroarea",
+						"customertype select(mapColumn(",
+						"          customer_type = id,",
+						"          customer_type_code = type,",
+						"          business_unit_id,",
+						"          organization_id",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectcustomertype",
+						"fulfillmentservices select(mapColumn(",
+						"          fulfillment_service = id,",
+						"          service_name,",
+						"          business_unit_id,",
+						"          organization_id",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectfulfillmentservicetype",
+						"joinitems, selectlocations join({Fulfillment Location ID} == location_code",
+						"     && derivebuandorg@business_unit_id == selectlocations@business_unit_id",
+						"     && derivebuandorg@organization_id == selectlocations@organization_id,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> joinlocations",
+						"joinlocations, selectmicroarea join({Area ID (3 Digit Zip Code)*} == micro_area_code,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> joinmicroarea",
+						"joinmicroarea, selectcustomertype join({Customer Type} == customer_type_code",
+						"     && derivebuandorg@business_unit_id == selectcustomertype@business_unit_id",
+						"     && derivebuandorg@organization_id == selectcustomertype@organization_id,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> joincustomertypes",
+						"joincustomertypes, selectfulfillmentservicetype join({Fulfillment Service*} == service_name",
+						"     && derivebuandorg@business_unit_id == selectfulfillmentservicetype@business_unit_id",
+						"     && derivebuandorg@organization_id == selectfulfillmentservicetype@organization_id,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> joinfulfillmentservice",
+						"derivebu, selectTHTD join(business_unit_name == bu_name,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> jointhtd",
+						"filterbu select(mapColumn(",
+						"          ftp_bu_id = id,",
+						"          bu_name = name,",
+						"          tenant_id,",
+						"          ftp_organization_id = parent_id",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectTHTD",
+						"tenantheirarchydetail filter(tenant_hierarchy_type==3) ~> filterbu",
+						"filtertransaction select(mapColumn(",
+						"          ih_id = id,",
+						"          ih_business_unit_id = business_unit_id,",
+						"          ih_organization_id = organization_id",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectimporthistory",
+						"jointhtd, selectimporthistory join(transaction_id == ih_id,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> joinimporthistory",
+						"joinimporthistory derive(business_unit_id = iif($mode=='UX-Upload',ih_business_unit_id,ftp_bu_id),",
+						"          organization_id = iif($mode=='UX-Upload',ih_organization_id,ftp_organization_id),",
+						"          area_hierarchy_id = 1) ~> derivebuandorg",
+						"importhistory filter(id == toInteger($transaction_id)) ~> filtertransaction",
+						"joinfulfillmentservice sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          id as integer,",
+						"          item_id as integer,",
+						"          area_id as integer,",
+						"          customer_type as integer,",
+						"          fulfillment_service as integer,",
+						"          forecast_start_date as timestamp,",
+						"          forecast_end_date as timestamp,",
+						"          fulfillment_location as integer,",
+						"          created_date as timestamp,",
+						"          updated_date as timestamp,",
+						"          organization_id as string,",
+						"          business_unit_id as string,",
+						"          low_demand_quantity as integer,",
+						"          consensus_demand_quantity as integer,",
+						"          high_demand_quantity as integer,",
+						"          fixed_fulfillment as boolean,",
+						"          area_hierarchy_id as integer",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     postSQLs:['\\n'],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          item_id,",
+						"          area_id,",
+						"          customer_type,",
+						"          fulfillment_service,",
+						"          forecast_start_date = {Forecast Start Date*},",
+						"          forecast_end_date = {Forecast End Date*},",
+						"          fulfillment_location,",
+						"          organization_id,",
+						"          business_unit_id,",
+						"          low_demand_quantity = {Low Demand Quantity},",
+						"          consensus_demand_quantity = {Consensus Demand Quantity},",
+						"          high_demand_quantity = {High Demand Quantity},",
+						"          fixed_fulfillment,",
+						"          area_hierarchy_id",
+						"     )) ~> forecast"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_demand_forecast_validation')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "DEMAND_FORECAST_UX_UPLOAD",
+								"type": "DatasetReference"
+							},
+							"name": "demandforecastuxupload"
+						},
+						{
+							"dataset": {
+								"referenceName": "item",
+								"type": "DatasetReference"
+							},
+							"name": "item"
+						},
+						{
+							"dataset": {
+								"referenceName": "locations",
+								"type": "DatasetReference"
+							},
+							"name": "locations"
+						},
+						{
+							"dataset": {
+								"referenceName": "micro_area",
+								"type": "DatasetReference"
+							},
+							"name": "microarea"
+						},
+						{
+							"dataset": {
+								"referenceName": "customertypes",
+								"type": "DatasetReference"
+							},
+							"name": "customertypes"
+						},
+						{
+							"dataset": {
+								"referenceName": "fulfillment_services",
+								"type": "DatasetReference"
+							},
+							"name": "fulfillmentservices"
+						},
+						{
+							"dataset": {
+								"referenceName": "importhistory",
+								"type": "DatasetReference"
+							},
+							"name": "importhistory"
+						},
+						{
+							"dataset": {
+								"referenceName": "tenant_heirarchy_table",
+								"type": "DatasetReference"
+							},
+							"name": "TenantHeirarychyDetail"
+						},
+						{
+							"dataset": {
+								"referenceName": "forecast",
+								"type": "DatasetReference"
+							},
+							"name": "demandforecastcheck"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "forecast",
+								"type": "DatasetReference"
+							},
+							"name": "validdemandforecast"
+						},
+						{
+							"dataset": {
+								"referenceName": "FailedUXUploadDemandForecast",
+								"type": "DatasetReference"
+							},
+							"name": "failedrows"
+						}
+					],
+					"transformations": [
+						{
+							"name": "validations"
+						},
+						{
+							"name": "derivations"
+						},
+						{
+							"name": "aggregationerrors"
+						},
+						{
+							"name": "join1"
+						},
+						{
+							"name": "splitvalidationrows"
+						},
+						{
+							"name": "mapissueroute"
+						},
+						{
+							"name": "RenameBackwards"
+						},
+						{
+							"name": "filterthtd"
+						},
+						{
+							"name": "joinTHTD"
+						},
+						{
+							"name": "selectimporthistory"
+						},
+						{
+							"name": "SelectColumnsMain"
+						},
+						{
+							"name": "joinitem"
+						},
+						{
+							"name": "joinlocation"
+						},
+						{
+							"name": "selectitems"
+						},
+						{
+							"name": "selectlocations"
+						},
+						{
+							"name": "selectmicroarea"
+						},
+						{
+							"name": "selectcustomertypes"
+						},
+						{
+							"name": "selectfulfillmentservice"
+						},
+						{
+							"name": "joincustomertype"
+						},
+						{
+							"name": "joinarea"
+						},
+						{
+							"name": "joinfulfillmentservice"
+						},
+						{
+							"name": "joindemandforecast"
+						},
+						{
+							"name": "deriveddemandforecast"
+						},
+						{
+							"name": "filtertemp"
+						},
+						{
+							"name": "joinExistingRecErrors"
+						},
+						{
+							"name": "outputfilenamefailed"
+						},
+						{
+							"name": "nonnumericvalsinnumericfields"
+						},
+						{
+							"name": "recordid"
+						},
+						{
+							"name": "findduplicates"
+						},
+						{
+							"name": "filtertransaction"
+						},
+						{
+							"name": "joinbuorgtransactionlocation"
+						},
+						{
+							"name": "jointransactionuorgitem"
+						},
+						{
+							"name": "jointransactionbuorgcusttype"
+						},
+						{
+							"name": "jointransactionbuorgfservice"
+						},
+						{
+							"name": "jointransactionbuorgdemandforecast"
+						},
+						{
+							"name": "selectextrecords"
+						},
+						{
+							"name": "filterrowswithvalidationerrors"
+						},
+						{
+							"name": "removeemptyrows"
+						},
+						{
+							"name": "joinImportHistoryMain"
+						},
+						{
+							"name": "derivedtransactionid"
+						},
+						{
+							"name": "selectdemandforecasts"
+						},
+						{
+							"name": "selectextrecordsload"
+						},
+						{
+							"name": "joinLoadValuesSelectCols"
+						},
+						{
+							"name": "datatypeconversions"
+						}
+					],
+					"scriptLines": [
+						"parameters{",
+						"     file_path as string ('/TEST/Upload/DemandForecast/464.xlsx'),",
+						"     transaction_id as string ('464')",
+						"}",
+						"source(output(",
+						"          {Item ID*} as string,",
+						"          {Area ID (3 Digit Zip Code)*} as string,",
+						"          {Customer Type} as string,",
+						"          {Fulfillment Service*} as string,",
+						"          {Forecast Start Date*} as date 'yyyy-MM-dd',",
+						"          {Forecast End Date*} as date 'yyyy-MM-dd',",
+						"          {Low Demand Quantity} as string,",
+						"          {Consensus Demand Quantity} as string,",
+						"          {High Demand Quantity} as string,",
+						"          {Fulfillment Location ID} as string,",
+						"          {Fixed Fulfillment} as string",
+						"     ),",
+						"     allowSchemaDrift: false,",
+						"     validateSchema: true,",
+						"     ignoreNoFilesFound: false,",
+						"     rowUrlColumn: 'file_name',",
+						"     wildcardPaths:[($file_path)]) ~> demandforecastuxupload",
+						"source(output(",
+						"          id as integer,",
+						"          item_code as string,",
+						"          description as string,",
+						"          short_description as string,",
+						"          department as string,",
+						"          sub_department as string,",
+						"          class as string,",
+						"          sub_class as string,",
+						"          style as string,",
+						"          color as string,",
+						"          size as string,",
+						"          size_second as string,",
+						"          sku_lifecycle_status as integer,",
+						"          product_division as string,",
+						"          product_family as string,",
+						"          measurement_unit as string,",
+						"          unit_cost as float,",
+						"          unit_volume as float,",
+						"          unit_weight as float,",
+						"          unit_cube as float,",
+						"          units_per_pallet as float,",
+						"          uom_conversion_factor as float,",
+						"          distribution_channel as string,",
+						"          item_handling_type as string,",
+						"          item_unit_price as float,",
+						"          minimum_sales_qty as float,",
+						"          birth_year as short,",
+						"          birth_month as short,",
+						"          expiration_year as short,",
+						"          expiration_month as short,",
+						"          created_date as timestamp,",
+						"          updated_date as timestamp,",
+						"          business_unit_id as string,",
+						"          organization_id as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> item",
+						"source(output(",
+						"          id as integer,",
+						"          location_code as string,",
+						"          name as string,",
+						"          address as string,",
+						"          city as string,",
+						"          state as string,",
+						"          zip as string,",
+						"          country as string,",
+						"          sub_type as string,",
+						"          delivery_partners as string,",
+						"          throughput as float,",
+						"          capacity as float,",
+						"          special_information as string,",
+						"          holding_cost as float,",
+						"          inbound_handling_cost as float,",
+						"          outbound_handling_cost as float,",
+						"          longitude as decimal(0,0),",
+						"          latitude as decimal(0,0),",
+						"          updated_date as date,",
+						"          created_date as date,",
+						"          status as string,",
+						"          inbound_processing_time as decimal(0,0),",
+						"          outbound_processing_time as decimal(0,0),",
+						"          type as integer,",
+						"          transfer_inbound_processing_time as double,",
+						"          transfer_outbound_processing_time as double,",
+						"          transfer_inbound_handling_cost as double,",
+						"          transfer_outbound_handling_cost as double,",
+						"          tenant_id as string,",
+						"          organization_id as string,",
+						"          business_unit_id as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> locations",
+						"source(output(",
+						"          id as integer,",
+						"          micro_area_code as string,",
+						"          description as string,",
+						"          primary_fulfillment_location as integer,",
+						"          attribute_1 as string,",
+						"          attribute_2 as string,",
+						"          created_date as timestamp,",
+						"          updated_date as timestamp",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> microarea",
+						"source(output(",
+						"          id as integer,",
+						"          customer_type_code as string,",
+						"          type as string,",
+						"          description as string,",
+						"          created_date as timestamp,",
+						"          updated_date as timestamp,",
+						"          business_unit_id as string,",
+						"          organization_id as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> customertypes",
+						"source(output(",
+						"          id as integer,",
+						"          fulfillment_service_code as string,",
+						"          service_name as string,",
+						"          service_type as string,",
+						"          delivery_speed_value as float,",
+						"          delivery_speed_unit as string,",
+						"          service_radius_value as float,",
+						"          service_radius_unit as string,",
+						"          service_charge as float,",
+						"          deployment_type as string,",
+						"          created_date as timestamp,",
+						"          updated_date as timestamp,",
+						"          business_unit_id as string,",
+						"          organization_id as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> fulfillmentservices",
+						"source(output(",
+						"          id as integer,",
+						"          original_file_name as string,",
+						"          user_id as string,",
+						"          status_enum_value_id as integer,",
+						"          processed_time as timestamp,",
+						"          errors as string,",
+						"          business_unit_id as string,",
+						"          organization_id as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> importhistory",
+						"source(output(",
+						"          id as string,",
+						"          tenant_hierarchy_type as integer,",
+						"          name as string,",
+						"          contact_name as string,",
+						"          email as string,",
+						"          phone as string,",
+						"          street_address_1 as string,",
+						"          street_address_2 as string,",
+						"          city as string,",
+						"          state as string,",
+						"          zip as integer,",
+						"          country as string,",
+						"          active as boolean,",
+						"          tenant_id as string,",
+						"          created_date as timestamp,",
+						"          updated_date as timestamp,",
+						"          parent_id as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> TenantHeirarychyDetail",
+						"source(output(",
+						"          id as integer,",
+						"          item_id as integer,",
+						"          area_id as integer,",
+						"          customer_type as integer,",
+						"          fulfillment_service as integer,",
+						"          forecast_start_date as timestamp,",
+						"          forecast_end_date as timestamp,",
+						"          fulfillment_location as integer,",
+						"          created_date as timestamp,",
+						"          updated_date as timestamp,",
+						"          organization_id as string,",
+						"          business_unit_id as string,",
+						"          low_demand_quantity as integer,",
+						"          consensus_demand_quantity as integer,",
+						"          high_demand_quantity as integer,",
+						"          fixed_fulfillment as boolean,",
+						"          area_hierarchy_id as integer",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> demandforecastcheck",
+						"removeemptyrows, selectlocations, selectitems, selectmicroarea, selectcustomertypes, selectfulfillmentservice assert(expectTrue(not(isNull(mapissueroute@Item_ID))&&\r",
+						"not(isNull(mapissueroute@Area_ID))&&\r",
+						"not(isNull(Customer_Type))&&\r",
+						"not(isNull(Fulfillment_Service))&&\r",
+						"not(isNull(Fulfillment_Location_ID)), false, 'mandatoryvalues', null, 'mandatory values missing'),",
+						"     expectExists(Fulfillment_Location_ID == location_code, false, 'locations', null, 'location code not found'),",
+						"     expectExists(mapissueroute@Item_ID == item_code, false, 'item', null, 'item code not matching'),",
+						"     expectExists(mapissueroute@Area_ID == micro_area_code, false, 'microarea', null, 'area code not matching'),",
+						"     expectExists(Fulfillment_Service == service_name, false, 'fulfillmentservices', null, 'fulfillment service type not matching'),",
+						"     expectExists(Customer_Type == type, false, 'customertype', null, 'customer type not matching'),",
+						"     expectTrue(isNull(presence), false, 'recordisnew', null, 'record already exists'),",
+						"     expectTrue(numericfieldintegrity, false, 'numericintegrity', null, 'numerical field contains non numeric values'),",
+						"     expectTrue(notduplicatedrow, false, 'dataduplicated', null, 'duplicate records detected in upload')) ~> validations",
+						"RenameBackwards derive(validation_errors = assertErrorMessages(),",
+						"          transaction_id = toInteger($transaction_id),",
+						"          sink_file_name = replace(file_name,'.xlsx','.txt'),",
+						"          file_name_failed_rows = replace(file_name,'/Upload/','/FailedTransactions/'),",
+						"          fixed_fulfillment = 12) ~> derivations",
+						"derivations aggregate(groupBy(file_name),",
+						"     errors_count = countIf(not(isNull(validation_errors)))) ~> aggregationerrors",
+						"derivations, aggregationerrors join(RenameBackwards@file_name == aggregationerrors@file_name,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join1",
+						"SelectColumnsMain split(errors_count==0,",
+						"     disjoint: false) ~> splitvalidationrows@(validrows, validationfailedrows)",
+						"joinExistingRecErrors select(mapColumn(",
+						"          Item_ID = {Item ID*},",
+						"          Area_ID = {Area ID (3 Digit Zip Code)*},",
+						"          Customer_Type = {Customer Type},",
+						"          Fulfillment_Service = {Fulfillment Service*},",
+						"          {Forecast Start Date} = {Forecast Start Date*},",
+						"          {Forecast End Date} = {Forecast End Date*},",
+						"          {Low Demand Quantity},",
+						"          {Consensus Demand Quantity},",
+						"          {High Demand Quantity},",
+						"          Fulfillment_Location_ID = {Fulfillment Location ID},",
+						"          {Fixed Fulfillment},",
+						"          file_name,",
+						"          presence,",
+						"          numericfieldintegrity,",
+						"          notduplicatedrow = nonduplicatedrow,",
+						"          recordid = recordid@recordid",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> mapissueroute",
+						"validations select(mapColumn(",
+						"          {Item ID*} = mapissueroute@Item_ID,",
+						"          {Area ID (3 Digit Zip Code)*} = mapissueroute@Area_ID,",
+						"          {Customer Type} = Customer_Type,",
+						"          {Fulfillment Service*} = Fulfillment_Service,",
+						"          {Forecast Start Date*} = {Forecast Start Date},",
+						"          {Forecast End Date*} = {Forecast End Date},",
+						"          {Low Demand Quantity},",
+						"          {Consensus Demand Quantity},",
+						"          {High Demand Quantity},",
+						"          {Fulfillment Location ID} = Fulfillment_Location_ID,",
+						"          {Fixed Fulfillment},",
+						"          file_name,",
+						"          recordid",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> RenameBackwards",
+						"TenantHeirarychyDetail filter(tenant_hierarchy_type==3) ~> filterthtd",
+						"filtertransaction, filterthtd join(business_unit_id == TenantHeirarychyDetail@id",
+						"     && organization_id == parent_id,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> joinTHTD",
+						"joinTHTD select(mapColumn(",
+						"          transaction_id = importhistory@id,",
+						"          business_unit_id,",
+						"          organization_id",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectimporthistory",
+						"join1 select(mapColumn(",
+						"          {Item ID*},",
+						"          {Area ID (3 Digit Zip Code)*},",
+						"          {Customer Type},",
+						"          {Fulfillment Service*},",
+						"          {Forecast Start Date*},",
+						"          {Forecast End Date*},",
+						"          {Low Demand Quantity},",
+						"          {Consensus Demand Quantity},",
+						"          {High Demand Quantity},",
+						"          {Fulfillment Location ID},",
+						"          file_name = RenameBackwards@file_name,",
+						"          validation_errors,",
+						"          transaction_id,",
+						"          sink_file_name,",
+						"          errors_count,",
+						"          recordid,",
+						"          fixed_fulfillment",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> SelectColumnsMain",
+						"joinImportHistoryMain, selectitems join({Item ID*} == item_code,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> joinitem",
+						"joinitem, selectlocations join({Fulfillment Location ID} == location_code,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> joinlocation",
+						"jointransactionuorgitem select(mapColumn(",
+						"          item_id = id,",
+						"          item_code",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectitems",
+						"joinbuorgtransactionlocation select(mapColumn(",
+						"          location_id = id,",
+						"          location_code",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectlocations",
+						"microarea select(mapColumn(",
+						"          area_id = id,",
+						"          micro_area_code",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectmicroarea",
+						"jointransactionbuorgcusttype select(mapColumn(",
+						"          customer_type_id = id,",
+						"          customer_type_code,",
+						"          type",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectcustomertypes",
+						"jointransactionbuorgfservice select(mapColumn(",
+						"          fulfillment_service_id = id,",
+						"          fulfillment_service_code,",
+						"          service_name,",
+						"          service_type",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectfulfillmentservice",
+						"joinlocation, selectcustomertypes join({Customer Type} == type,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> joincustomertype",
+						"joincustomertype, selectmicroarea join({Area ID (3 Digit Zip Code)*} == micro_area_code,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> joinarea",
+						"joinarea, selectfulfillmentservice join({Fulfillment Service*} == service_name,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> joinfulfillmentservice",
+						"joinfulfillmentservice, selectdemandforecasts join(selectitems@item_id == selectdemandforecasts@item_id",
+						"     && selectmicroarea@area_id == selectdemandforecasts@area_id",
+						"     && location_id == fulfillment_location",
+						"     && customer_type_id == customer_type",
+						"     && fulfillment_service_id == fulfillment_service",
+						"     && {Forecast Start Date*} == forecast_start_date",
+						"     && {Forecast End Date*} == forecast_end_date,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> joindemandforecast",
+						"filtertemp derive(presence = 'true',",
+						"          forecast_start_date = toDate(toString(forecast_start_date)),",
+						"          forecast_end_date = toDate(toString(forecast_end_date))) ~> deriveddemandforecast",
+						"jointransactionbuorgdemandforecast filter(not(isNull(fulfillment_location))) ~> filtertemp",
+						"nonnumericvalsinnumericfields, selectextrecords join(recordid@recordid == selectextrecords@recordid,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> joinExistingRecErrors",
+						"filterrowswithvalidationerrors derive(failed_file_name = replace(replace($file_path,'/Upload/','/FailedTransactions/'),'.xlsx','.json'),",
+						"          type = 'error',",
+						"          message = concat('record number ',toString(recordid),' has following errors ',toString(validation_errors))) ~> outputfilenamefailed",
+						"findduplicates derive(numericfieldintegrity = iif(isNull({Low Demand Quantity}),true(),not(isNull(toFloat({Low Demand Quantity})))) && iif(isNull({Consensus Demand Quantity}),true(),not(isNull(toFloat({Consensus Demand Quantity})))) && iif(isNull({High Demand Quantity}),true(),not(isNull(toFloat({High Demand Quantity})))) &&  iif(isNull({Fixed Fulfillment}),true(),not(isNull(toFloat({Fixed Fulfillment}))))) ~> nonnumericvalsinnumericfields",
+						"demandforecastuxupload keyGenerate(output(recordid as long),",
+						"     startAt: 1L,",
+						"     stepValue: 1L) ~> recordid",
+						"recordid window(over({Item ID*},",
+						"          {Area ID (3 Digit Zip Code)*},",
+						"          {Fulfillment Service*},",
+						"          {Customer Type},",
+						"          {Forecast Start Date*},",
+						"          {Forecast End Date*},",
+						"          {Fulfillment Location ID}),",
+						"     asc(recordid, true),",
+						"     nonduplicatedrow = rowNumber()==1) ~> findduplicates",
+						"importhistory filter(id == toInteger($transaction_id)) ~> filtertransaction",
+						"locations, selectimporthistory join(locations@business_unit_id == selectimporthistory@business_unit_id",
+						"     && locations@organization_id == selectimporthistory@organization_id,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> joinbuorgtransactionlocation",
+						"item, selectimporthistory join(item@business_unit_id == selectimporthistory@business_unit_id",
+						"     && item@organization_id == selectimporthistory@organization_id,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> jointransactionuorgitem",
+						"customertypes, selectimporthistory join(customertypes@business_unit_id == selectimporthistory@business_unit_id",
+						"     && customertypes@organization_id == selectimporthistory@organization_id,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> jointransactionbuorgcusttype",
+						"fulfillmentservices, selectimporthistory join(fulfillmentservices@business_unit_id == selectimporthistory@business_unit_id",
+						"     && fulfillmentservices@organization_id == selectimporthistory@organization_id,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> jointransactionbuorgfservice",
+						"demandforecastcheck, selectimporthistory join(demandforecastcheck@business_unit_id == selectimporthistory@business_unit_id",
+						"     && demandforecastcheck@organization_id == selectimporthistory@organization_id,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> jointransactionbuorgdemandforecast",
+						"joindemandforecast select(mapColumn(",
+						"          recordid,",
+						"          presence",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectextrecords",
+						"splitvalidationrows@validationfailedrows filter(not(isNull(validation_errors))) ~> filterrowswithvalidationerrors",
+						"mapissueroute filter(not(isNull(Item_ID)) || not(isNull(Area_ID)) || not(isNull(Customer_Type)) || not(isNull(Fulfillment_Service)) || not(isNull({Forecast Start Date})) || not(isNull({Forecast End Date})) || not(isNull({Low Demand Quantity})) || not(isNull({High Demand Quantity})) || not(isNull(Fulfillment_Location_ID)) || not(isNull({Fixed Fulfillment}))) ~> removeemptyrows",
+						"derivedtransactionid, selectimporthistory join(derivedtransactionid@transaction_id == selectimporthistory@transaction_id,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> joinImportHistoryMain",
+						"recordid derive(transaction_id = toInteger($transaction_id)) ~> derivedtransactionid",
+						"deriveddemandforecast select(mapColumn(",
+						"          item_id,",
+						"          area_id,",
+						"          customer_type,",
+						"          fulfillment_service,",
+						"          forecast_start_date,",
+						"          forecast_end_date,",
+						"          fulfillment_location,",
+						"          area_hierarchy_id,",
+						"          presence",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectdemandforecasts",
+						"joindemandforecast select(mapColumn(",
+						"          file_name,",
+						"          item_id = selectitems@item_id,",
+						"          recordid,",
+						"          business_unit_id,",
+						"          organization_id,",
+						"          location_id,",
+						"          customer_type_id,",
+						"          area_id = selectmicroarea@area_id,",
+						"          fulfillment_service_id",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectextrecordsload",
+						"splitvalidationrows@validrows, selectextrecordsload join(splitvalidationrows@validrows@recordid == selectextrecordsload@recordid,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> joinLoadValuesSelectCols",
+						"joinLoadValuesSelectCols derive({Low Demand Quantity} = toInteger({Low Demand Quantity}),",
+						"          {Consensus Demand Quantity} = toInteger({Consensus Demand Quantity}),",
+						"          {High Demand Quantity} = toInteger({High Demand Quantity})) ~> datatypeconversions",
+						"datatypeconversions sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          id as integer,",
+						"          item_id as integer,",
+						"          area_id as integer,",
+						"          customer_type as integer,",
+						"          fulfillment_service as integer,",
+						"          forecast_start_date as timestamp,",
+						"          forecast_end_date as timestamp,",
+						"          fulfillment_location as integer,",
+						"          created_date as timestamp,",
+						"          updated_date as timestamp,",
+						"          organization_id as string,",
+						"          business_unit_id as string,",
+						"          low_demand_quantity as integer,",
+						"          consensus_demand_quantity as integer,",
+						"          high_demand_quantity as integer,",
+						"          fixed_fulfillment as boolean,",
+						"          area_hierarchy_id as integer",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          item_id,",
+						"          area_id,",
+						"          customer_type = customer_type_id,",
+						"          fulfillment_service = fulfillment_service_id,",
+						"          forecast_start_date = {Forecast Start Date*},",
+						"          forecast_end_date = {Forecast End Date*},",
+						"          fulfillment_location = location_id,",
+						"          organization_id,",
+						"          business_unit_id,",
+						"          low_demand_quantity = {Low Demand Quantity},",
+						"          consensus_demand_quantity = {Consensus Demand Quantity},",
+						"          high_demand_quantity = {High Demand Quantity},",
+						"          fixed_fulfillment,",
+						"          area_hierarchy_id = area_id",
+						"     ),",
+						"     preCommands: [],",
+						"     postCommands: []) ~> validdemandforecast",
+						"outputfilenamefailed sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     rowUrlColumn:'failed_file_name',",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          type,",
+						"          message",
+						"     )) ~> failedrows"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_fulfillment_forcast_ux')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "IMPORT_MANAGER_MERGED"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "FULFILLMENT_FORECAST_UX_STAGING",
+								"type": "DatasetReference"
+							},
+							"name": "FulfillmentSource"
+						},
+						{
+							"dataset": {
+								"referenceName": "importhistory",
+								"type": "DatasetReference"
+							},
+							"name": "importHistory"
+						},
+						{
+							"dataset": {
+								"referenceName": "locations",
+								"type": "DatasetReference"
+							},
+							"name": "importLocations"
+						},
+						{
+							"dataset": {
+								"referenceName": "fulfillment_services",
+								"type": "DatasetReference"
+							},
+							"name": "fulfillmentservices"
+						},
+						{
+							"dataset": {
+								"referenceName": "fulfillment_forecast",
+								"type": "DatasetReference"
+							},
+							"name": "fulfillmentforecast"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "fulfillment_forecast",
+								"type": "DatasetReference"
+							},
+							"name": "validfulfillmentforecast"
+						},
+						{
+							"dataset": {
+								"referenceName": "Error_Json",
+								"type": "DatasetReference"
+							},
+							"name": "failedrows"
+						}
+					],
+					"transformations": [
+						{
+							"name": "NewRecordID"
+						},
+						{
+							"name": "TransactionID"
+						},
+						{
+							"name": "selectimportdetails"
+						},
+						{
+							"name": "JoiningIDs"
+						},
+						{
+							"name": "selectlocations"
+						},
+						{
+							"name": "joinLocations"
+						},
+						{
+							"name": "selectfulfillmentidandname"
+						},
+						{
+							"name": "joinFullfillments"
+						},
+						{
+							"name": "elemenateUnwantedColumns"
+						},
+						{
+							"name": "nonduplicate"
+						},
+						{
+							"name": "numericalintegrity"
+						},
+						{
+							"name": "deriverrors"
+						},
+						{
+							"name": "aggregate1"
+						},
+						{
+							"name": "join1"
+						},
+						{
+							"name": "filter2"
+						},
+						{
+							"name": "Addingpresence"
+						},
+						{
+							"name": "selectfulfillmentcast"
+						},
+						{
+							"name": "assert3"
+						},
+						{
+							"name": "select7"
+						},
+						{
+							"name": "splitingbasedonerrors"
+						},
+						{
+							"name": "filter3"
+						},
+						{
+							"name": "derivedColumn1"
+						},
+						{
+							"name": "joingwithimport"
+						},
+						{
+							"name": "select8"
+						},
+						{
+							"name": "join4"
+						},
+						{
+							"name": "join5"
+						},
+						{
+							"name": "join6"
+						},
+						{
+							"name": "changecolumntypes"
+						},
+						{
+							"name": "filter4"
+						}
+					],
+					"scriptLines": [
+						"parameters{",
+						"     file_path as string ('/DEV/Upload/FulfillmentForecast/643.xlsx'),",
+						"     transaction_id as string ('643')",
+						"}",
+						"source(output(",
+						"          {Forecast Date*} as date,",
+						"          {Forecast 1 Units} as string,",
+						"          {Forecast 1 Orders} as string,",
+						"          {Forecast 2 Units} as string,",
+						"          {Units per Order} as string,",
+						"          {Forecast Locked Date} as date,",
+						"          {Fulfillment Service*} as string,",
+						"          {Fulfillment Location ID*} as string,",
+						"          {Forecast 2 Orders} as string",
+						"     ),",
+						"     allowSchemaDrift: false,",
+						"     validateSchema: true,",
+						"     ignoreNoFilesFound: false,",
+						"     rowUrlColumn: 'filename',",
+						"     wildcardPaths:[($file_path)]) ~> FulfillmentSource",
+						"source(output(",
+						"          id as integer,",
+						"          original_file_name as string,",
+						"          user_id as string,",
+						"          status_enum_value_id as integer,",
+						"          processed_time as timestamp,",
+						"          errors as string,",
+						"          business_unit_id as string,",
+						"          organization_id as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> importHistory",
+						"source(output(",
+						"          id as integer,",
+						"          location_code as string,",
+						"          name as string,",
+						"          address as string,",
+						"          city as string,",
+						"          state as string,",
+						"          zip as string,",
+						"          country as string,",
+						"          sub_type as string,",
+						"          delivery_partners as string,",
+						"          throughput as float,",
+						"          capacity as float,",
+						"          special_information as string,",
+						"          holding_cost as float,",
+						"          inbound_handling_cost as float,",
+						"          outbound_handling_cost as float,",
+						"          longitude as double,",
+						"          latitude as double,",
+						"          updated_date as date,",
+						"          created_date as date,",
+						"          status as string,",
+						"          inbound_processing_time as decimal(0,0),",
+						"          outbound_processing_time as decimal(0,0),",
+						"          type as integer,",
+						"          transfer_inbound_processing_time as double,",
+						"          transfer_outbound_processing_time as double,",
+						"          transfer_inbound_handling_cost as double,",
+						"          transfer_outbound_handling_cost as double,",
+						"          tenant_id as string,",
+						"          organization_id as string,",
+						"          business_unit_id as string,",
+						"          units_per_hour as float,",
+						"          max_fte_regular_hours as float,",
+						"          min_fte_regular_hours as float,",
+						"          max_temp_regular_hours as float,",
+						"          min_temp_regular_hours as float,",
+						"          max_fte_overtime_hours as float,",
+						"          max_temp_overtime_hours as float,",
+						"          regular_fte_wage as float,",
+						"          regular_temp_wage as float,",
+						"          overtime_fte_wage as float,",
+						"          overtime_temp_wage as float,",
+						"          fte_staff_count as integer,",
+						"          temp_staff_count as integer",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> importLocations",
+						"source(output(",
+						"          id as integer,",
+						"          fulfillment_service_code as string,",
+						"          service_name as string,",
+						"          service_type as string,",
+						"          delivery_speed_value as float,",
+						"          delivery_speed_unit as string,",
+						"          service_radius_value as float,",
+						"          service_radius_unit as string,",
+						"          service_charge as float,",
+						"          deployment_type as string,",
+						"          created_date as timestamp,",
+						"          updated_date as timestamp,",
+						"          business_unit_id as string,",
+						"          organization_id as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> fulfillmentservices",
+						"source(output(",
+						"          organization_id as string,",
+						"          business_unit_id as string,",
+						"          location_id as integer,",
+						"          fulfillment_service_id as integer,",
+						"          forecast_date as date,",
+						"          locked_forecast_units as long,",
+						"          current_forecast_units as long,",
+						"          average_upo as float,",
+						"          locked_forecast_orders as long,",
+						"          current_forecast_orders as long,",
+						"          forecast_locked_date as date,",
+						"          created_date as timestamp,",
+						"          updated_date as timestamp,",
+						"          forecast_3_units as long,",
+						"          forecast_3_orders as long",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     inferDriftedColumnTypes: true,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> fulfillmentforecast",
+						"FulfillmentSource keyGenerate(output(recordid as long),",
+						"     startAt: 1L,",
+						"     stepValue: 1L) ~> NewRecordID",
+						"NewRecordID derive(transaction_id = toInteger($transaction_id)) ~> TransactionID",
+						"filter2 select(mapColumn(",
+						"          import_history_id = id,",
+						"          business_unit_id,",
+						"          organization_id",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectimportdetails",
+						"numericalintegrity, selectimportdetails join(transaction_id == import_history_id,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> JoiningIDs",
+						"join5 select(mapColumn(",
+						"          location_id = id,",
+						"          location_code",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectlocations",
+						"JoiningIDs, selectlocations join(Fulfillment_Location_ID_SC == location_code,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> joinLocations",
+						"join6 select(mapColumn(",
+						"          fulfillment_service_id = id,",
+						"          service_name",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectfulfillmentidandname",
+						"join4, selectfulfillmentcast join(select8@location_id == selectfulfillmentcast@location_id",
+						"     && selectfulfillmentidandname@fulfillment_service_id == selectfulfillmentcast@fulfillment_service_id",
+						"     && Forecast_Date_SC == forecast_date,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> joinFullfillments",
+						"TransactionID select(mapColumn(",
+						"          Forecast_Date_SC = {Forecast Date*},",
+						"          Forecast_1_Units_SC = {Forecast 1 Units},",
+						"          Forecast_1_Orders_SC = {Forecast 1 Orders},",
+						"          Forecast_2_Units_SC = {Forecast 2 Units},",
+						"          Units_per_Order_SC = {Units per Order},",
+						"          Forecast_Locked_Date_SC = {Forecast Locked Date},",
+						"          Fulfillment_Service_SC = {Fulfillment Service*},",
+						"          Fulfillment_Location_ID_SC = {Fulfillment Location ID*},",
+						"          Forecast_2_Orders_SC = {Forecast 2 Orders},",
+						"          filename,",
+						"          recordid,",
+						"          transaction_id",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> elemenateUnwantedColumns",
+						"elemenateUnwantedColumns window(over(filename,",
+						"          {Fulfillment_Location_ID*} = Fulfillment_Location_ID_SC,",
+						"          {Fulfillment_Service*} = Fulfillment_Service_SC,",
+						"          {Forecast_Date*} = Forecast_Date_SC,",
+						"          Forecast_Locked_Date = Forecast_Locked_Date_SC),",
+						"     asc(recordid, true),",
+						"     nonduplicate_row = rowNumber() == 1) ~> nonduplicate",
+						"nonduplicate derive(numericalintegrity = iif(isNull(Forecast_1_Units_SC),true(),not(isNull(toFloat(Forecast_1_Units_SC)))) && iif(isNull(Forecast_1_Orders_SC),true(),not(isNull(toFloat(Forecast_1_Orders_SC)))) && iif(isNull(Forecast_2_Units_SC),true(),not(isNull(toFloat(Forecast_2_Units_SC)))) && iif(isNull(Forecast_2_Orders_SC),true(),not(isNull(toFloat(Forecast_2_Orders_SC)))) && iif(isNull(Units_per_Order_SC),true(),not(isNull(toFloat(Units_per_Order_SC))))) ~> numericalintegrity",
+						"assert3 derive(validation_errors = assertErrorMessages(),",
+						"          transaction_id = toInteger($transaction_id),",
+						"          type = 'Error') ~> deriverrors",
+						"deriverrors aggregate(groupBy(filename),",
+						"     error_count = countIf(not(isNull(validation_errors)))) ~> aggregate1",
+						"deriverrors, aggregate1 join(select7@filename == aggregate1@filename,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join1",
+						"importHistory filter(toInteger(id) == toInteger($transaction_id)) ~> filter2",
+						"joingwithimport derive(presence = 'true') ~> Addingpresence",
+						"Addingpresence select(mapColumn(",
+						"          organization_id = fulfillmentforecast@organization_id,",
+						"          business_unit_id = fulfillmentforecast@business_unit_id,",
+						"          location_id,",
+						"          fulfillment_service_id,",
+						"          forecast_date,",
+						"          locked_forecast_units,",
+						"          current_forecast_units,",
+						"          average_upo,",
+						"          locked_forecast_orders,",
+						"          current_forecast_orders,",
+						"          forecast_locked_date,",
+						"          created_date,",
+						"          updated_date,",
+						"          presence",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectfulfillmentcast",
+						"filter4, selectlocations, selectfulfillmentidandname assert(expectTrue(not(isNull(Fulfillment_Location_ID_SC)) && not(isNull(Fulfillment_Service_SC)) && not(isNull(Forecast_Date_SC)), false, 'nullvalues', null, 'Null Values Found In Mandatory Fields'),",
+						"     expectExists(Fulfillment_Location_ID_SC == selectlocations@location_code, false, 'locationexist', null, 'Location ID Not Found In Database'),",
+						"     expectExists(Fulfillment_Service_SC == selectfulfillmentidandname@service_name, false, 'profileexist', null, 'Fulfillment Service Does Not Exists In Database'),",
+						"     expectTrue(isNull(presence), false, 'checkrecordexists', null, 'Record Already Exists In DB'),",
+						"     expectTrue(numericalintegrity, false, 'numericalfieldintegrity', null, 'Numerical Fields Contains Non Numeric Values'),",
+						"     expectTrue(nonduplicate_row, false, 'duplicateddata', null, 'Duplicate Records Found In Upload')) ~> assert3",
+						"joinFullfillments select(mapColumn(",
+						"          Forecast_Date_SC,",
+						"          Forecast_1_Units_SC,",
+						"          Forecast_1_Orders_SC,",
+						"          Forecast_2_Units_SC,",
+						"          Units_per_Order_SC,",
+						"          Forecast_Locked_Date_SC,",
+						"          Fulfillment_Service_SC,",
+						"          Fulfillment_Location_ID_SC,",
+						"          Forecast_2_Orders_SC,",
+						"          filename,",
+						"          recordid,",
+						"          transaction_id,",
+						"          nonduplicate_row,",
+						"          numericalintegrity,",
+						"          location_id = select8@location_id,",
+						"          location_code,",
+						"          organization_id = select8@organization_id,",
+						"          business_unit_id = select8@business_unit_id,",
+						"          fulfillment_service_id = selectfulfillmentidandname@fulfillment_service_id,",
+						"          service_name,",
+						"          presence",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select7",
+						"join1 split(error_count == 0,",
+						"     disjoint: false) ~> splitingbasedonerrors@(validrows, invalidrows)",
+						"splitingbasedonerrors@invalidrows filter(not(isNull(validation_errors))) ~> filter3",
+						"filter3 derive(failed_file_name = replace(replace(replace($file_path, 'staging/', ''), '/Upload/', '/FailedTransactions/'), '.xlsx', '.json'),",
+						"          error_message = concat('record number ',toString(recordid),' has following errors ',toString(validation_errors)),",
+						"          type = 'error') ~> derivedColumn1",
+						"fulfillmentforecast, selectimportdetails join(fulfillmentforecast@organization_id == selectimportdetails@organization_id",
+						"     && fulfillmentforecast@business_unit_id == selectimportdetails@business_unit_id,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> joingwithimport",
+						"joinLocations select(mapColumn(",
+						"          Forecast_Date_SC,",
+						"          Forecast_1_Units_SC,",
+						"          Forecast_1_Orders_SC,",
+						"          Forecast_2_Units_SC,",
+						"          Units_per_Order_SC,",
+						"          Forecast_Locked_Date_SC,",
+						"          Fulfillment_Service_SC,",
+						"          Fulfillment_Location_ID_SC,",
+						"          Forecast_2_Orders_SC,",
+						"          filename,",
+						"          recordid,",
+						"          transaction_id,",
+						"          nonduplicate_row,",
+						"          numericalintegrity,",
+						"          import_history_id,",
+						"          location_id,",
+						"          location_code,",
+						"          organization_id,",
+						"          business_unit_id",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select8",
+						"select8, selectfulfillmentidandname join(Fulfillment_Service_SC == service_name,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join4",
+						"importLocations, selectimportdetails join(importLocations@organization_id == selectimportdetails@organization_id",
+						"     && importLocations@organization_id == selectimportdetails@organization_id,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join5",
+						"fulfillmentservices, selectimportdetails join(fulfillmentservices@organization_id == selectimportdetails@organization_id",
+						"     && fulfillmentservices@business_unit_id == selectimportdetails@business_unit_id,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join6",
+						"splitingbasedonerrors@validrows derive(Forecast_1_Units_SC = toLong(Forecast_1_Units_SC),",
+						"          Forecast_1_Orders_SC = toLong(Forecast_1_Orders_SC),",
+						"          Forecast_2_Units_SC = toLong(Forecast_2_Units_SC),",
+						"          Forecast_2_Orders_SC = toLong(Forecast_2_Orders_SC),",
+						"          Units_per_Order_SC = toFloat(Units_per_Order_SC)) ~> changecolumntypes",
+						"select7 filter(not(isNull(Fulfillment_Location_ID_SC)) || not(isNull(Fulfillment_Service_SC)) || not(isNull(Forecast_Date_SC)) || not(isNull(Forecast_1_Units_SC)) || not(isNull(Forecast_1_Orders_SC)) || not(isNull(Forecast_2_Units_SC)) || not(isNull(Forecast_Locked_Date_SC)) || not(isNull(Units_per_Order_SC))) ~> filter4",
+						"changecolumntypes sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          organization_id as string,",
+						"          business_unit_id as string,",
+						"          location_id as integer,",
+						"          fulfillment_service_id as integer,",
+						"          forecast_date as date,",
+						"          locked_forecast_units as long,",
+						"          current_forecast_units as long,",
+						"          average_upo as float,",
+						"          locked_forecast_orders as long,",
+						"          current_forecast_orders as long,",
+						"          forecast_locked_date as date,",
+						"          created_date as timestamp,",
+						"          updated_date as timestamp,",
+						"          forecast_3_units as long,",
+						"          forecast_3_orders as long",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          organization_id,",
+						"          business_unit_id,",
+						"          location_id = splitingbasedonerrors@validrows@location_id,",
+						"          fulfillment_service_id = splitingbasedonerrors@validrows@fulfillment_service_id,",
+						"          forecast_date = Forecast_Date_SC,",
+						"          locked_forecast_units = Forecast_1_Units_SC,",
+						"          current_forecast_units = Forecast_2_Units_SC,",
+						"          average_upo = Units_per_Order_SC,",
+						"          locked_forecast_orders = Forecast_1_Orders_SC,",
+						"          current_forecast_orders = Forecast_2_Orders_SC,",
+						"          forecast_locked_date = Forecast_Locked_Date_SC",
+						"     )) ~> validfulfillmentforecast",
+						"derivedColumn1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     rowUrlColumn:'failed_file_name',",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          type,",
+						"          message = error_message",
+						"     )) ~> failedrows"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_fulfillment_forecast')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "main"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "FULFILLMENT_FORECAST_RAW",
+								"type": "DatasetReference"
+							},
+							"name": "fulfillmentforecast"
+						},
+						{
+							"dataset": {
+								"referenceName": "tenant_heirarchy_table",
+								"type": "DatasetReference"
+							},
+							"name": "TenantHeirarchyDetail"
+						},
+						{
+							"dataset": {
+								"referenceName": "locations",
+								"type": "DatasetReference"
+							},
+							"name": "LocationMaster"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "fulfillment_forecast",
+								"type": "DatasetReference"
+							},
+							"name": "sinkfullfillmentforecast"
+						},
+						{
+							"dataset": {
+								"referenceName": "SFTP_Failed_FulfillmentForecast",
+								"type": "DatasetReference"
+							},
+							"name": "sinkfailedftpfiles"
+						}
+					],
+					"transformations": [
+						{
+							"name": "THDSelected"
+						},
+						{
+							"name": "JoinTHDSelected"
+						},
+						{
+							"name": "LocationsSelected"
+						},
+						{
+							"name": "JoinLocations"
+						},
+						{
+							"name": "AlterRow1"
+						},
+						{
+							"name": "filterburecords"
+						},
+						{
+							"name": "filterorgrecords"
+						},
+						{
+							"name": "joinorgrecords"
+						},
+						{
+							"name": "selectorgbranch"
+						},
+						{
+							"name": "assert1"
+						},
+						{
+							"name": "derivederrors"
+						},
+						{
+							"name": "splitvalidationrows"
+						}
+					],
+					"scriptLines": [
+						"parameters{",
+						"     filename as string ('Radial/FulfillmentForecast/sample_file_ff_20240624.csv')",
+						"}",
+						"source(output(",
+						"          {Organization ID} as string,",
+						"          {Business ID} as string,",
+						"          {Location Code} as string,",
+						"          {Fulfillment Service} as string,",
+						"          {Forecast Date} as date 'MM/dd/yyyy',",
+						"          {Locked Forecast Units} as long '000,000,000',",
+						"          {Current Forecast Units} as long '000,000,000',",
+						"          {Forecast 3 Units} as string,",
+						"          {Average Locked UPO} as string,",
+						"          {Locked Forecast Orders} as string,",
+						"          {Current Forecast Orders} as string,",
+						"          {Forecast 3 Orders} as string,",
+						"          {Forecast Locked Date} as date 'MM/dd/yyyy'",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     rowUrlColumn: 'file_name',",
+						"     wildcardPaths:[($filename)],",
+						"     mode: 'read') ~> fulfillmentforecast",
+						"source(output(",
+						"          id as string,",
+						"          tenant_hierarchy_type as integer,",
+						"          name as string,",
+						"          contact_name as string,",
+						"          email as string,",
+						"          phone as string,",
+						"          street_address_1 as string,",
+						"          street_address_2 as string,",
+						"          city as string,",
+						"          state as string,",
+						"          zip as integer,",
+						"          country as string,",
+						"          active as boolean,",
+						"          tenant_id as string,",
+						"          created_date as timestamp,",
+						"          updated_date as timestamp,",
+						"          parent_id as string,",
+						"          tenant_hierarchy_code as string,",
+						"          isdeleted as boolean,",
+						"          updated_by_user_id as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> TenantHeirarchyDetail",
+						"source(output(",
+						"          id as integer,",
+						"          location_code as string,",
+						"          name as string,",
+						"          address as string,",
+						"          city as string,",
+						"          state as string,",
+						"          zip as string,",
+						"          country as string,",
+						"          sub_type as string,",
+						"          delivery_partners as string,",
+						"          throughput as float,",
+						"          capacity as float,",
+						"          special_information as string,",
+						"          holding_cost as float,",
+						"          inbound_handling_cost as float,",
+						"          outbound_handling_cost as float,",
+						"          longitude as decimal(0,0),",
+						"          latitude as decimal(0,0),",
+						"          updated_date as date,",
+						"          created_date as date,",
+						"          status as string,",
+						"          inbound_processing_time as decimal(0,0),",
+						"          outbound_processing_time as decimal(0,0),",
+						"          type as integer,",
+						"          transfer_inbound_processing_time as double,",
+						"          transfer_outbound_processing_time as double,",
+						"          transfer_inbound_handling_cost as double,",
+						"          transfer_outbound_handling_cost as double,",
+						"          tenant_id as string,",
+						"          organization_id as string,",
+						"          business_unit_id as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> LocationMaster",
+						"joinorgrecords select(mapColumn(",
+						"          business_unit_id = id,",
+						"          tenant_id,",
+						"          organization_id = parent_id,",
+						"          bu_tenant_hierarchy_code = tenant_hierarchy_code,",
+						"          org_tenant_hierarchy_code",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> THDSelected",
+						"fulfillmentforecast, THDSelected join({Business ID} == bu_tenant_hierarchy_code",
+						"     && {Organization ID} == org_tenant_hierarchy_code,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> JoinTHDSelected",
+						"LocationMaster select(mapColumn(",
+						"          location_code,",
+						"          location_id = id,",
+						"          name,",
+						"          tenant_id,",
+						"          organization_id,",
+						"          business_unit_id",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> LocationsSelected",
+						"JoinTHDSelected, LocationsSelected join({Location Code} == location_code",
+						"     && THDSelected@business_unit_id == LocationsSelected@business_unit_id",
+						"     && THDSelected@tenant_id == LocationsSelected@tenant_id",
+						"     && THDSelected@organization_id == LocationsSelected@organization_id,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> JoinLocations",
+						"splitvalidationrows@validrows alterRow(upsertIf(true())) ~> AlterRow1",
+						"TenantHeirarchyDetail filter(tenant_hierarchy_type == 3) ~> filterburecords",
+						"TenantHeirarchyDetail filter(tenant_hierarchy_type == 2) ~> filterorgrecords",
+						"filterburecords, selectorgbranch join(parent_id == org_id,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> joinorgrecords",
+						"filterorgrecords select(mapColumn(",
+						"          org_id = id,",
+						"          org_tenant_id = tenant_id,",
+						"          org_parent_id = parent_id,",
+						"          org_tenant_hierarchy_code = tenant_hierarchy_code",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectorgbranch",
+						"JoinLocations assert(expectTrue(not(isNull(THDSelected@business_unit_id)) && not(isNull(THDSelected@organization_id)), false, 'assertthtd', null, 'Business Unit & Organization ID doesnot match with existing record'),",
+						"     expectTrue(not(isNull(location_id)), false, 'assertlocations', not(isNull(THDSelected@business_unit_id)) && not(isNull(THDSelected@organization_id)), 'Location ID Doesnt Exist In Database'),",
+						"     expectTrue(iif(isNull({Locked Forecast Units}),true(),not(isNull(toFloat({Locked Forecast Units})))) && iif(isNull({Current Forecast Units}),true(),not(isNull(toFloat({Current Forecast Units})))) && iif(isNull({Forecast 3 Units}),true(),not(isNull(toFloat({Forecast 3 Units})))) && iif(isNull({Average Locked UPO}),true(),not(isNull(toFloat({Average Locked UPO})))) && iif(isNull({Locked Forecast Orders}),true(),not(isNull(toFloat({Locked Forecast Orders})))) && iif(isNull({Current Forecast Orders}),true(),not(isNull(toFloat({Current Forecast Orders})))) && iif(isNull({Forecast 3 Orders}),true(),not(isNull(toFloat({Forecast 3 Orders})))), false, 'nonnumericvaluespresent', null, 'Non Numeric Values Present In Numeric Field')) ~> assert1",
+						"assert1 derive(validation_errors = assertErrorMessages(),",
+						"          failedfilename = replace($filename,'Radial','faileduploads')) ~> derivederrors",
+						"derivederrors split(isNull(validation_errors),",
+						"     disjoint: false) ~> splitvalidationrows@(validrows, validationfailedrows)",
+						"AlterRow1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          organization_id as string,",
+						"          business_unit_id as string,",
+						"          location_id as integer,",
+						"          fulfillment_service_id as integer,",
+						"          forecast_date as date,",
+						"          locked_forecast_units as long,",
+						"          current_forecast_units as long,",
+						"          average_upo as float,",
+						"          locked_forecast_orders as long,",
+						"          current_forecast_orders as long,",
+						"          forecast_locked_date as date,",
+						"          created_date as timestamp,",
+						"          updated_date as timestamp,",
+						"          forecast_3_units as long,",
+						"          forecast_3_orders as long",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:false,",
+						"     updateable:false,",
+						"     upsertable:true,",
+						"     keys:['location_id','forecast_date'],",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          organization_id = splitvalidationrows@validrows@organization_id,",
+						"          business_unit_id = splitvalidationrows@validrows@business_unit_id,",
+						"          location_id,",
+						"          forecast_date = {Forecast Date},",
+						"          locked_forecast_units = {Locked Forecast Units},",
+						"          current_forecast_units = {Current Forecast Units},",
+						"          forecast_locked_date = {Forecast Locked Date},",
+						"          average_upo = {Average Locked UPO}",
+						"     )) ~> sinkfullfillmentforecast",
+						"splitvalidationrows@validationfailedrows sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     rowUrlColumn:'failedfilename',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     quoteAll: true,",
+						"     mapColumn(",
+						"          {Organization ID},",
+						"          {Business ID},",
+						"          {Location Code},",
+						"          {Fulfillment Service},",
+						"          {Forecast Date},",
+						"          {Locked Forecast Units},",
+						"          {Current Forecast Units},",
+						"          {Forecast 3 Units},",
+						"          {Average Locked UPO},",
+						"          {Locked Forecast Orders},",
+						"          {Current Forecast Orders},",
+						"          {Forecast 3 Orders},",
+						"          {Forecast Locked Date},",
+						"          file_name,",
+						"          validation_errors",
+						"     )) ~> sinkfailedftpfiles"
+					]
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}

@@ -1,0 +1,1942 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "bricz-deploy-factory"
+		},
+		"sftp_schedule_file_ingest_shipment_history_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Location": {
+			"type": "string",
+			"defaultValue": "outbound"
+		},
+		"sftp_schedule_file_ingest_shipment_history_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Directory": {
+			"type": "string",
+			"defaultValue": "ShipmentHistory"
+		},
+		"sftp_schedule_file_ingest_shipment_history_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Location": {
+			"type": "string",
+			"defaultValue": "main"
+		},
+		"sftp_schedule_file_ingest_shipment_history_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Directory": {
+			"type": "string",
+			"defaultValue": "Radial/ShipmentHistory"
+		},
+		"sftp_scheduled_file_ingest_budget_staffing_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Location": {
+			"type": "string",
+			"defaultValue": "outbound"
+		},
+		"sftp_scheduled_file_ingest_budget_staffing_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Directory": {
+			"type": "string",
+			"defaultValue": "BudgetStaffing"
+		},
+		"sftp_scheduled_file_ingest_budget_staffing_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Location": {
+			"type": "string",
+			"defaultValue": "main/Radial/"
+		},
+		"sftp_scheduled_file_ingest_budget_staffing_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Directory": {
+			"type": "string",
+			"defaultValue": "BudgetStaffing"
+		},
+		"sftp_scheduled_file_ingest_daily_actuals_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Location": {
+			"type": "string",
+			"defaultValue": "outbound"
+		},
+		"sftp_scheduled_file_ingest_daily_actuals_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Directory": {
+			"type": "string",
+			"defaultValue": "DailyActuals"
+		},
+		"sftp_scheduled_file_ingest_daily_actuals_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Location": {
+			"type": "string",
+			"defaultValue": "main/Radial/"
+		},
+		"sftp_scheduled_file_ingest_daily_actuals_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Directory": {
+			"type": "string",
+			"defaultValue": "DailyActuals"
+		},
+		"sftp_scheduled_file_ingest_fulfillment_forecasts_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Location": {
+			"type": "string",
+			"defaultValue": "outbound"
+		},
+		"sftp_scheduled_file_ingest_fulfillment_forecasts_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Directory": {
+			"type": "string",
+			"defaultValue": "FulfillmentForecast"
+		},
+		"sftp_scheduled_file_ingest_fulfillment_forecasts_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Location": {
+			"type": "string",
+			"defaultValue": "main/Radial/"
+		},
+		"sftp_scheduled_file_ingest_fulfillment_forecasts_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Directory": {
+			"type": "string",
+			"defaultValue": "FulfillmentForecast"
+		},
+		"sftp_scheduled_file_ingest_item_master_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Location": {
+			"type": "string",
+			"defaultValue": "outbound"
+		},
+		"sftp_scheduled_file_ingest_item_master_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Directory": {
+			"type": "string",
+			"defaultValue": "ItemMaster"
+		},
+		"sftp_scheduled_file_ingest_item_master_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Location": {
+			"type": "string",
+			"defaultValue": "main/Radial/"
+		},
+		"sftp_scheduled_file_ingest_item_master_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Directory": {
+			"type": "string",
+			"defaultValue": "ItemMaster"
+		},
+		"sftp_scheduled_file_ingest_location_master_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Location": {
+			"type": "string",
+			"defaultValue": "outbound"
+		},
+		"sftp_scheduled_file_ingest_location_master_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Directory": {
+			"type": "string",
+			"defaultValue": "LocationMaster"
+		},
+		"sftp_scheduled_file_ingest_location_master_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Location": {
+			"type": "string",
+			"defaultValue": "main/Radial/"
+		},
+		"sftp_scheduled_file_ingest_location_master_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Directory": {
+			"type": "string",
+			"defaultValue": "LocationMaster"
+		},
+		"sftp_scheduled_file_ingest_order_history_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Location": {
+			"type": "string",
+			"defaultValue": "outbound"
+		},
+		"sftp_scheduled_file_ingest_order_history_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Directory": {
+			"type": "string",
+			"defaultValue": "OrderHistory"
+		},
+		"sftp_scheduled_file_ingest_order_history_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Location": {
+			"type": "string",
+			"defaultValue": "main"
+		},
+		"sftp_scheduled_file_ingest_order_history_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Directory": {
+			"type": "string",
+			"defaultValue": "Radial/OrderHistory"
+		},
+		"sftp_scheduled_file_ingest_staffing_history_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Location": {
+			"type": "string",
+			"defaultValue": "outbound"
+		},
+		"sftp_scheduled_file_ingest_staffing_history_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Directory": {
+			"type": "string",
+			"defaultValue": "StaffingHistory"
+		},
+		"sftp_scheduled_file_ingest_staffing_history_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Location": {
+			"type": "string",
+			"defaultValue": "main"
+		},
+		"sftp_scheduled_file_ingest_staffing_history_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Directory": {
+			"type": "string",
+			"defaultValue": "Radial/StaffingHistory"
+		},
+		"sftp_upload_file_ingest_all_pipelines_properties_SFTP_REDIRECT_BLOB_SINGLE_parameters_folder_path": {
+			"type": "string",
+			"defaultValue": "outbound"
+		},
+		"sftp_upload_file_ingest_all_pipelines_properties_SFTP_REDIRECT_BLOB_SINGLE_parameters_container": {
+			"type": "string",
+			"defaultValue": "main"
+		},
+		"sftp_upload_item_master_properties_ITEM_MASTER_DATALAKE_parameters_filename": {
+			"type": "string",
+			"defaultValue": "@triggerBody().fileName"
+		},
+		"sftp_upload_item_master_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/c061dde2-a728-4240-8f3d-15ccff95ec4d/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Storage/storageAccounts/stdevdatapipe001"
+		},
+		"sftp_upload_order_history_properties_ORDER_HISTORY_COPY_parameters_filename": {
+			"type": "string",
+			"defaultValue": "@triggerBody().filename"
+		},
+		"sftp_upload_order_history_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/c061dde2-a728-4240-8f3d-15ccff95ec4d/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Storage/storageAccounts/stdevdatapipe001"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/LOCATION_MASTER')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "df_activity_location_master",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_location_master",
+								"type": "DataFlowReference",
+								"parameters": {
+									"file_path": {
+										"value": "'@{replace(concat(pipeline().parameters.folder_path,'/',pipeline().parameters.file_name),'main','')}'",
+										"type": "Expression"
+									}
+								},
+								"datasetParameters": {
+									"LocationMasterRaw": {},
+									"TenantHeirarchyDetail": {},
+									"TenantHierarchyDetail": {},
+									"WriteToLocationsTable": {},
+									"failedrowslocationmaster": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine",
+							"continuationSettings": {
+								"customizedCheckpointKey": "07bf77db-08a7-4725-afab-425dfbda5236"
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"parameters": {
+					"folder_path": {
+						"type": "string",
+						"defaultValue": "Radial/LocationMaster"
+					},
+					"file_name": {
+						"type": "String",
+						"defaultValue": "data_107e2644-2ce0-4274-abb8-2ad1ea4d944d_d6b001c9-e396-41a1-ad43-b5f3d1aebeae.csv"
+					}
+				},
+				"folder": {
+					"name": "FTP"
+				},
+				"annotations": [],
+				"lastPublishTime": "2023-10-10T12:18:39Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LOCATION_STAFFING')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "validation",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "setting_status_inprogress",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_validation_location_staffing",
+								"type": "DataFlowReference",
+								"parameters": {
+									"file_path": {
+										"value": "'@{replace(concat(pipeline().parameters.folder_path,'/',pipeline().parameters.file_name),'staging','')}'",
+										"type": "Expression"
+									},
+									"transaction_id": {
+										"value": "'@{replace(pipeline().parameters.file_name,'.xlsx','')}'",
+										"type": "Expression"
+									}
+								},
+								"datasetParameters": {
+									"locationstaffingux": {},
+									"locations": {},
+									"operationalprofile": {},
+									"enumvalues": {},
+									"operationalcalendar": {},
+									"importhistory": {},
+									"ValidLocationStaffingRows": {},
+									"failedrows": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "runtimeerrorvalidation",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "validation",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "runtimefailurecapture",
+								"type": "DataFlowReference",
+								"parameters": {
+									"transaction_id": {
+										"value": "'@{replace(pipeline().parameters.file_name,'.xlsx','')}'",
+										"type": "Expression"
+									},
+									"runtime_error": {
+										"value": "'@{replace(replace(replace(string(json(replace(activity('validation').error.message,'\\n',' ')).Message),pipeline().parameters.quote,' '),'\"',''),pipeline().parameters.next_line,' ')}'",
+										"type": "Expression"
+									},
+									"quote": "'\\''"
+								},
+								"datasetParameters": {
+									"importhistory": {},
+									"importhistorysink": {},
+									"notifications": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "setting_status_inprogress",
+						"type": "ExecuteDataFlow",
+						"state": "Inactive",
+						"onInactiveMarkAs": "Succeeded",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "importhistorystatusinprogress",
+								"type": "DataFlowReference",
+								"parameters": {
+									"transaction_id": {
+										"value": "'@{replace(pipeline().parameters.file_name,'.xlsx','')}'",
+										"type": "Expression"
+									},
+									"quote": "'\\''"
+								},
+								"datasetParameters": {
+									"importhistory": {},
+									"importhistorysink": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "rows_failed",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "validation",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "rows_failed",
+							"value": {
+								"value": "@activity('validation').output.runstatus.metrics.failedrows.rowsWritten",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "failedrowscountcheck",
+						"type": "IfCondition",
+						"dependsOn": [
+							{
+								"activity": "rows_failed",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@equals(variables('rows_failed'),0)",
+								"type": "Expression"
+							},
+							"ifFalseActivities": [
+								{
+									"name": "dferrorvalidation",
+									"type": "ExecuteDataFlow",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataflow": {
+											"referenceName": "dffailurecapture",
+											"type": "DataFlowReference",
+											"parameters": {
+												"transaction_id": {
+													"value": "'@{replace(pipeline().parameters.file_name,'.xlsx','')}'",
+													"type": "Expression"
+												},
+												"single_quote": "'\\''",
+												"file_path": {
+													"value": "'@{concat(replace(pipeline().parameters.folder_path,'staging',''),'/',pipeline().parameters.file_name)}'",
+													"type": "Expression"
+												}
+											},
+											"datasetParameters": {
+												"failure": {},
+												"importhistorylookup": {},
+												"importhistory": {},
+												"notification": {}
+											}
+										},
+										"staging": {},
+										"compute": {
+											"coreCount": 8,
+											"computeType": "General"
+										},
+										"traceLevel": "Fine"
+									}
+								}
+							],
+							"ifTrueActivities": [
+								{
+									"name": "transform",
+									"type": "ExecuteDataFlow",
+									"state": "Inactive",
+									"onInactiveMarkAs": "Succeeded",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataflow": {
+											"referenceName": "df_transform_location_staffing",
+											"type": "DataFlowReference",
+											"parameters": {
+												"file_path": {
+													"value": "'@{replace(concat(pipeline().parameters.folder_path,'/',replace(pipeline().parameters.file_name,'.xlsx',''),'.txt'),'staging','')}'",
+													"type": "Expression"
+												},
+												"transaction_id": {
+													"value": "'@{replace(pipeline().parameters.file_name,'.xlsx','')}'",
+													"type": "Expression"
+												}
+											},
+											"datasetParameters": {
+												"locationstaffingmain": {},
+												"importhistory": {},
+												"locations": {},
+												"enumvalue": {},
+												"operationalprofile": {},
+												"sinkopeartionalcalendar": {}
+											}
+										},
+										"staging": {},
+										"compute": {
+											"coreCount": 8,
+											"computeType": "General"
+										},
+										"traceLevel": "Fine"
+									}
+								},
+								{
+									"name": "runtimeerrortransform",
+									"type": "ExecuteDataFlow",
+									"state": "Inactive",
+									"onInactiveMarkAs": "Succeeded",
+									"dependsOn": [
+										{
+											"activity": "transform",
+											"dependencyConditions": [
+												"Failed"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataflow": {
+											"referenceName": "runtimefailurecapture",
+											"type": "DataFlowReference",
+											"parameters": {
+												"transaction_id": {
+													"value": "'@{replace(pipeline().parameters.file_name,'.xlsx','')}'",
+													"type": "Expression"
+												},
+												"runtime_error": {
+													"value": "'@{replace(replace(replace(string(json(replace(activity('transform').error.message,'\\n',' ')).Message),pipeline().parameters.quote,' '),'\"',''),pipeline().parameters.next_line,' ')}'",
+													"type": "Expression"
+												},
+												"quote": "'\\''"
+											},
+											"datasetParameters": {
+												"importhistory": {},
+												"importhistorysink": {},
+												"notifications": {}
+											}
+										},
+										"staging": {},
+										"compute": {
+											"coreCount": 8,
+											"computeType": "General"
+										},
+										"traceLevel": "Fine"
+									}
+								},
+								{
+									"name": "StatusComplete",
+									"type": "ExecuteDataFlow",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataflow": {
+											"referenceName": "importhistorystatusupdate",
+											"type": "DataFlowReference",
+											"parameters": {
+												"transaction_id": {
+													"value": "'@{replace(pipeline().parameters.file_name,'.xlsx','')}'",
+													"type": "Expression"
+												},
+												"quote": "'\\''",
+												"status_value_id": {
+													"value": "'@{'2'}'",
+													"type": "Expression"
+												}
+											},
+											"datasetParameters": {
+												"importhistory": {},
+												"importhistorysink": {},
+												"notification": {}
+											}
+										},
+										"staging": {},
+										"compute": {
+											"coreCount": 8,
+											"computeType": "General"
+										},
+										"traceLevel": "Fine"
+									}
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"parameters": {
+					"quote": {
+						"type": "string",
+						"defaultValue": "'"
+					},
+					"folder_path": {
+						"type": "string",
+						"defaultValue": "/TEST/Upload/LocationStaffing"
+					},
+					"file_name": {
+						"type": "string",
+						"defaultValue": "16.xlsx"
+					},
+					"next_line": {
+						"type": "string",
+						"defaultValue": "\\n"
+					}
+				},
+				"variables": {
+					"transaction_id": {
+						"type": "String"
+					},
+					"rows_failed": {
+						"type": "Integer"
+					}
+				},
+				"folder": {
+					"name": "IMPORT_MANAGER"
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LOCATION_UX')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "validation",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "setting_status_inprogress",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_locations_ux",
+								"type": "DataFlowReference",
+								"parameters": {
+									"transaction_id": {
+										"value": "'@{replace(pipeline().parameters.file_name,'.xlsx','')}'",
+										"type": "Expression"
+									},
+									"file_path": {
+										"value": "'@{replace(concat(pipeline().parameters.folder_path,'/',pipeline().parameters.file_name),'staging','')}'",
+										"type": "Expression"
+									}
+								},
+								"datasetParameters": {
+									"FetchingLocations": {},
+									"importHistory": {},
+									"ExcelSource": {},
+									"source1": {},
+									"fetchingtenentdetails": {},
+									"loadlocationsdatadb": {},
+									"failedrows": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "runtimeerrorvalidation",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "validation",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "runtimefailurecapture",
+								"type": "DataFlowReference",
+								"parameters": {
+									"transaction_id": {
+										"value": "'@{replace(pipeline().parameters.file_name,'.xlsx','')}'",
+										"type": "Expression"
+									},
+									"runtime_error": {
+										"value": "'@{replace(replace(replace(string(json(replace(activity('validation').error.message,'\\n',' ')).Message),pipeline().parameters.quote,' '),'\"',''),pipeline().parameters.next_line,' ')}'",
+										"type": "Expression"
+									},
+									"quote": "'\\''"
+								},
+								"datasetParameters": {
+									"importhistory": {},
+									"importhistorysink": {},
+									"notifications": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "setting_status_inprogress",
+						"type": "ExecuteDataFlow",
+						"state": "Inactive",
+						"onInactiveMarkAs": "Succeeded",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "importhistorystatusinprogress",
+								"type": "DataFlowReference",
+								"parameters": {
+									"transaction_id": {
+										"value": "'@{replace(pipeline().parameters.file_name,'.xlsx','')}'",
+										"type": "Expression"
+									},
+									"quote": "'\\''"
+								},
+								"datasetParameters": {
+									"importhistory": {},
+									"importhistorysink": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "rows_failed",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "validation",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "rows_failed",
+							"value": {
+								"value": "@activity('validation').output.runstatus.metrics.failedrows.rowsWritten",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "failedrowscountcheck",
+						"type": "IfCondition",
+						"dependsOn": [
+							{
+								"activity": "rows_failed",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@equals(variables('rows_failed'),0)",
+								"type": "Expression"
+							},
+							"ifFalseActivities": [
+								{
+									"name": "dferrorvalidation",
+									"type": "ExecuteDataFlow",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataflow": {
+											"referenceName": "dffailurecapture",
+											"type": "DataFlowReference",
+											"parameters": {
+												"transaction_id": {
+													"value": "'@{replace(pipeline().parameters.file_name,'.xlsx','')}'",
+													"type": "Expression"
+												},
+												"single_quote": "'\\''",
+												"file_path": {
+													"value": "'@{concat(replace(pipeline().parameters.folder_path,'staging',''),'/',pipeline().parameters.file_name)}'",
+													"type": "Expression"
+												}
+											},
+											"datasetParameters": {
+												"failure": {},
+												"importhistorylookup": {},
+												"importhistory": {},
+												"notification": {}
+											}
+										},
+										"staging": {},
+										"compute": {
+											"coreCount": 8,
+											"computeType": "General"
+										},
+										"traceLevel": "Fine"
+									}
+								}
+							],
+							"ifTrueActivities": [
+								{
+									"name": "transform",
+									"type": "ExecuteDataFlow",
+									"state": "Inactive",
+									"onInactiveMarkAs": "Succeeded",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataflow": {
+											"referenceName": "df_transform_location_ux",
+											"type": "DataFlowReference",
+											"parameters": {
+												"file_path": {
+													"value": "'@{replace(concat(pipeline().parameters.folder_path,'/',replace(pipeline().parameters.file_name,'.xlsx',''),'.txt'),'staging','')}'",
+													"type": "Expression"
+												},
+												"transaction_id": {
+													"value": "'@{replace(pipeline().parameters.file_name,'.xlsx','')}'",
+													"type": "Expression"
+												}
+											},
+											"datasetParameters": {
+												"locationmain": {},
+												"importhistory": {},
+												"locationtype": {},
+												"tenantheirarchydetail": {},
+												"sinklocation": {}
+											}
+										},
+										"staging": {},
+										"compute": {
+											"coreCount": 8,
+											"computeType": "General"
+										},
+										"traceLevel": "Fine"
+									}
+								},
+								{
+									"name": "runtimeerrortransform",
+									"type": "ExecuteDataFlow",
+									"state": "Inactive",
+									"onInactiveMarkAs": "Succeeded",
+									"dependsOn": [
+										{
+											"activity": "transform",
+											"dependencyConditions": [
+												"Failed"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataflow": {
+											"referenceName": "runtimefailurecapture",
+											"type": "DataFlowReference",
+											"parameters": {
+												"transaction_id": {
+													"value": "'@{replace(pipeline().parameters.file_name,'.xlsx','')}'",
+													"type": "Expression"
+												},
+												"runtime_error": {
+													"value": "'@{replace(replace(replace(string(json(replace(activity('transform').error.message,'\\n',' ')).Message),pipeline().parameters.quote,' '),'\"',''),pipeline().parameters.next_line,' ')}'",
+													"type": "Expression"
+												},
+												"quote": "'\\''"
+											},
+											"datasetParameters": {
+												"importhistory": {},
+												"importhistorysink": {},
+												"notifications": {}
+											}
+										},
+										"staging": {},
+										"compute": {
+											"coreCount": 8,
+											"computeType": "General"
+										},
+										"traceLevel": "Fine"
+									}
+								},
+								{
+									"name": "StatusComplete",
+									"type": "ExecuteDataFlow",
+									"dependsOn": [
+										{
+											"activity": "transform",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataflow": {
+											"referenceName": "importhistorystatusupdate",
+											"type": "DataFlowReference",
+											"parameters": {
+												"transaction_id": {
+													"value": "'@{replace(pipeline().parameters.file_name,'.xlsx','')}'",
+													"type": "Expression"
+												},
+												"quote": "'\\''",
+												"status_value_id": {
+													"value": "'@{'2'}'",
+													"type": "Expression"
+												}
+											},
+											"datasetParameters": {
+												"importhistory": {},
+												"importhistorysink": {},
+												"notification": {}
+											}
+										},
+										"staging": {},
+										"compute": {
+											"coreCount": 8,
+											"computeType": "General"
+										},
+										"traceLevel": "Fine"
+									}
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"parameters": {
+					"quote": {
+						"type": "string",
+						"defaultValue": "'"
+					},
+					"folder_path": {
+						"type": "string",
+						"defaultValue": "DEV/Upload/Location"
+					},
+					"file_name": {
+						"type": "string",
+						"defaultValue": "36.xlsx"
+					},
+					"next_line": {
+						"type": "string",
+						"defaultValue": "\\n"
+					}
+				},
+				"variables": {
+					"transaction_id": {
+						"type": "String"
+					},
+					"rows_failed": {
+						"type": "Integer"
+					}
+				},
+				"folder": {
+					"name": "IMPORT_MANAGER"
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MOVE_STAGGING_MAIN')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Data flow1",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_validation_location_staffing",
+								"type": "DataFlowReference",
+								"parameters": {
+									"file_path": {
+										"value": "'@{pipeline().parameters.file_path}'",
+										"type": "Expression"
+									},
+									"transaction_id": {
+										"value": "'@{pipeline().parameters.transaction_id}'",
+										"type": "Expression"
+									}
+								},
+								"datasetParameters": {
+									"locationstaffingux": {},
+									"locations": {},
+									"operationalprofile": {},
+									"enumvalues": {},
+									"operationalcalendar": {},
+									"importhistory": {},
+									"ValidLocationStaffingRows": {},
+									"failedrows": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"parameters": {
+					"file_path": {
+						"type": "string",
+						"defaultValue": "DEV/Upload/LocationStaffing/17.xlsx"
+					},
+					"transaction_id": {
+						"type": "string",
+						"defaultValue": "17"
+					}
+				},
+				"folder": {
+					"name": "REMOTE"
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ORDER_HISTORY')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "df_order_history",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_order_history",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"orderhistoryraw": {},
+									"TenantHeirarchyDetail": {},
+									"OrderHistory": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 32,
+								"computeType": "MemoryOptimized"
+							},
+							"traceLevel": "Fine",
+							"continuationSettings": {
+								"customizedCheckpointKey": "bd83f014-f182-4d2c-8f76-89b0fa32937d"
+							}
+						}
+					},
+					{
+						"name": "Notify Mail",
+						"type": "WebActivity",
+						"dependsOn": [
+							{
+								"activity": "df_order_status_history",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"method": "POST",
+							"headers": {},
+							"url": "https://prod-69.eastus.logic.azure.com:443/workflows/0755ac6ab8ba4359b56ea72ce6dc03e9/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=j4Y5kxvgBtB_wNtZkEsXV79Asm4Ct1qzmlV9R7zf8uc",
+							"connectVia": {
+								"referenceName": "AutoResolveIntegrationRuntime",
+								"type": "IntegrationRuntimeReference"
+							},
+							"body": {
+								"value": "{\n\"datafactoryname\" : \"@{pipeline().DataFactory}\", \n\"pipelineName\" : \"@{pipeline().Pipeline}\", \n\"runID\" : \"@{pipeline().RunId}\",\n\"records_read_from_file\" : \"@{activity('df_order_history').output.runStatus.metrics.OrderHistory.sources.orderhistoryraw.rowsRead}\",\n\"records_written_order_history\" : \"@{activity('df_order_history').output.runStatus.metrics.OrderHistory.rowsWritten}\",\n\"records_written_order_line_history\" : \"@{activity('df_order_line_history').output.runStatus.metrics.OrderLineHistory.rowsWritten}\",\n\"records_written_order_status_history\" : \"@{activity('df_order_status_history').output.runStatus.metrics.OrderStatusHistory.rowsWritten}\" ,\"time_taken_order_history\":\"@{activity('df_order_history').Duration}\",\n\"time_taken_order_line_history\":\"@{activity('df_order_line_history').Duration}\",\n\"time_taken_order_status_history\":\"@{activity('df_order_status_history').Duration}\"\n}",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "df_order_line_history",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "df_order_history",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_order_line_history",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"orderhistoryraw": {},
+									"TenantHeirarchyDetail": {},
+									"OrderHistory": {},
+									"OrderLineHistory": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 32,
+								"computeType": "MemoryOptimized"
+							},
+							"traceLevel": "Fine",
+							"continuationSettings": {
+								"customizedCheckpointKey": "15bce445-52eb-4c37-9bcf-1b6d6720d802"
+							}
+						}
+					},
+					{
+						"name": "df_order_status_history",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "df_order_line_history",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_order_status_history",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"orderhistoryraw": {},
+									"TenantHeirarchyDetail": {},
+									"OrderHistory": {},
+									"OrderStatusHistory": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 32,
+								"computeType": "MemoryOptimized"
+							},
+							"traceLevel": "Fine",
+							"continuationSettings": {
+								"customizedCheckpointKey": "9a27ee55-a57e-4214-9863-64ee1eea9dc9"
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"folder": {
+					"name": "REMOTE"
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SHIPMENT_HISTORY')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "df_shipment_history",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_shipment_history",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"shipmenthistoryraw": {},
+									"tenantheirarchydetail": {},
+									"orderlinetable": {},
+									"orderhistory": {},
+									"orderstatushistory": {},
+									"ShipmentHistory": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine",
+							"continuationSettings": {
+								"customizedCheckpointKey": "4dfa84a5-86d5-4909-82ce-972c39e64017"
+							}
+						}
+					},
+					{
+						"name": "df_shipment_line_history",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "df_shipment_history",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_shipment_line_history",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"shipmenthistoryraw": {},
+									"tenantheirarchytable": {},
+									"orderlinehistory": {},
+									"shipmenthistory": {},
+									"ShipmentLineHistory": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine",
+							"continuationSettings": {
+								"customizedCheckpointKey": "b14fc32f-e468-4b0b-b227-ccfd1ec5562a"
+							}
+						}
+					},
+					{
+						"name": "Notify_shipment_history",
+						"type": "WebActivity",
+						"dependsOn": [
+							{
+								"activity": "df_shipment_line_history",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"method": "POST",
+							"headers": {},
+							"url": "https://prod-24.eastus.logic.azure.com:443/workflows/3f1f036d9abd4a62b2bc78fb3b8d2d28/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=En5Cc4PP9vYZHA_L0IiC9QO75q-a5sSAn08HSO_fU_s",
+							"connectVia": {
+								"referenceName": "AutoResolveIntegrationRuntime",
+								"type": "IntegrationRuntimeReference"
+							},
+							"body": {
+								"value": "{\n\"datafactoryname\" : \"@{pipeline().DataFactory}\", \n\"pipelineName\" : \"@{pipeline().Pipeline}\", \n\"runID\" : \"@{pipeline().RunId}\",\n\"records_read_from_file\" : \"@{activity('df_shipment_history').output.runStatus.metrics.ShipmentHistory.sources.shipmenthistoryraw.rowsRead}\",\n\"records_written_shipment_history\" : \"@{activity('df_shipment_history').output.runStatus.metrics.ShipmentHistory.rowsWritten}\",\n\"records_written_shipment_line_history\" : \"@{activity('df_shipment_line_history').output.runStatus.metrics.ShipmentLineHistory.rowsWritten}\",\n\"time_taken_shipment_history\":\"@{activity('df_shipment_history').Duration}\",\n\"time_taken_shipment_line_history\":\"@{activity('df_shipment_line_history').Duration}\"\n}",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"folder": {
+					"name": "REMOTE"
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/THROUGHPUT_PREDICTIONS')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "df_activity_throughput",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_throughput_predictions",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"throughtputoutput": {},
+									"TenantHeirarchyTable": {},
+									"LocationsTable": {},
+									"EnumTypeDB": {},
+									"EnumValue": {},
+									"WriteToDatabase": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"folder": {
+					"name": "REMOTE"
+				},
+				"annotations": [],
+				"lastPublishTime": "2023-10-10T12:18:39Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/TRANSPORTATION_LANES')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "df_activity_transportation_lanes",
+						"description": "Dataflow actvity to transform data to transportation_lane table",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_transportation_lane",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"RawDataForZone": {},
+									"TenantHeirarchyTable": {},
+									"TransitTimeTable": {},
+									"LocationsTable": {},
+									"WriteToDatabase": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine",
+							"continuationSettings": {
+								"customizedCheckpointKey": "d32679e3-42d6-41a0-861e-373bbc45824b"
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"folder": {
+					"name": "FTP"
+				},
+				"annotations": [],
+				"lastPublishTime": "2023-10-10T12:18:39Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ZONE')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Pipeline built on 2023-08-08",
+				"activities": [
+					{
+						"name": "df_activity_zone",
+						"description": "Dataflow activity for zone table",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_zone",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"RawDataForZone": {},
+									"TenantHeirarchyTable": {},
+									"WriteToDatabase": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine",
+							"continuationSettings": {
+								"customizedCheckpointKey": "1c7e1575-29b2-429d-b3e5-04524c8d01b6"
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"folder": {
+					"name": "FTP"
+				},
+				"annotations": [],
+				"lastPublishTime": "2023-10-09T13:03:57Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/sftp_schedule_file_ingest_shipment_history')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Stopped",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "SFTP_TO_MAIN_FOR_PROCESSING",
+							"type": "PipelineReference"
+						},
+						"parameters": {
+							"SourceStore_Location": "[parameters('sftp_schedule_file_ingest_shipment_history_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Location')]",
+							"SourceStore_Directory": "[parameters('sftp_schedule_file_ingest_shipment_history_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Directory')]",
+							"DestinationStore_Location": "[parameters('sftp_schedule_file_ingest_shipment_history_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Location')]",
+							"DestinationStore_Directory": "[parameters('sftp_schedule_file_ingest_shipment_history_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Directory')]"
+						}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Day",
+						"interval": 1,
+						"startTime": "2024-07-09T05:05:00",
+						"timeZone": "Central Standard Time"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/sftp_scheduled_file_ingest_budget_staffing')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Stopped",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "SFTP_TO_MAIN_FOR_PROCESSING",
+							"type": "PipelineReference"
+						},
+						"parameters": {
+							"SourceStore_Location": "[parameters('sftp_scheduled_file_ingest_budget_staffing_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Location')]",
+							"SourceStore_Directory": "[parameters('sftp_scheduled_file_ingest_budget_staffing_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Directory')]",
+							"DestinationStore_Location": "[parameters('sftp_scheduled_file_ingest_budget_staffing_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Location')]",
+							"DestinationStore_Directory": "[parameters('sftp_scheduled_file_ingest_budget_staffing_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Directory')]"
+						}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Day",
+						"interval": 1,
+						"startTime": "2024-07-06T05:00:00",
+						"timeZone": "Central Standard Time"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/sftp_scheduled_file_ingest_daily_actuals')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Stopped",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "SFTP_TO_MAIN_FOR_PROCESSING",
+							"type": "PipelineReference"
+						},
+						"parameters": {
+							"SourceStore_Location": "[parameters('sftp_scheduled_file_ingest_daily_actuals_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Location')]",
+							"SourceStore_Directory": "[parameters('sftp_scheduled_file_ingest_daily_actuals_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Directory')]",
+							"DestinationStore_Location": "[parameters('sftp_scheduled_file_ingest_daily_actuals_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Location')]",
+							"DestinationStore_Directory": "[parameters('sftp_scheduled_file_ingest_daily_actuals_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Directory')]"
+						}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Day",
+						"interval": 1,
+						"startTime": "2024-07-06T05:00:00",
+						"timeZone": "Central Standard Time"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/sftp_scheduled_file_ingest_fulfillment_forecasts')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Stopped",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "SFTP_TO_MAIN_FOR_PROCESSING",
+							"type": "PipelineReference"
+						},
+						"parameters": {
+							"SourceStore_Location": "[parameters('sftp_scheduled_file_ingest_fulfillment_forecasts_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Location')]",
+							"SourceStore_Directory": "[parameters('sftp_scheduled_file_ingest_fulfillment_forecasts_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Directory')]",
+							"DestinationStore_Location": "[parameters('sftp_scheduled_file_ingest_fulfillment_forecasts_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Location')]",
+							"DestinationStore_Directory": "[parameters('sftp_scheduled_file_ingest_fulfillment_forecasts_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Directory')]"
+						}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Day",
+						"interval": 1,
+						"startTime": "2024-07-04T05:00:00",
+						"timeZone": "Central Standard Time"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/sftp_scheduled_file_ingest_item_master')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Stopped",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "SFTP_TO_MAIN_FOR_PROCESSING",
+							"type": "PipelineReference"
+						},
+						"parameters": {
+							"SourceStore_Location": "[parameters('sftp_scheduled_file_ingest_item_master_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Location')]",
+							"SourceStore_Directory": "[parameters('sftp_scheduled_file_ingest_item_master_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Directory')]",
+							"DestinationStore_Location": "[parameters('sftp_scheduled_file_ingest_item_master_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Location')]",
+							"DestinationStore_Directory": "[parameters('sftp_scheduled_file_ingest_item_master_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Directory')]"
+						}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Day",
+						"interval": 1,
+						"startTime": "2024-07-04T05:10:00",
+						"timeZone": "Central Standard Time"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/sftp_scheduled_file_ingest_location_master')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Stopped",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "SFTP_TO_MAIN_FOR_PROCESSING",
+							"type": "PipelineReference"
+						},
+						"parameters": {
+							"SourceStore_Location": "[parameters('sftp_scheduled_file_ingest_location_master_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Location')]",
+							"SourceStore_Directory": "[parameters('sftp_scheduled_file_ingest_location_master_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Directory')]",
+							"DestinationStore_Location": "[parameters('sftp_scheduled_file_ingest_location_master_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Location')]",
+							"DestinationStore_Directory": "[parameters('sftp_scheduled_file_ingest_location_master_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Directory')]"
+						}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Day",
+						"interval": 1,
+						"startTime": "2024-07-04T05:30:00",
+						"timeZone": "Central Standard Time"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/sftp_scheduled_file_ingest_order_history')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Stopped",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "SFTP_TO_MAIN_FOR_PROCESSING",
+							"type": "PipelineReference"
+						},
+						"parameters": {
+							"SourceStore_Location": "[parameters('sftp_scheduled_file_ingest_order_history_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Location')]",
+							"SourceStore_Directory": "[parameters('sftp_scheduled_file_ingest_order_history_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Directory')]",
+							"DestinationStore_Location": "[parameters('sftp_scheduled_file_ingest_order_history_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Location')]",
+							"DestinationStore_Directory": "[parameters('sftp_scheduled_file_ingest_order_history_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Directory')]"
+						}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Day",
+						"interval": 1,
+						"startTime": "2024-07-09T05:02:00",
+						"timeZone": "Central Standard Time"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/sftp_scheduled_file_ingest_staffing_history')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Stopped",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "SFTP_TO_MAIN_FOR_PROCESSING",
+							"type": "PipelineReference"
+						},
+						"parameters": {
+							"SourceStore_Location": "[parameters('sftp_scheduled_file_ingest_staffing_history_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Location')]",
+							"SourceStore_Directory": "[parameters('sftp_scheduled_file_ingest_staffing_history_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_SourceStore_Directory')]",
+							"DestinationStore_Location": "[parameters('sftp_scheduled_file_ingest_staffing_history_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Location')]",
+							"DestinationStore_Directory": "[parameters('sftp_scheduled_file_ingest_staffing_history_properties_SFTP_TO_MAIN_FOR_PROCESSING_parameters_DestinationStore_Directory')]"
+						}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Day",
+						"interval": 1,
+						"startTime": "2024-07-09T05:00:00",
+						"timeZone": "Central Standard Time"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/sftp_upload_file_ingest_all_pipelines')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "SFTP_REDIRECT_BLOB_SINGLE",
+							"type": "PipelineReference"
+						},
+						"parameters": {
+							"folder_path": "[parameters('sftp_upload_file_ingest_all_pipelines_properties_SFTP_REDIRECT_BLOB_SINGLE_parameters_folder_path')]",
+							"container": "[parameters('sftp_upload_file_ingest_all_pipelines_properties_SFTP_REDIRECT_BLOB_SINGLE_parameters_container')]"
+						}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Day",
+						"interval": 1,
+						"startTime": "2024-07-22T05:00:00",
+						"timeZone": "Central Standard Time"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/sftp_upload_item_master')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "ITEM_MASTER_DATALAKE",
+							"type": "PipelineReference"
+						},
+						"parameters": {
+							"filename": "[parameters('sftp_upload_item_master_properties_ITEM_MASTER_DATALAKE_parameters_filename')]"
+						}
+					}
+				],
+				"type": "BlobEventsTrigger",
+				"typeProperties": {
+					"blobPathBeginsWith": "/main/blobs/Radial/ItemMaster",
+					"blobPathEndsWith": ".csv",
+					"ignoreEmptyBlobs": true,
+					"scope": "[parameters('sftp_upload_item_master_properties_typeProperties_scope')]",
+					"events": [
+						"Microsoft.Storage.BlobCreated"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/sftp_upload_order_history')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "ORDER_HISTORY_COPY",
+							"type": "PipelineReference"
+						},
+						"parameters": {
+							"filename": "[parameters('sftp_upload_order_history_properties_ORDER_HISTORY_COPY_parameters_filename')]"
+						}
+					}
+				],
+				"type": "BlobEventsTrigger",
+				"typeProperties": {
+					"blobPathBeginsWith": "/main/blobs/Radial/OrderHistory",
+					"blobPathEndsWith": ".csv",
+					"ignoreEmptyBlobs": true,
+					"scope": "[parameters('sftp_upload_order_history_properties_typeProperties_scope')]",
+					"events": [
+						"Microsoft.Storage.BlobCreated"
+					]
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}

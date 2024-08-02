@@ -1,0 +1,1382 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "bricz-deploy-factory"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/INVENTORY_UX')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "datalakelinkedservice",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Excel",
+				"typeProperties": {
+					"sheetName": "Inventory Import Template",
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "211.xlsx",
+						"folderPath": "DEV/Upload/Inventory",
+						"fileSystem": "staging"
+					},
+					"firstRowAsHeader": true
+				},
+				"schema": [
+					{
+						"name": "Item ID",
+						"type": "String"
+					},
+					{
+						"name": "Location ID",
+						"type": "String"
+					},
+					{
+						"name": "Stock Date",
+						"type": "String"
+					},
+					{
+						"name": "Stock Quantity",
+						"type": "String"
+					},
+					{
+						"name": "Reserved Quantity",
+						"type": "String"
+					},
+					{
+						"name": "Available Quantity",
+						"type": "String"
+					},
+					{
+						"name": "On Order ID",
+						"type": "String"
+					},
+					{
+						"name": "On Order Due Date",
+						"type": "String"
+					},
+					{
+						"name": "On Order Supplier Shipping Date",
+						"type": "String"
+					},
+					{
+						"name": "On Order Promised Delivery Date",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ITEM_MASTER_DL_STORE')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "datalakelinkedservice",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "ItemMaster",
+						"fileSystem": "mldatalake"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ITEM_MASTER_RAW')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "datalakelinkedservice",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "src_files"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "sample_file.csv",
+						"folderPath": "Radial/ItemMaster",
+						"fileSystem": "main"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "Organization ID",
+						"type": "String"
+					},
+					{
+						"name": "Business ID",
+						"type": "String"
+					},
+					{
+						"name": "Location Code",
+						"type": "String"
+					},
+					{
+						"name": "Item Code",
+						"type": "String"
+					},
+					{
+						"name": "Description",
+						"type": "String"
+					},
+					{
+						"name": "Lifecycle Status",
+						"type": "String"
+					},
+					{
+						"name": "Department",
+						"type": "String"
+					},
+					{
+						"name": "Sub_Department",
+						"type": "String"
+					},
+					{
+						"name": "Product Division",
+						"type": "String"
+					},
+					{
+						"name": "Product Category",
+						"type": "String"
+					},
+					{
+						"name": "Measurement Unit",
+						"type": "String"
+					},
+					{
+						"name": "Unit Cost",
+						"type": "String"
+					},
+					{
+						"name": "Unit Volume",
+						"type": "String"
+					},
+					{
+						"name": "Unit Weight",
+						"type": "String"
+					},
+					{
+						"name": "Item Unit Price",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LANE_RATES_RAW')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "datalakelinkedservice",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "src_files"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "lane_rates/raw",
+						"fileSystem": "radial-demo-data"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "Zones",
+						"type": "String"
+					},
+					{
+						"name": "2",
+						"type": "String"
+					},
+					{
+						"name": "3",
+						"type": "String"
+					},
+					{
+						"name": "4",
+						"type": "String"
+					},
+					{
+						"name": "5",
+						"type": "String"
+					},
+					{
+						"name": "6",
+						"type": "String"
+					},
+					{
+						"name": "7",
+						"type": "String"
+					},
+					{
+						"name": "8",
+						"type": "String"
+					},
+					{
+						"name": "44",
+						"type": "String"
+					},
+					{
+						"name": "45",
+						"type": "String"
+					},
+					{
+						"name": "46",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LANE_RATE_2DAY_AIR_RAW')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "datalakelinkedservice",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "src_files"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "Radial/LaneRates/UPS/2DayAir",
+						"fileSystem": "main"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "Zones",
+						"type": "String"
+					},
+					{
+						"name": "202.0",
+						"type": "String"
+					},
+					{
+						"name": "203.0",
+						"type": "String"
+					},
+					{
+						"name": "204.0",
+						"type": "String"
+					},
+					{
+						"name": "205.0",
+						"type": "String"
+					},
+					{
+						"name": "206.0",
+						"type": "String"
+					},
+					{
+						"name": "207.0",
+						"type": "String"
+					},
+					{
+						"name": "208.0",
+						"type": "String"
+					},
+					{
+						"name": "224.0",
+						"type": "String"
+					},
+					{
+						"name": "225.0",
+						"type": "String"
+					},
+					{
+						"name": "226",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LANE_RATE_GROUND_RAW')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "datalakelinkedservice",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "src_files"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "Radial/LaneRates/UPS/Ground",
+						"fileSystem": "main"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "Zones",
+						"type": "String"
+					},
+					{
+						"name": "2",
+						"type": "String"
+					},
+					{
+						"name": "3",
+						"type": "String"
+					},
+					{
+						"name": "4",
+						"type": "String"
+					},
+					{
+						"name": "5",
+						"type": "String"
+					},
+					{
+						"name": "6",
+						"type": "String"
+					},
+					{
+						"name": "7",
+						"type": "String"
+					},
+					{
+						"name": "8",
+						"type": "String"
+					},
+					{
+						"name": "44",
+						"type": "String"
+					},
+					{
+						"name": "45",
+						"type": "String"
+					},
+					{
+						"name": "46",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LANE_RATE_NEXTDAY_AIR_RAW')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "datalakelinkedservice",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "src_files"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "Radial/LaneRates/UPS/NextDayAir",
+						"fileSystem": "main"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LOCATION_MASTER_RAW')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "datalakelinkedservice",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "src_files"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "new_file_location_master.csv",
+						"folderPath": "Radial/LocationMaster",
+						"fileSystem": "main"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "Organization ID",
+						"type": "String"
+					},
+					{
+						"name": "Business ID",
+						"type": "String"
+					},
+					{
+						"name": "Location Code",
+						"type": "String"
+					},
+					{
+						"name": "Name",
+						"type": "String"
+					},
+					{
+						"name": "Address",
+						"type": "String"
+					},
+					{
+						"name": "City",
+						"type": "String"
+					},
+					{
+						"name": "State",
+						"type": "String"
+					},
+					{
+						"name": "Zip",
+						"type": "String"
+					},
+					{
+						"name": "Country",
+						"type": "String"
+					},
+					{
+						"name": "Latitude",
+						"type": "String"
+					},
+					{
+						"name": "Longitude",
+						"type": "String"
+					},
+					{
+						"name": "Location Status",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LOCATION_STAFFING_UX')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "datalakelinkedservice",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Excel",
+				"typeProperties": {
+					"sheetName": "Location Staffing Import Templa",
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "18.xlsx",
+						"folderPath": "DEV/Upload/LocationStaffing",
+						"fileSystem": "staging"
+					},
+					"firstRowAsHeader": true
+				},
+				"schema": [
+					{
+						"name": "Profile Name*",
+						"type": "String"
+					},
+					{
+						"name": "Location ID*",
+						"type": "String"
+					},
+					{
+						"name": "Date*",
+						"type": "String"
+					},
+					{
+						"name": "Metric Name*",
+						"type": "String"
+					},
+					{
+						"name": "Value*",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LOCATION_UX_STAGING')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "datalakelinkedservice",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Excel",
+				"typeProperties": {
+					"sheetName": "Location Import Template",
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "36.xlsx",
+						"folderPath": "DEV/Upload/Location",
+						"fileSystem": "staging"
+					},
+					"firstRowAsHeader": true
+				},
+				"schema": [
+					{
+						"name": "Location ID*",
+						"type": "String"
+					},
+					{
+						"name": "Location Name",
+						"type": "String"
+					},
+					{
+						"name": "Address",
+						"type": "String"
+					},
+					{
+						"name": "City",
+						"type": "String"
+					},
+					{
+						"name": "State",
+						"type": "String"
+					},
+					{
+						"name": "Zip",
+						"type": "String"
+					},
+					{
+						"name": "Country",
+						"type": "String"
+					},
+					{
+						"name": "Longitude",
+						"type": "String"
+					},
+					{
+						"name": "Latitude",
+						"type": "String"
+					},
+					{
+						"name": "Location Status",
+						"type": "String"
+					},
+					{
+						"name": "Location Type",
+						"type": "String"
+					},
+					{
+						"name": "Daily Throughput",
+						"type": "String"
+					},
+					{
+						"name": "Storage Capacity",
+						"type": "String"
+					},
+					{
+						"name": "Inbound Handling Cost",
+						"type": "String"
+					},
+					{
+						"name": "Outbound Handling Cost",
+						"type": "String"
+					},
+					{
+						"name": "Inbound Processing Time",
+						"type": "String"
+					},
+					{
+						"name": "Outbound Processing Time",
+						"type": "String"
+					},
+					{
+						"name": "Transfer Inbound Processing Time",
+						"type": "String"
+					},
+					{
+						"name": "Transfer Outbound Processing Time",
+						"type": "String"
+					},
+					{
+						"name": "Transfer Inbound Handling Cost",
+						"type": "String"
+					},
+					{
+						"name": "Transfer Outbound Handling Cost",
+						"type": "String"
+					},
+					{
+						"name": "Units per Hour",
+						"type": "String"
+					},
+					{
+						"name": "Max FTE Regular Hours",
+						"type": "String"
+					},
+					{
+						"name": "Min FTE Regular Hours",
+						"type": "String"
+					},
+					{
+						"name": "Max Temp Regular Hours",
+						"type": "String"
+					},
+					{
+						"name": "Min Temp Regular Hours",
+						"type": "String"
+					},
+					{
+						"name": "Max FTE Overtime Hours",
+						"type": "String"
+					},
+					{
+						"name": "Regular FTE Wage",
+						"type": "String"
+					},
+					{
+						"name": "Regular Temp Wage",
+						"type": "String"
+					},
+					{
+						"name": "Overtime FTE Wage",
+						"type": "String"
+					},
+					{
+						"name": "Overtime Temp Wage",
+						"type": "String"
+					},
+					{
+						"name": "FTE Staff Count",
+						"type": "String"
+					},
+					{
+						"name": "Temp Staff Count",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LocationStaffingMain')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "datalakelinkedservice",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "17.txt",
+						"folderPath": "DEV/Upload/LocationStaffing",
+						"fileSystem": "main"
+					},
+					"columnDelimiter": "\t",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LocationsMain')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "datalakelinkedservice",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "DEV/Upload/Location",
+						"fileSystem": "main"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "Location ID*",
+						"type": "String"
+					},
+					{
+						"name": "Location Name",
+						"type": "String"
+					},
+					{
+						"name": "Address",
+						"type": "String"
+					},
+					{
+						"name": "City",
+						"type": "String"
+					},
+					{
+						"name": "State",
+						"type": "String"
+					},
+					{
+						"name": "Zip",
+						"type": "String"
+					},
+					{
+						"name": "Country",
+						"type": "String"
+					},
+					{
+						"name": "Longitude",
+						"type": "String"
+					},
+					{
+						"name": "Latitude",
+						"type": "String"
+					},
+					{
+						"name": "Location Status",
+						"type": "String"
+					},
+					{
+						"name": "Location Type",
+						"type": "String"
+					},
+					{
+						"name": "Daily Throughput",
+						"type": "String"
+					},
+					{
+						"name": "Storage Capacity",
+						"type": "String"
+					},
+					{
+						"name": "Inbound Handling Cost",
+						"type": "String"
+					},
+					{
+						"name": "Outbound Handling Cost",
+						"type": "String"
+					},
+					{
+						"name": "Inbound Processing Time",
+						"type": "String"
+					},
+					{
+						"name": "Outbound Processing Time",
+						"type": "String"
+					},
+					{
+						"name": "Transfer Inbound Processing Time",
+						"type": "String"
+					},
+					{
+						"name": "Transfer Outbound Processing Time",
+						"type": "String"
+					},
+					{
+						"name": "Transfer Inbound Handling Cost",
+						"type": "String"
+					},
+					{
+						"name": "Transfer Outbound Handling Cost",
+						"type": "String"
+					},
+					{
+						"name": "Units per Hour",
+						"type": "String"
+					},
+					{
+						"name": "Max FTE Regular Hours",
+						"type": "String"
+					},
+					{
+						"name": "Min FTE Regular Hours",
+						"type": "String"
+					},
+					{
+						"name": "Max Temp Regular Hours",
+						"type": "String"
+					},
+					{
+						"name": "Min Temp Regular Hours",
+						"type": "String"
+					},
+					{
+						"name": "Regular FTE Wage",
+						"type": "String"
+					},
+					{
+						"name": "Regular Temp Wage",
+						"type": "String"
+					},
+					{
+						"name": "Overtime FTE Wage",
+						"type": "String"
+					},
+					{
+						"name": "Overtime Temp Wage",
+						"type": "String"
+					},
+					{
+						"name": "FTE Staff Count",
+						"type": "String"
+					},
+					{
+						"name": "Temp Staff Count",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ORDER_HISTORY_RAW')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "datalakelinkedservice",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "src_files"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "Radial/OrderHistory",
+						"fileSystem": "main"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "Order ID",
+						"type": "String"
+					},
+					{
+						"name": "Order Line ID",
+						"type": "String"
+					},
+					{
+						"name": "Location ID",
+						"type": "String"
+					},
+					{
+						"name": "Channel",
+						"type": "String"
+					},
+					{
+						"name": "Order Date",
+						"type": "String"
+					},
+					{
+						"name": "Order Original Ship Date",
+						"type": "String"
+					},
+					{
+						"name": "Order Actual Ship Date",
+						"type": "String"
+					},
+					{
+						"name": "Order Due Date",
+						"type": "String"
+					},
+					{
+						"name": "Order Received Date and Time",
+						"type": "String"
+					},
+					{
+						"name": "Order Completed Date and Time",
+						"type": "String"
+					},
+					{
+						"name": "Destination Zip Code",
+						"type": "String"
+					},
+					{
+						"name": "Item Code",
+						"type": "String"
+					},
+					{
+						"name": "Order Quantity",
+						"type": "String"
+					},
+					{
+						"name": "Quantity (UOM) Picked",
+						"type": "String"
+					},
+					{
+						"name": "Order Status",
+						"type": "String"
+					},
+					{
+						"name": "Carrier",
+						"type": "String"
+					},
+					{
+						"name": "Service Type",
+						"type": "String"
+					},
+					{
+						"name": "Shipment Fees",
+						"type": "String"
+					},
+					{
+						"name": "Order Value",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ORDER_HISTORY_SFTP')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "QA_Datalake",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "src_files"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "Radial/OrderHistory/OH",
+						"fileSystem": "staging"
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "Order ID",
+						"type": "String"
+					},
+					{
+						"name": "Order Line ID",
+						"type": "String"
+					},
+					{
+						"name": "Location ID",
+						"type": "String"
+					},
+					{
+						"name": "Channel",
+						"type": "String"
+					},
+					{
+						"name": "Order date",
+						"type": "String"
+					},
+					{
+						"name": "Order Original Ship date",
+						"type": "String"
+					},
+					{
+						"name": "Order Actual Ship date",
+						"type": "String"
+					},
+					{
+						"name": "Order due date",
+						"type": "String"
+					},
+					{
+						"name": "Order Received (in Warehouse) Date and time",
+						"type": "String"
+					},
+					{
+						"name": "Order Completed (in Warehouse) Date and time",
+						"type": "String"
+					},
+					{
+						"name": "Destination zip code (Ship to)",
+						"type": "String"
+					},
+					{
+						"name": "Item code",
+						"type": "String"
+					},
+					{
+						"name": "Order quantity",
+						"type": "String"
+					},
+					{
+						"name": "Quantity (UOM) Picked",
+						"type": "String"
+					},
+					{
+						"name": "Order Status",
+						"type": "String"
+					},
+					{
+						"name": "Carrier",
+						"type": "String"
+					},
+					{
+						"name": "Service Type",
+						"type": "String"
+					},
+					{
+						"name": "Shipment Fees",
+						"type": "String"
+					},
+					{
+						"name": "Order Value",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SFTP_Failed_FulfillmentForecast')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "SFTP_RADIAL_STORAGE",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "SftpLocation",
+						"folderPath": "/faileduploads/FulfillmentForecast"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SHIPMENT_HISTORY_RAW')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "datalakelinkedservice",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "src_files"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "Radial/ShipmentHistory",
+						"fileSystem": "main"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "Shipment ID",
+						"type": "String"
+					},
+					{
+						"name": "Order Line ID",
+						"type": "String"
+					},
+					{
+						"name": "Location ID",
+						"type": "String"
+					},
+					{
+						"name": "Carrier Name",
+						"type": "String"
+					},
+					{
+						"name": "Mode",
+						"type": "String"
+					},
+					{
+						"name": "Total Units",
+						"type": "String"
+					},
+					{
+						"name": "Total Shipment Weight",
+						"type": "String"
+					},
+					{
+						"name": "Total Shipment Volume",
+						"type": "String"
+					},
+					{
+						"name": "Total Shipment Cost",
+						"type": "String"
+					},
+					{
+						"name": "Total Shipment Value",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SHIPMENT_HISTORY_STAGING')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "QA_Datalake",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "src_files"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "Radial/OrderHistory",
+						"fileSystem": "staging"
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "Order ID|Order Line ID|Channel|Order date|Order Original Ship date|Order Actual Ship date|Order due date|Order Received (in Warehouse) Date and time|Order Completed (in Warehouse) Date and time|Destination zip code (Ship to)|Item code|Order quantity|Quantity (UOM) Picked|Order Status|Carrier|Service Type|Shipment Fees|Order Value",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/STAFFING_HISTORY_RAW')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "datalakelinkedservice",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"file_name": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "src_files"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@dataset().file_name",
+							"type": "Expression"
+						},
+						"folderPath": "Radial/StaffingHistory",
+						"fileSystem": "main"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "Organization ID",
+						"type": "String"
+					},
+					{
+						"name": "Business ID",
+						"type": "String"
+					},
+					{
+						"name": "Location Code",
+						"type": "String"
+					},
+					{
+						"name": "Date",
+						"type": "String"
+					},
+					{
+						"name": "Plan Type",
+						"type": "String"
+					},
+					{
+						"name": "Staff Type",
+						"type": "String"
+					},
+					{
+						"name": "Staff Count",
+						"type": "String"
+					},
+					{
+						"name": "Average Tenure",
+						"type": "String"
+					},
+					{
+						"name": "Regular Hours",
+						"type": "String"
+					},
+					{
+						"name": "OT Hours",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/STAGINGFILES')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "datalakelinkedservice",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "Radial",
+						"fileSystem": "main"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/STAGING_BINARY_FILES')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "datalakelinkedservice",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "Radial",
+						"fileSystem": "main"
+					}
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}

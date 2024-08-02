@@ -1,0 +1,4512 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "bricz-deploy-factory"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/df_validation_inventory')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "INVENTORY_UX",
+								"type": "DatasetReference"
+							},
+							"name": "inventoryuxstaging",
+							"description": "inventory ux staging"
+						},
+						{
+							"dataset": {
+								"referenceName": "locations",
+								"type": "DatasetReference"
+							},
+							"name": "locations"
+						},
+						{
+							"dataset": {
+								"referenceName": "item",
+								"type": "DatasetReference"
+							},
+							"name": "item",
+							"description": "Import data from items"
+						},
+						{
+							"dataset": {
+								"referenceName": "inventory",
+								"type": "DatasetReference"
+							},
+							"name": "inventory",
+							"description": "Import data from inventory"
+						},
+						{
+							"dataset": {
+								"referenceName": "importhistory",
+								"type": "DatasetReference"
+							},
+							"name": "importhistory"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "INVENTORY_MAIN_UX",
+								"type": "DatasetReference"
+							},
+							"name": "ValidInventoryDataLoad"
+						},
+						{
+							"dataset": {
+								"referenceName": "FailedInventoryRows",
+								"type": "DatasetReference"
+							},
+							"name": "failedrows"
+						}
+					],
+					"transformations": [
+						{
+							"name": "validations"
+						},
+						{
+							"name": "reverserename"
+						},
+						{
+							"name": "deriveerrors"
+						},
+						{
+							"name": "selectmainfields"
+						},
+						{
+							"name": "aggregateerrors"
+						},
+						{
+							"name": "joinaggregaterror"
+						},
+						{
+							"name": "splitvalidatedrows"
+						},
+						{
+							"name": "derivedfilename"
+						},
+						{
+							"name": "newchangenameforassert"
+						},
+						{
+							"name": "joinlocations"
+						},
+						{
+							"name": "selectlocations"
+						},
+						{
+							"name": "selectitem"
+						},
+						{
+							"name": "derivepresence"
+						},
+						{
+							"name": "joinitem"
+						},
+						{
+							"name": "selectexistrecordcheck"
+						},
+						{
+							"name": "joinexistrecordchech"
+						},
+						{
+							"name": "selectcolsforassert"
+						},
+						{
+							"name": "joininventory"
+						},
+						{
+							"name": "derivestocktypeid"
+						},
+						{
+							"name": "numericfieldintegritycheck"
+						},
+						{
+							"name": "appendrecordid"
+						},
+						{
+							"name": "detectduplicates"
+						},
+						{
+							"name": "filtertransactionrecord"
+						},
+						{
+							"name": "selectimporthistory"
+						},
+						{
+							"name": "join1"
+						},
+						{
+							"name": "joinitemtransbuorg"
+						},
+						{
+							"name": "joininventorytransbuorg"
+						},
+						{
+							"name": "filterrowswithvalidationerrors"
+						},
+						{
+							"name": "removeemptyrows"
+						}
+					],
+					"scriptLines": [
+						"parameters{",
+						"     file_path as string ('/DEV/Upload/Inventory/211.xlsx'),",
+						"     transaction_id as string ('211')",
+						"}",
+						"source(output(",
+						"          {Item ID} as string,",
+						"          {Location ID} as string,",
+						"          {Stock Date} as string,",
+						"          {Stock Quantity} as string,",
+						"          {Reserved Quantity} as string,",
+						"          {Available Quantity} as string,",
+						"          {On Order ID} as string,",
+						"          {On Order Due Date} as string,",
+						"          {On Order Supplier Shipping Date} as string,",
+						"          {On Order Promised Delivery Date} as string",
+						"     ),",
+						"     allowSchemaDrift: false,",
+						"     validateSchema: true,",
+						"     ignoreNoFilesFound: false,",
+						"     rowUrlColumn: 'file_name',",
+						"     wildcardPaths:[($file_path)]) ~> inventoryuxstaging",
+						"source(output(",
+						"          id as integer,",
+						"          location_code as string,",
+						"          name as string,",
+						"          address as string,",
+						"          city as string,",
+						"          state as string,",
+						"          zip as string,",
+						"          country as string,",
+						"          sub_type as string,",
+						"          delivery_partners as string,",
+						"          throughput as float,",
+						"          capacity as float,",
+						"          special_information as string,",
+						"          holding_cost as float,",
+						"          inbound_handling_cost as float,",
+						"          outbound_handling_cost as float,",
+						"          longitude as double,",
+						"          latitude as double,",
+						"          updated_date as date,",
+						"          created_date as date,",
+						"          status as string,",
+						"          inbound_processing_time as decimal(0,0),",
+						"          outbound_processing_time as decimal(0,0),",
+						"          type as integer,",
+						"          transfer_inbound_processing_time as double,",
+						"          transfer_outbound_processing_time as double,",
+						"          transfer_inbound_handling_cost as double,",
+						"          transfer_outbound_handling_cost as double,",
+						"          tenant_id as string,",
+						"          organization_id as string,",
+						"          business_unit_id as string,",
+						"          units_per_hour as float,",
+						"          max_fte_regular_hours as float,",
+						"          min_fte_regular_hours as float,",
+						"          max_temp_regular_hours as float,",
+						"          min_temp_regular_hours as float,",
+						"          max_fte_overtime_hours as float,",
+						"          max_temp_overtime_hours as float,",
+						"          regular_fte_wage as float,",
+						"          regular_temp_wage as float,",
+						"          overtime_fte_wage as float,",
+						"          overtime_temp_wage as float,",
+						"          fte_staff_count as integer,",
+						"          temp_staff_count as integer",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> locations",
+						"source(output(",
+						"          id as integer,",
+						"          item_code as string,",
+						"          description as string,",
+						"          short_description as string,",
+						"          department as string,",
+						"          sub_department as string,",
+						"          class as string,",
+						"          sub_class as string,",
+						"          style as string,",
+						"          color as string,",
+						"          size as string,",
+						"          size_second as string,",
+						"          sku_lifecycle_status as integer,",
+						"          product_division as string,",
+						"          product_family as string,",
+						"          measurement_unit as string,",
+						"          unit_cost as float,",
+						"          unit_volume as float,",
+						"          unit_weight as float,",
+						"          unit_cube as float,",
+						"          units_per_pallet as float,",
+						"          uom_conversion_factor as float,",
+						"          distribution_channel as string,",
+						"          item_handling_type as string,",
+						"          item_unit_price as float,",
+						"          minimum_sales_qty as float,",
+						"          birth_year as short,",
+						"          birth_month as short,",
+						"          expiration_year as short,",
+						"          expiration_month as short,",
+						"          created_date as timestamp,",
+						"          updated_date as timestamp,",
+						"          business_unit_id as string,",
+						"          organization_id as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> item",
+						"source(output(",
+						"          id as integer,",
+						"          item_id as integer,",
+						"          location_id as integer,",
+						"          on_hand_stock_date as date,",
+						"          on_hand_stock_quantity as float,",
+						"          reserved_on_hold_stock_ as float,",
+						"          available_stock as float,",
+						"          lot_id as string,",
+						"          on_order_due_date as date,",
+						"          on_order_quantity_ as float,",
+						"          purchase_order_status as float,",
+						"          on_order_supplier_shipping_date as date,",
+						"          on_order_promised_delivery_date as date,",
+						"          created_date as timestamp,",
+						"          updated_date as timestamp,",
+						"          tenant_id as string,",
+						"          organization_id as string,",
+						"          business_unit_id as string,",
+						"          stock_type_id as integer",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> inventory",
+						"source(output(",
+						"          id as integer,",
+						"          original_file_name as string,",
+						"          user_id as string,",
+						"          status_enum_value_id as integer,",
+						"          processed_time as timestamp,",
+						"          errors as string,",
+						"          business_unit_id as string,",
+						"          organization_id as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> importhistory",
+						"removeemptyrows, selectlocations, selectitem assert(expectExists(selectcolsforassert@Location_ID == location_code, false, 'locationexist', null, 'Location ID Not Found In Database'),",
+						"     expectExists(selectcolsforassert@Item_ID == item_code, false, 'itemexists', null, 'Item Specified Does Not Exists In Database'),",
+						"     expectTrue(isNull(presence), false, 'checkrecordexists', null, 'Record Already Exists In DB'),",
+						"     expectTrue(numericintegrity, false, 'numericfieldintegrity', null, 'Non numerical values exist in numerical fields'),",
+						"     expectTrue(nonduplicatedrow, false, 'duplicated', null, 'Duplicate records found in upload')) ~> validations",
+						"validations select(mapColumn(",
+						"          {Item ID} = selectcolsforassert@Item_ID,",
+						"          {Location ID} = selectcolsforassert@Location_ID,",
+						"          {Stock Date},",
+						"          {Stock Quantity},",
+						"          {Reserved Quantity},",
+						"          {Available Quantity},",
+						"          {On Order ID},",
+						"          {On Order Due Date},",
+						"          {On Order Supplier Shipping Date},",
+						"          {On Order Promised Delivery Date},",
+						"          file_name,",
+						"          presence,",
+						"          record_id",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> reverserename",
+						"reverserename derive(validation_errors = assertErrorMessages(),",
+						"          transaction_id = toInteger($transaction_id),",
+						"          sink_file_name = replace(file_name,'.xlsx','.txt')) ~> deriveerrors",
+						"joinaggregaterror select(mapColumn(",
+						"          {Item ID},",
+						"          {Location ID},",
+						"          {Stock Date},",
+						"          {Stock Quantity},",
+						"          {Reserved Quantity},",
+						"          {Available Quantity},",
+						"          {On Order ID},",
+						"          {On Order Due Date},",
+						"          {On Order Supplier Shipping Date},",
+						"          {On Order Promised Delivery Date},",
+						"          file_name = reverserename@file_name,",
+						"          presence,",
+						"          validation_errors,",
+						"          transaction_id,",
+						"          sink_file_name,",
+						"          file_name = aggregateerrors@file_name,",
+						"          errors_count,",
+						"          record_id",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectmainfields",
+						"deriveerrors aggregate(groupBy(file_name),",
+						"     errors_count = countIf(not(isNull(validation_errors)))) ~> aggregateerrors",
+						"deriveerrors, aggregateerrors join(reverserename@file_name == aggregateerrors@file_name,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> joinaggregaterror",
+						"selectmainfields split(errors_count==0,",
+						"     disjoint: false) ~> splitvalidatedrows@(validrows, validationfailedrows)",
+						"filterrowswithvalidationerrors derive(failed_file_name = replace(replace($file_path,'/Upload/','/FailedTransactions/'),'.xlsx','.json'),",
+						"          type = 'error',",
+						"          message = concat('record number ',toString(record_id),' has following errors ',toString(validation_errors))) ~> derivedfilename",
+						"numericfieldintegritycheck select(mapColumn(",
+						"          Item_ID = {Item ID},",
+						"          Location_ID = {Location ID},",
+						"          {Stock Date},",
+						"          {Stock Quantity},",
+						"          {Reserved Quantity},",
+						"          {Available Quantity},",
+						"          {On Order ID},",
+						"          {On Order Due Date},",
+						"          {On Order Supplier Shipping Date},",
+						"          {On Order Promised Delivery Date},",
+						"          file_name,",
+						"          numericintegrity,",
+						"          record_id,",
+						"          nonduplicatedrow",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> newchangenameforassert",
+						"derivestocktypeid, selectlocations join({Location ID} == location_code,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> joinlocations",
+						"join1 select(mapColumn(",
+						"          location_id = locations@id,",
+						"          location_code",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectlocations",
+						"joinitemtransbuorg select(mapColumn(",
+						"          item_id = item@id,",
+						"          item_code",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectitem",
+						"joininventorytransbuorg derive(presence = 'true') ~> derivepresence",
+						"joinlocations, selectitem join({Item ID} == item_code,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> joinitem",
+						"joininventory select(mapColumn(",
+						"          {Item ID},",
+						"          {Location ID},",
+						"          {Stock Date},",
+						"          {Stock Quantity},",
+						"          {Reserved Quantity},",
+						"          {Available Quantity},",
+						"          {On Order ID},",
+						"          {On Order Due Date},",
+						"          {On Order Supplier Shipping Date},",
+						"          {On Order Promised Delivery Date},",
+						"          file_name,",
+						"          presence,",
+						"          record_id",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectexistrecordcheck",
+						"newchangenameforassert, selectexistrecordcheck join(newchangenameforassert@record_id == selectexistrecordcheck@record_id,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> joinexistrecordchech",
+						"joinexistrecordchech select(mapColumn(",
+						"          Item_ID,",
+						"          Location_ID,",
+						"          {Stock Date} = newchangenameforassert@{Stock Date},",
+						"          {Stock Quantity} = newchangenameforassert@{Stock Quantity},",
+						"          {Reserved Quantity} = newchangenameforassert@{Reserved Quantity},",
+						"          {Available Quantity} = newchangenameforassert@{Available Quantity},",
+						"          {On Order ID} = newchangenameforassert@{On Order ID},",
+						"          {On Order Due Date} = newchangenameforassert@{On Order Due Date},",
+						"          {On Order Supplier Shipping Date} = newchangenameforassert@{On Order Supplier Shipping Date},",
+						"          {On Order Promised Delivery Date} = newchangenameforassert@{On Order Promised Delivery Date},",
+						"          file_name = newchangenameforassert@file_name,",
+						"          presence,",
+						"          numericintegrity,",
+						"          nonduplicatedrow,",
+						"          record_id = selectexistrecordcheck@record_id",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectcolsforassert",
+						"joinitem, derivepresence join(selectlocations@location_id == inventory@location_id",
+						"     && selectitem@item_id == inventory@item_id",
+						"     && derivestocktypeid@stock_type_id == inventory@stock_type_id,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> joininventory",
+						"appendrecordid derive(stock_type_id = 1) ~> derivestocktypeid",
+						"detectduplicates derive(numericintegrity = iif(isNull({Stock Quantity}),true(),not(isNull(toFloat({Stock Quantity})))) &&  iif(isNull({Reserved Quantity}),true(),not(isNull(toFloat({Reserved Quantity})))) && iif(isNull({Available Quantity}),true(),not(isNull(toFloat({Available Quantity}))))) ~> numericfieldintegritycheck",
+						"inventoryuxstaging keyGenerate(output(record_id as long),",
+						"     startAt: 1L,",
+						"     stepValue: 1L) ~> appendrecordid",
+						"appendrecordid window(over({Item ID},",
+						"          {Location ID},",
+						"          {Stock Date},",
+						"          {On Order Supplier Shipping Date},",
+						"          {On Order Promised Delivery Date},",
+						"          {On Order Due Date},",
+						"          {On Order ID}),",
+						"     asc(record_id, true),",
+						"     nonduplicatedrow = rowNumber() == 1) ~> detectduplicates",
+						"importhistory filter(id == toInteger($transaction_id)) ~> filtertransactionrecord",
+						"filtertransactionrecord select(mapColumn(",
+						"          id,",
+						"          business_unit_id,",
+						"          organization_id",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectimporthistory",
+						"locations, selectimporthistory join(locations@business_unit_id == selectimporthistory@business_unit_id",
+						"     && locations@organization_id == selectimporthistory@organization_id,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join1",
+						"item, selectimporthistory join(item@business_unit_id == selectimporthistory@business_unit_id",
+						"     && item@organization_id == selectimporthistory@organization_id,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> joinitemtransbuorg",
+						"inventory, selectimporthistory join(inventory@business_unit_id == selectimporthistory@business_unit_id",
+						"     && inventory@organization_id == selectimporthistory@organization_id,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> joininventorytransbuorg",
+						"splitvalidatedrows@validationfailedrows filter(not(isNull(validation_errors))) ~> filterrowswithvalidationerrors",
+						"selectcolsforassert filter(not(isNull(Item_ID)) || not(isNull(Location_ID)) || not(isNull({Stock Date})) || not(isNull({Stock Quantity})) || not(isNull({Reserved Quantity})) || not(isNull({Available Quantity})) || not(isNull({On Order ID})) || not(isNull({On Order Due Date})) || not(isNull({On Order Supplier Shipping Date})) || not(isNull({On Order Promised Delivery Date}))) ~> removeemptyrows",
+						"splitvalidatedrows@validrows sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          {Item ID} as string,",
+						"          {Location ID} as string,",
+						"          {Stock Date} as string,",
+						"          {Stock Quantity} as string,",
+						"          {Reserved Quantity} as string,",
+						"          {Available Quantity} as string,",
+						"          {On Order ID} as string,",
+						"          {On Order Due Date} as string,",
+						"          {On Order Supplier Shipping Date} as string,",
+						"          {On Order Promised Delivery Date} as string",
+						"     ),",
+						"     rowUrlColumn:'sink_file_name',",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          {Item ID},",
+						"          {Location ID},",
+						"          {Stock Date},",
+						"          {Stock Quantity},",
+						"          {Reserved Quantity},",
+						"          {Available Quantity},",
+						"          {On Order ID},",
+						"          {On Order Due Date},",
+						"          {On Order Supplier Shipping Date},",
+						"          {On Order Promised Delivery Date}",
+						"     )) ~> ValidInventoryDataLoad",
+						"derivedfilename sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     rowUrlColumn:'failed_file_name',",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          type,",
+						"          message",
+						"     )) ~> failedrows"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_validation_location')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "locations",
+								"type": "DatasetReference"
+							},
+							"name": "locations"
+						},
+						{
+							"dataset": {
+								"referenceName": "LOCATION_UX_STAGING",
+								"type": "DatasetReference"
+							},
+							"name": "locationstagingux"
+						},
+						{
+							"dataset": {
+								"referenceName": "location_type",
+								"type": "DatasetReference"
+							},
+							"name": "locationtype"
+						},
+						{
+							"dataset": {
+								"referenceName": "importhistory",
+								"type": "DatasetReference"
+							},
+							"name": "importhistory"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "LocationsMain",
+								"type": "DatasetReference"
+							},
+							"name": "ValidLocations"
+						},
+						{
+							"dataset": {
+								"referenceName": "FailedRowsLocation",
+								"type": "DatasetReference"
+							},
+							"name": "failedrows"
+						}
+					],
+					"transformations": [
+						{
+							"name": "validations"
+						},
+						{
+							"name": "reverserename"
+						},
+						{
+							"name": "deriveerrors"
+						},
+						{
+							"name": "selectmainfields"
+						},
+						{
+							"name": "aggregateerrors"
+						},
+						{
+							"name": "joinaggregaterror"
+						},
+						{
+							"name": "splitvalidatedrows"
+						},
+						{
+							"name": "derivedfilename"
+						},
+						{
+							"name": "newchangenameforassert"
+						},
+						{
+							"name": "addcolpresence"
+						},
+						{
+							"name": "selectlocation"
+						},
+						{
+							"name": "derivedColumn"
+						},
+						{
+							"name": "filtertransaction"
+						},
+						{
+							"name": "selectimporthistory"
+						},
+						{
+							"name": "appendrecordid"
+						},
+						{
+							"name": "detectduplicates"
+						},
+						{
+							"name": "selectlocationtypes"
+						},
+						{
+							"name": "joinbuorglocations"
+						},
+						{
+							"name": "filterrowswithvalidationerrors"
+						},
+						{
+							"name": "joinlocationstable"
+						},
+						{
+							"name": "filteremptyrows"
+						}
+					],
+					"scriptLines": [
+						"parameters{",
+						"     file_path as string ('/DEV/Upload/Location/36.xlsx'),",
+						"     transaction_id as string ('36')",
+						"}",
+						"source(output(",
+						"          id as integer,",
+						"          location_code as string,",
+						"          name as string,",
+						"          address as string,",
+						"          city as string,",
+						"          state as string,",
+						"          zip as string,",
+						"          country as string,",
+						"          sub_type as string,",
+						"          delivery_partners as string,",
+						"          throughput as float,",
+						"          capacity as float,",
+						"          special_information as string,",
+						"          holding_cost as float,",
+						"          inbound_handling_cost as float,",
+						"          outbound_handling_cost as float,",
+						"          longitude as double,",
+						"          latitude as double,",
+						"          updated_date as date,",
+						"          created_date as date,",
+						"          status as string,",
+						"          inbound_processing_time as decimal(0,0),",
+						"          outbound_processing_time as decimal(0,0),",
+						"          type as integer,",
+						"          transfer_inbound_processing_time as double,",
+						"          transfer_outbound_processing_time as double,",
+						"          transfer_inbound_handling_cost as double,",
+						"          transfer_outbound_handling_cost as double,",
+						"          tenant_id as string,",
+						"          organization_id as string,",
+						"          business_unit_id as string,",
+						"          units_per_hour as float,",
+						"          max_fte_regular_hours as float,",
+						"          min_fte_regular_hours as float,",
+						"          max_temp_regular_hours as float,",
+						"          min_temp_regular_hours as float,",
+						"          max_fte_overtime_hours as float,",
+						"          max_temp_overtime_hours as float,",
+						"          regular_fte_wage as float,",
+						"          regular_temp_wage as float,",
+						"          overtime_fte_wage as float,",
+						"          overtime_temp_wage as float,",
+						"          fte_staff_count as integer,",
+						"          temp_staff_count as integer",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> locations",
+						"source(output(",
+						"          {Location ID*} as string,",
+						"          {Location Name} as string,",
+						"          Address as string,",
+						"          City as string,",
+						"          State as string,",
+						"          Zip as string,",
+						"          Country as string,",
+						"          Longitude as string,",
+						"          Latitude as string,",
+						"          {Location Status} as string,",
+						"          {Location Type} as string,",
+						"          {Daily Throughput} as string,",
+						"          {Storage Capacity} as string,",
+						"          {Inbound Handling Cost} as string,",
+						"          {Outbound Handling Cost} as string,",
+						"          {Inbound Processing Time} as string,",
+						"          {Outbound Processing Time} as string,",
+						"          {Transfer Inbound Processing Time} as string,",
+						"          {Transfer Outbound Processing Time} as string,",
+						"          {Transfer Inbound Handling Cost} as string,",
+						"          {Transfer Outbound Handling Cost} as string,",
+						"          {Units per Hour} as string,",
+						"          {Max FTE Regular Hours} as string,",
+						"          {Min FTE Regular Hours} as string,",
+						"          {Max Temp Regular Hours} as string,",
+						"          {Min Temp Regular Hours} as string,",
+						"          {Max FTE Overtime Hours} as string,",
+						"          {Regular FTE Wage} as string,",
+						"          {Regular Temp Wage} as string,",
+						"          {Overtime FTE Wage} as string,",
+						"          {Overtime Temp Wage} as string,",
+						"          {FTE Staff Count} as string,",
+						"          {Temp Staff Count} as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     wildcardPaths:[($file_path)]) ~> locationstagingux",
+						"source(output(",
+						"          id as integer,",
+						"          name as string,",
+						"          description as string,",
+						"          created_date as date,",
+						"          updated_date as date,",
+						"          display_icon as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> locationtype",
+						"source(output(",
+						"          id as integer,",
+						"          original_file_name as string,",
+						"          user_id as string,",
+						"          status_enum_value_id as integer,",
+						"          processed_time as timestamp,",
+						"          errors as string,",
+						"          business_unit_id as string,",
+						"          organization_id as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> importhistory",
+						"filteremptyrows, selectlocationtypes, selectlocation assert(expectTrue(isNull(newchangenameforassert@presence), false, 'checkrecordexists', null, 'Record Already Exists In DB'),",
+						"     expectExists(Location_Type == name, false, 'checklocationtype', null, 'Location Type Not Found'),",
+						"     expectTrue(numericalfieldintegrity, false, 'numericalintegrity', null, 'Numerical fields contain non numeric values'),",
+						"     expectUnique(Location_ID, false, 'duplicateddata', null, 'Duplicate Records Found In The Upload')) ~> validations",
+						"validations select(mapColumn(",
+						"          {Location ID*} = Location_ID,",
+						"          {Location Name},",
+						"          Address,",
+						"          City,",
+						"          State,",
+						"          Zip,",
+						"          Country,",
+						"          Longitude,",
+						"          Latitude,",
+						"          {Location Status},",
+						"          {Location Type} = Location_Type,",
+						"          {Daily Throughput},",
+						"          {Storage Capacity},",
+						"          {Inbound Handling Cost},",
+						"          {Outbound Handling Cost},",
+						"          {Inbound Processing Time},",
+						"          {Outbound Processing Time},",
+						"          {Transfer Inbound Processing Time},",
+						"          {Transfer Outbound Processing Time},",
+						"          {Transfer Inbound Handling Cost},",
+						"          {Transfer Outbound Handling Cost},",
+						"          {Units per Hour},",
+						"          {Max FTE Regular Hours},",
+						"          {Min FTE Regular Hours},",
+						"          {Max Temp Regular Hours},",
+						"          {Min Temp Regular Hours},",
+						"          {Regular FTE Wage},",
+						"          {Regular Temp Wage},",
+						"          {Overtime FTE Wage},",
+						"          {Overtime Temp Wage},",
+						"          {FTE Staff Count},",
+						"          {Temp Staff Count},",
+						"          file_name,",
+						"          record_id",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> reverserename",
+						"reverserename derive(validation_errors = assertErrorMessages(),",
+						"          transaction_id = toInteger($transaction_id),",
+						"          sink_file_name = replace(file_name,'.xlsx','.txt')) ~> deriveerrors",
+						"joinaggregaterror select(mapColumn(",
+						"          {Location ID*},",
+						"          {Location Name},",
+						"          Address,",
+						"          City,",
+						"          State,",
+						"          Zip,",
+						"          Country,",
+						"          Longitude,",
+						"          Latitude,",
+						"          {Location Status},",
+						"          {Location Type},",
+						"          {Daily Throughput},",
+						"          {Storage Capacity},",
+						"          {Inbound Handling Cost},",
+						"          {Outbound Handling Cost},",
+						"          {Inbound Processing Time},",
+						"          {Outbound Processing Time},",
+						"          {Transfer Inbound Processing Time},",
+						"          {Transfer Outbound Processing Time},",
+						"          {Transfer Inbound Handling Cost},",
+						"          {Transfer Outbound Handling Cost},",
+						"          {Units per Hour},",
+						"          {Max FTE Regular Hours},",
+						"          {Min FTE Regular Hours},",
+						"          {Max Temp Regular Hours},",
+						"          {Min Temp Regular Hours},",
+						"          {Regular FTE Wage},",
+						"          {Regular Temp Wage},",
+						"          {Overtime FTE Wage},",
+						"          {Overtime Temp Wage},",
+						"          {FTE Staff Count},",
+						"          {Temp Staff Count},",
+						"          file_name = reverserename@file_name,",
+						"          validation_errors,",
+						"          transaction_id,",
+						"          sink_file_name,",
+						"          errors_count,",
+						"          record_id",
+						"     ),",
+						"     skipDuplicateMapInputs: false,",
+						"     skipDuplicateMapOutputs: false) ~> selectmainfields",
+						"deriveerrors aggregate(groupBy(file_name),",
+						"     errors_count = countIf(not(isNull(validation_errors)))) ~> aggregateerrors",
+						"deriveerrors, aggregateerrors join(reverserename@file_name == aggregateerrors@file_name,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> joinaggregaterror",
+						"selectmainfields split(errors_count==0,",
+						"     disjoint: false) ~> splitvalidatedrows@(validrows, validationfailedrows)",
+						"filterrowswithvalidationerrors derive(failed_file_name = replace(replace($file_path,'/Upload/','/FailedTransactions/'),'.xlsx','.json'),",
+						"          type = 'error',",
+						"          message = concat('record number ',toString(record_id),' has following errors ',toString(validation_errors))) ~> derivedfilename",
+						"derivedColumn select(mapColumn(",
+						"          Location_ID = {Location ID*},",
+						"          {Location Name},",
+						"          Address,",
+						"          City,",
+						"          State,",
+						"          Zip,",
+						"          Country,",
+						"          Longitude,",
+						"          Latitude,",
+						"          {Location Status},",
+						"          Location_Type = {Location Type},",
+						"          {Daily Throughput},",
+						"          {Storage Capacity},",
+						"          {Inbound Handling Cost},",
+						"          {Outbound Handling Cost},",
+						"          {Inbound Processing Time},",
+						"          {Outbound Processing Time},",
+						"          {Transfer Inbound Processing Time},",
+						"          {Transfer Outbound Processing Time},",
+						"          {Transfer Inbound Handling Cost},",
+						"          {Transfer Outbound Handling Cost},",
+						"          {Units per Hour},",
+						"          {Max FTE Regular Hours},",
+						"          {Min FTE Regular Hours},",
+						"          {Max Temp Regular Hours},",
+						"          {Min Temp Regular Hours},",
+						"          {Max FTE Overtime Hours},",
+						"          {Regular FTE Wage},",
+						"          {Regular Temp Wage},",
+						"          {Overtime FTE Wage},",
+						"          {Overtime Temp Wage},",
+						"          {FTE Staff Count},",
+						"          {Temp Staff Count},",
+						"          file_name,",
+						"          numericalfieldintegrity,",
+						"          nonduplicatedrow,",
+						"          record_id,",
+						"          presence",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> newchangenameforassert",
+						"joinbuorglocations derive(presence = 'true') ~> addcolpresence",
+						"addcolpresence select(mapColumn(",
+						"          location_code,",
+						"          presence",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectlocation",
+						"joinlocationstable derive(file_name = $file_path,",
+						"          numericalfieldintegrity = iif(isNull({Daily Throughput}),true(),not(isNull(toFloat({Daily Throughput})))) && iif(isNull({Storage Capacity}),true(),not(isNull(toFloat({Storage Capacity})))) && iif(isNull({Inbound Handling Cost}),true(),not(isNull(toFloat({Inbound Handling Cost})))) && iif(isNull({Outbound Handling Cost}),true(),not(isNull(toFloat({Outbound Handling Cost})))) && iif(isNull({Transfer Inbound Handling Cost}),true(),not(isNull(toFloat({Transfer Inbound Handling Cost})))) && iif(isNull({Transfer Outbound Handling Cost}),true(),not(isNull(toFloat({Transfer Outbound Handling Cost})))) && iif(isNull({Units per Hour}),true(),not(isNull(toFloat({Units per Hour})))) && iif(isNull({Min FTE Regular Hours}),true(),not(isNull(toFloat({Min FTE Regular Hours})))) && iif(isNull({Max FTE Regular Hours}),true(),not(isNull(toFloat({Max FTE Regular Hours})))) && iif(isNull({Min Temp Regular Hours}),true(),not(isNull(toFloat({Min Temp Regular Hours})))) && iif(isNull({Max Temp Regular Hours}),true(),not(isNull(toFloat({Max Temp Regular Hours})))) && iif(isNull({Max FTE Overtime Hours}),true(),not(isNull(toFloat({Max FTE Overtime Hours})))) && iif(isNull({Regular FTE Wage}),true(),not(isNull(toFloat({Regular FTE Wage})))) && iif(isNull({Regular Temp Wage}),true(),not(isNull(toFloat({Regular Temp Wage})))) && iif(isNull({Overtime FTE Wage}),true(),not(isNull(toFloat({Overtime FTE Wage})))) && iif(isNull({Overtime Temp Wage}),true(),not(isNull(toFloat({Overtime Temp Wage})))) && iif(isNull({FTE Staff Count}),true(),not(isNull(toFloat({FTE Staff Count})))) && iif(isNull({Temp Staff Count}),true(),not(isNull(toFloat({Temp Staff Count}))))) ~> derivedColumn",
+						"importhistory filter(id == toInteger($transaction_id)) ~> filtertransaction",
+						"filtertransaction select(mapColumn(",
+						"          id,",
+						"          original_file_name,",
+						"          user_id,",
+						"          status_enum_value_id,",
+						"          processed_time,",
+						"          errors,",
+						"          business_unit_id,",
+						"          organization_id",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectimporthistory",
+						"locationstagingux keyGenerate(output(record_id as long),",
+						"     startAt: 1L,",
+						"     stepValue: 1L) ~> appendrecordid",
+						"appendrecordid window(over({Location ID*}),",
+						"     asc(record_id, true),",
+						"     nonduplicatedrow = rowNumber() == 1) ~> detectduplicates",
+						"locationtype select(mapColumn(",
+						"          id,",
+						"          name",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectlocationtypes",
+						"locations, selectimporthistory join(locations@business_unit_id == selectimporthistory@business_unit_id",
+						"     && locations@organization_id == selectimporthistory@organization_id,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> joinbuorglocations",
+						"splitvalidatedrows@validationfailedrows filter(not(isNull(validation_errors))) ~> filterrowswithvalidationerrors",
+						"detectduplicates, selectlocation join({Location ID*} == location_code,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> joinlocationstable",
+						"newchangenameforassert filter(not(isNull(Location_ID)) || not(isNull({Location Name})) || not(isNull(Address)) || not(isNull(City)) || not(isNull(State)) || not(isNull(Zip)) || not(isNull(Longitude)) || not(isNull(Latitude)) || not(isNull({Location Status})) || not(isNull(Location_Type)) || not(isNull({Daily Throughput})) || not(isNull({Storage Capacity})) || not(isNull({Inbound Handling Cost})) || not(isNull({Outbound Handling Cost})) || not(isNull({Inbound Processing Time})) || not(isNull({Outbound Processing Time})) || not(isNull({Transfer Inbound Processing Time})) || not(isNull({Transfer Outbound Processing Time})) || not(isNull({Transfer Inbound Handling Cost})) || not(isNull({Units per Hour})) || not(isNull({Max FTE Regular Hours})) || not(isNull({Min FTE Regular Hours})) || not(isNull({Max Temp Regular Hours})) || not(isNull({Min Temp Regular Hours})) || not(isNull({Max FTE Overtime Hours})) || not(isNull({Regular FTE Wage})) || not(isNull({Regular Temp Wage})) || not(isNull({Overtime FTE Wage})) || not(isNull({Overtime Temp Wage})) || not(isNull({FTE Staff Count})) || not(isNull({Temp Staff Count}))) ~> filteremptyrows",
+						"splitvalidatedrows@validrows sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          {Location ID*} as string,",
+						"          {Location Name} as string,",
+						"          Address as string,",
+						"          City as string,",
+						"          State as string,",
+						"          Zip as string,",
+						"          Country as string,",
+						"          Longitude as string,",
+						"          Latitude as string,",
+						"          {Location Status} as string,",
+						"          {Location Type} as string,",
+						"          {Daily Throughput} as string,",
+						"          {Storage Capacity} as string,",
+						"          {Inbound Handling Cost} as string,",
+						"          {Outbound Handling Cost} as string,",
+						"          {Inbound Processing Time} as string,",
+						"          {Outbound Processing Time} as string,",
+						"          {Transfer Inbound Processing Time} as string,",
+						"          {Transfer Outbound Processing Time} as string,",
+						"          {Transfer Inbound Handling Cost} as string,",
+						"          {Transfer Outbound Handling Cost} as string,",
+						"          {Units per Hour} as string,",
+						"          {Max FTE Regular Hours} as string,",
+						"          {Min FTE Regular Hours} as string,",
+						"          {Max Temp Regular Hours} as string,",
+						"          {Min Temp Regular Hours} as string,",
+						"          {Regular FTE Wage} as string,",
+						"          {Regular Temp Wage} as string,",
+						"          {Overtime FTE Wage} as string,",
+						"          {Overtime Temp Wage} as string,",
+						"          {FTE Staff Count} as string,",
+						"          {Temp Staff Count} as string",
+						"     ),",
+						"     rowUrlColumn:'sink_file_name',",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          {Location ID*},",
+						"          {Location Name},",
+						"          Address,",
+						"          City,",
+						"          State,",
+						"          Zip,",
+						"          Country,",
+						"          Longitude,",
+						"          Latitude,",
+						"          {Location Status},",
+						"          {Location Type},",
+						"          {Daily Throughput},",
+						"          {Storage Capacity},",
+						"          {Inbound Handling Cost},",
+						"          {Outbound Handling Cost},",
+						"          {Inbound Processing Time},",
+						"          {Outbound Processing Time},",
+						"          {Transfer Inbound Processing Time},",
+						"          {Transfer Outbound Processing Time},",
+						"          {Transfer Inbound Handling Cost},",
+						"          {Transfer Outbound Handling Cost},",
+						"          {Units per Hour},",
+						"          {Max FTE Regular Hours},",
+						"          {Min FTE Regular Hours},",
+						"          {Max Temp Regular Hours},",
+						"          {Min Temp Regular Hours},",
+						"          {Regular FTE Wage},",
+						"          {Regular Temp Wage},",
+						"          {Overtime FTE Wage},",
+						"          {Overtime Temp Wage},",
+						"          {FTE Staff Count},",
+						"          {Temp Staff Count}",
+						"     )) ~> ValidLocations",
+						"derivedfilename sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     rowUrlColumn:'failed_file_name',",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          type,",
+						"          message",
+						"     )) ~> failedrows"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_validation_location_staffing')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "LOCATION_STAFFING_UX",
+								"type": "DatasetReference"
+							},
+							"name": "locationstaffingux"
+						},
+						{
+							"dataset": {
+								"referenceName": "locations",
+								"type": "DatasetReference"
+							},
+							"name": "locations"
+						},
+						{
+							"dataset": {
+								"referenceName": "operationalprofile",
+								"type": "DatasetReference"
+							},
+							"name": "operationalprofile"
+						},
+						{
+							"dataset": {
+								"referenceName": "enum_values",
+								"type": "DatasetReference"
+							},
+							"name": "enumvalues"
+						},
+						{
+							"dataset": {
+								"referenceName": "operational_calendar",
+								"type": "DatasetReference"
+							},
+							"name": "operationalcalendar"
+						},
+						{
+							"dataset": {
+								"referenceName": "importhistory",
+								"type": "DatasetReference"
+							},
+							"name": "importhistory"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "operational_calendar",
+								"type": "DatasetReference"
+							},
+							"name": "ValidLocationStaffingRows"
+						},
+						{
+							"dataset": {
+								"referenceName": "FailedLocationStaffingJson",
+								"type": "DatasetReference"
+							},
+							"name": "failedrows"
+						}
+					],
+					"transformations": [
+						{
+							"name": "validations"
+						},
+						{
+							"name": "reverserename"
+						},
+						{
+							"name": "deriveerrors"
+						},
+						{
+							"name": "selectmainfields"
+						},
+						{
+							"name": "aggregateerrors"
+						},
+						{
+							"name": "joinaggregaterror"
+						},
+						{
+							"name": "splitvalidatedrows"
+						},
+						{
+							"name": "derivedfilename"
+						},
+						{
+							"name": "newchangenameforassert"
+						},
+						{
+							"name": "joinlocations"
+						},
+						{
+							"name": "selectlocations"
+						},
+						{
+							"name": "selectoperationalprofile"
+						},
+						{
+							"name": "filterenumvalues"
+						},
+						{
+							"name": "selectenumvalues"
+						},
+						{
+							"name": "derivepresence"
+						},
+						{
+							"name": "joinprofile"
+						},
+						{
+							"name": "joinenumvalues"
+						},
+						{
+							"name": "joinoperationalcalendar"
+						},
+						{
+							"name": "selectexistrecordcheck"
+						},
+						{
+							"name": "joinopcalendarcheck"
+						},
+						{
+							"name": "selectcolsforassert"
+						},
+						{
+							"name": "findduplicates"
+						},
+						{
+							"name": "selecttransaction"
+						},
+						{
+							"name": "joinimporthistoryop"
+						},
+						{
+							"name": "joinimporthistoryopcalendar"
+						},
+						{
+							"name": "jointransactionlocation"
+						},
+						{
+							"name": "appendrecordid"
+						},
+						{
+							"name": "filterrowswithvalidationerrors"
+						},
+						{
+							"name": "filteremptyrows"
+						},
+						{
+							"name": "selectopcalendarloadtable"
+						},
+						{
+							"name": "joinloadtablebranch"
+						},
+						{
+							"name": "joinihvalidation"
+						},
+						{
+							"name": "derivedColumnimphistory"
+						},
+						{
+							"name": "selectopcalendar"
+						},
+						{
+							"name": "datatypederviations"
+						}
+					],
+					"scriptLines": [
+						"parameters{",
+						"     file_path as string ('/DEV/Upload/LocationStaffing/510.xlsx'),",
+						"     transaction_id as string ('510')",
+						"}",
+						"source(output(",
+						"          {Profile Name*} as string,",
+						"          {Location ID*} as string,",
+						"          {Date*} as date,",
+						"          {Metric Name*} as string,",
+						"          {Value*} as string",
+						"     ),",
+						"     allowSchemaDrift: false,",
+						"     validateSchema: true,",
+						"     ignoreNoFilesFound: false,",
+						"     rowUrlColumn: 'file_name',",
+						"     wildcardPaths:[($file_path)]) ~> locationstaffingux",
+						"source(output(",
+						"          id as integer,",
+						"          location_code as string,",
+						"          name as string,",
+						"          address as string,",
+						"          city as string,",
+						"          state as string,",
+						"          zip as string,",
+						"          country as string,",
+						"          sub_type as string,",
+						"          delivery_partners as string,",
+						"          throughput as float,",
+						"          capacity as float,",
+						"          special_information as string,",
+						"          holding_cost as float,",
+						"          inbound_handling_cost as float,",
+						"          outbound_handling_cost as float,",
+						"          longitude as decimal(0,0),",
+						"          latitude as decimal(0,0),",
+						"          updated_date as date,",
+						"          created_date as date,",
+						"          status as string,",
+						"          inbound_processing_time as decimal(0,0),",
+						"          outbound_processing_time as decimal(0,0),",
+						"          type as integer,",
+						"          transfer_inbound_processing_time as double,",
+						"          transfer_outbound_processing_time as double,",
+						"          transfer_inbound_handling_cost as double,",
+						"          transfer_outbound_handling_cost as double,",
+						"          tenant_id as string,",
+						"          organization_id as string,",
+						"          business_unit_id as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> locations",
+						"source(output(",
+						"          id as integer,",
+						"          name as string,",
+						"          created_date as timestamp,",
+						"          updated_date as timestamp,",
+						"          business_unit_id as string,",
+						"          organization_id as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> operationalprofile",
+						"source(output(",
+						"          id as integer,",
+						"          enum_type_id as integer,",
+						"          value_id as integer,",
+						"          value as string,",
+						"          created_date as timestamp,",
+						"          updated_date as timestamp",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> enumvalues",
+						"source(output(",
+						"          id as integer,",
+						"          business_unit_id as string,",
+						"          organization_id as string,",
+						"          location_id as integer,",
+						"          date as date,",
+						"          location_metric_value as decimal(0,0),",
+						"          created_date as timestamp,",
+						"          updated_date as timestamp,",
+						"          enum_value_id as integer,",
+						"          enum_type_id as integer,",
+						"          operational_profile_id as integer",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> operationalcalendar",
+						"source(output(",
+						"          id as integer,",
+						"          original_file_name as string,",
+						"          user_id as string,",
+						"          status_enum_value_id as integer,",
+						"          processed_time as timestamp,",
+						"          errors as string,",
+						"          business_unit_id as string,",
+						"          organization_id as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> importhistory",
+						"filteremptyrows, selectlocations, selectoperationalprofile, selectenumvalues assert(expectTrue(not(isNull(Profile_Name))&&not(isNull(selectcolsforassert@Location_ID))&&not(isNull(Date))&&not(isNull(Metric_Name))&&not(isNull(selectcolsforassert@Value)), false, 'nullvalues', null, 'Null Values Found In Mandatory Fields'),",
+						"     expectExists(selectcolsforassert@Location_ID == location_code, false, 'locationexist', null, 'Location ID Not Found In Database'),",
+						"     expectExists(Profile_Name == name, false, 'profileexist', null, 'Profile Details Not Found In Database'),",
+						"     expectExists(Metric_Name == selectenumvalues@value, false, 'metrictype', null, 'Metric Type Specified Not Found'),",
+						"     expectTrue(isNull(presence), false, 'checkrecordexists', null, 'Record Already Exists In DB'),",
+						"     expectTrue(nonduplicatedrow, false, 'duplicaterecords', null, 'Duplicate Records Uploaded'),",
+						"     expectTrue(toDecimal(selectcolsforassert@Value) >= 0, false, 'valueoutofrange', null, 'Value Out Of Range')) ~> validations",
+						"validations select(mapColumn(",
+						"          {Profile Name*} = Profile_Name,",
+						"          {Location ID*} = selectcolsforassert@Location_ID,",
+						"          {Date*} = Date,",
+						"          {Metric Name*} = Metric_Name,",
+						"          {Value*} = selectcolsforassert@Value,",
+						"          file_name,",
+						"          record_id",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> reverserename",
+						"reverserename derive(validation_errors = assertErrorMessages(),",
+						"          transaction_id = toInteger($transaction_id),",
+						"          sink_file_name = replace(file_name,'.xlsx','.txt'),",
+						"          file_name_failed_rows = replace(file_name,'/Upload/','/FailedTransactions/')) ~> deriveerrors",
+						"joinaggregaterror select(mapColumn(",
+						"          {Profile Name*},",
+						"          {Location ID*},",
+						"          {Date*},",
+						"          {Metric_Name*} = {Metric Name*},",
+						"          {Value*},",
+						"          file_name = reverserename@file_name,",
+						"          validation_errors,",
+						"          transaction_id,",
+						"          sink_file_name,",
+						"          file_name_failed_rows,",
+						"          file_name = aggregateerrors@file_name,",
+						"          errors_count,",
+						"          record_id",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectmainfields",
+						"deriveerrors aggregate(groupBy(file_name),",
+						"     errors_count = countIf(not(isNull(validation_errors)))) ~> aggregateerrors",
+						"deriveerrors, aggregateerrors join(reverserename@file_name == aggregateerrors@file_name,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> joinaggregaterror",
+						"selectmainfields split(errors_count==0,",
+						"     disjoint: false) ~> splitvalidatedrows@(validrows, validationfailedrows)",
+						"filterrowswithvalidationerrors derive(failed_file_name = replace(replace($file_path,'/Upload/','/FailedTransactions/'),'.xlsx','.json'),",
+						"          type = 'error',",
+						"          message = concat('record number ',toString(record_id),' has following errors ',toString(validation_errors))) ~> derivedfilename",
+						"appendrecordid select(mapColumn(",
+						"          Profile_Name = {Profile Name*},",
+						"          Location_ID = {Location ID*},",
+						"          Date = {Date*},",
+						"          Metric_Name = {Metric Name*},",
+						"          Value = {Value*},",
+						"          file_name,",
+						"          record_id",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> newchangenameforassert",
+						"joinihvalidation, selectlocations join({Location ID*} == location_code,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> joinlocations",
+						"jointransactionlocation select(mapColumn(",
+						"          location_id = locations@id,",
+						"          location_code",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectlocations",
+						"joinimporthistoryop select(mapColumn(",
+						"          profile_id = operationalprofile@id,",
+						"          name",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectoperationalprofile",
+						"enumvalues filter(enum_type_id==4) ~> filterenumvalues",
+						"filterenumvalues select(mapColumn(",
+						"          enum_type_id,",
+						"          value_id,",
+						"          value",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectenumvalues",
+						"joinimporthistoryopcalendar derive(presence = 'true') ~> derivepresence",
+						"joinlocations, selectoperationalprofile join({Profile Name*} == name,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> joinprofile",
+						"joinprofile, selectenumvalues join({Metric Name*} == value,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> joinenumvalues",
+						"joinenumvalues, selectopcalendar join(profile_id == operational_profile_id",
+						"     && selectlocations@location_id == selectopcalendar@location_id",
+						"     && {Date*} == toDate(toString(date))",
+						"     && value_id == enum_value_id,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> joinoperationalcalendar",
+						"joinoperationalcalendar select(mapColumn(",
+						"          presence,",
+						"          record_id",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectexistrecordcheck",
+						"findduplicates, selectexistrecordcheck join(newchangenameforassert@record_id == selectexistrecordcheck@record_id,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> joinopcalendarcheck",
+						"joinopcalendarcheck select(mapColumn(",
+						"          Profile_Name,",
+						"          Location_ID,",
+						"          Date,",
+						"          Metric_Name,",
+						"          Value,",
+						"          file_name,",
+						"          presence,",
+						"          nonduplicatedrow,",
+						"          record_id = newchangenameforassert@record_id",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectcolsforassert",
+						"newchangenameforassert window(over(Profile_Name,",
+						"          Location_ID,",
+						"          Metric_Name,",
+						"          Date),",
+						"     asc(file_name, true),",
+						"     nonduplicatedrow = rowNumber() == 1) ~> findduplicates",
+						"importhistory filter(id == toInteger($transaction_id)) ~> selecttransaction",
+						"operationalprofile, selecttransaction join(operationalprofile@business_unit_id == importhistory@business_unit_id",
+						"     && operationalprofile@organization_id == importhistory@organization_id,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> joinimporthistoryop",
+						"operationalcalendar, selecttransaction join(operationalcalendar@business_unit_id == importhistory@business_unit_id",
+						"     && operationalcalendar@organization_id == importhistory@organization_id,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> joinimporthistoryopcalendar",
+						"locations, selecttransaction join(locations@business_unit_id == importhistory@business_unit_id",
+						"     && locations@organization_id == importhistory@organization_id,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> jointransactionlocation",
+						"locationstaffingux keyGenerate(output(record_id as long),",
+						"     startAt: 1L,",
+						"     stepValue: 1L) ~> appendrecordid",
+						"splitvalidatedrows@validationfailedrows filter(not(isNull(validation_errors))) ~> filterrowswithvalidationerrors",
+						"selectcolsforassert filter(not(isNull(Profile_Name)) || not(isNull(Location_ID)) || not(isNull(Date)) || not(isNull(Metric_Name)) || not(isNull(Value))) ~> filteremptyrows",
+						"joinoperationalcalendar select(mapColumn(",
+						"          profile_id,",
+						"          location_id = selectlocations@location_id,",
+						"          {Date*},",
+						"          enum_type_id = selectenumvalues@enum_type_id,",
+						"          value_id,",
+						"          {Value*},",
+						"          file_name,",
+						"          record_id,",
+						"          original_file_name,",
+						"          business_unit_id = importhistory@business_unit_id,",
+						"          organization_id = importhistory@organization_id",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectopcalendarloadtable",
+						"splitvalidatedrows@validrows, selectopcalendarloadtable join(splitvalidatedrows@validrows@record_id == selectopcalendarloadtable@record_id,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> joinloadtablebranch",
+						"derivedColumnimphistory, selecttransaction join(transaction_id == id,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> joinihvalidation",
+						"appendrecordid derive(transaction_id = toInteger($transaction_id)) ~> derivedColumnimphistory",
+						"derivepresence select(mapColumn(",
+						"          id = operationalcalendar@id,",
+						"          business_unit_id = operationalcalendar@business_unit_id,",
+						"          organization_id = operationalcalendar@organization_id,",
+						"          location_id,",
+						"          date,",
+						"          location_metric_value,",
+						"          created_date,",
+						"          updated_date,",
+						"          enum_value_id,",
+						"          enum_type_id,",
+						"          operational_profile_id,",
+						"          id = importhistory@id,",
+						"          original_file_name,",
+						"          user_id,",
+						"          status_enum_value_id,",
+						"          processed_time,",
+						"          errors,",
+						"          presence",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectopcalendar",
+						"joinloadtablebranch derive({Value*} = toDecimal(splitvalidatedrows@validrows@{Value*})) ~> datatypederviations",
+						"datatypederviations sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          id as integer,",
+						"          business_unit_id as string,",
+						"          organization_id as string,",
+						"          location_id as integer,",
+						"          date as date,",
+						"          location_metric_value as decimal(0,0),",
+						"          created_date as timestamp,",
+						"          updated_date as timestamp,",
+						"          enum_value_id as integer,",
+						"          enum_type_id as integer,",
+						"          operational_profile_id as integer",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          business_unit_id,",
+						"          organization_id,",
+						"          location_id,",
+						"          date = splitvalidatedrows@validrows@{Date*},",
+						"          location_metric_value = {Value*},",
+						"          enum_value_id = value_id,",
+						"          enum_type_id,",
+						"          operational_profile_id = profile_id",
+						"     ),",
+						"     preCommands: [],",
+						"     postCommands: []) ~> ValidLocationStaffingRows",
+						"derivedfilename sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     rowUrlColumn:'failed_file_name',",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          type,",
+						"          message",
+						"     )) ~> failedrows"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_zone')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Data flow edited on 2023-08-08 on bringing in attributes from filename and using lookup to fetch organization_id and business_unit_id",
+				"folder": {
+					"name": "main"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ZONE_RAW",
+								"type": "DatasetReference"
+							},
+							"name": "RawDataForZone",
+							"description": "source data stored in datalake-\"radial-demo-data\" for populating pfp.zone table\n"
+						},
+						{
+							"dataset": {
+								"referenceName": "tenant_heirarchy_table",
+								"type": "DatasetReference"
+							},
+							"name": "TenantHeirarchyTable",
+							"description": "Data from tenant_heirarchy_table"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "zone",
+								"type": "DatasetReference"
+							},
+							"name": "WriteToDatabase",
+							"description": "Write transformed data to pfp.zone table"
+						}
+					],
+					"transformations": [
+						{
+							"name": "DerivingAttributes",
+							"description": "Deriving attributes for fields like origin_start, origin_end, business_unit_name from filename, static value for delivery_partner_id"
+						},
+						{
+							"name": "MappingColumns",
+							"description": "Final step in data transformation to select specific columns, renaming certain columns to match the zone table schema"
+						},
+						{
+							"name": "SelectColumnsHeirarchy",
+							"description": "Selecting specific columns required for downstream actviities"
+						},
+						{
+							"name": "JoinHeirarchyTable",
+							"description": "Joins heirarchy table for extracting business_unit_id and organization_id"
+						},
+						{
+							"name": "AlterRow1"
+						},
+						{
+							"name": "filter1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          {Dest. ZIP} as string,",
+						"          {Ground - ZONE} as string,",
+						"          {3 Day Select} as string,",
+						"          {2nd Day Air} as string,",
+						"          {2nd Day Air A.M.} as string,",
+						"          {Next Day Air Saver} as string,",
+						"          {Next Day Air} as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     enableCdc: true,",
+						"     mode: 'read',",
+						"     skipInitialLoad: true,",
+						"     rowUrlColumn: 'file_name') ~> RawDataForZone",
+						"source(output(",
+						"          id as string,",
+						"          tenant_hierarchy_type as integer,",
+						"          name as string,",
+						"          contact_name as string,",
+						"          email as string,",
+						"          phone as string,",
+						"          street_address_1 as string,",
+						"          street_address_2 as string,",
+						"          city as string,",
+						"          state as string,",
+						"          zip as integer,",
+						"          country as string,",
+						"          active as boolean,",
+						"          tenant_id as string,",
+						"          created_date as timestamp,",
+						"          updated_date as timestamp,",
+						"          parent_id as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> TenantHeirarchyTable",
+						"RawDataForZone derive(origin_start = split(split(file_name,\"/\")[4],\"_\")[2],",
+						"          origin_end = split(split(file_name,\"/\")[4],\"_\")[2],",
+						"          delivery_partner_id = 2,",
+						"          destination_end = {Dest. ZIP},",
+						"          business_unit_name = split(split(file_name,\"/\")[4],\"_\")[1],",
+						"          organization_id := \"8078acfb-eca6-4708-b197-694f50a24c92\",",
+						"          business_unit_id := \"994dc35f-7eba-4f6e-918b-7bd311482d7b\",",
+						"          local1 := \"8078acfb-eca6-4708-b197-694f50a24c92\") ~> DerivingAttributes",
+						"JoinHeirarchyTable select(mapColumn(",
+						"          zone = {Ground - ZONE},",
+						"          delivery_partner_id,",
+						"          origin_start,",
+						"          origin_end,",
+						"          destination_start = {Dest. ZIP},",
+						"          destination_end,",
+						"          business_unit_id = id,",
+						"          organization_id = parent_id",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> MappingColumns",
+						"filter1 select(mapColumn(",
+						"          id,",
+						"          name,",
+						"          parent_id",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> SelectColumnsHeirarchy",
+						"DerivingAttributes, SelectColumnsHeirarchy join(business_unit_name == name,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> JoinHeirarchyTable",
+						"MappingColumns alterRow(upsertIf(true())) ~> AlterRow1",
+						"TenantHeirarchyTable filter(tenant_hierarchy_type==3) ~> filter1",
+						"AlterRow1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          id as integer,",
+						"          zone as string,",
+						"          delivery_partner_id as integer,",
+						"          origin_start as string,",
+						"          origin_end as string,",
+						"          destination_start as string,",
+						"          destination_end as string,",
+						"          created_date as timestamp,",
+						"          updated_date as timestamp,",
+						"          business_unit_id as string,",
+						"          organization_id as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:false,",
+						"     updateable:false,",
+						"     upsertable:true,",
+						"     keys:['zone','origin_start','destination_start'],",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     preCommands: [],",
+						"     postCommands: []) ~> WriteToDatabase"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dffailurecapture')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "failurestringdemandforecast",
+								"type": "DatasetReference"
+							},
+							"name": "failure"
+						},
+						{
+							"dataset": {
+								"referenceName": "importhistory",
+								"type": "DatasetReference"
+							},
+							"name": "importhistorylookup"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "importhistory",
+								"type": "DatasetReference"
+							},
+							"name": "importhistory"
+						},
+						{
+							"dataset": {
+								"referenceName": "notification",
+								"type": "DatasetReference"
+							},
+							"name": "notification"
+						}
+					],
+					"transformations": [
+						{
+							"name": "derivedColumn1"
+						},
+						{
+							"name": "AlterRow1"
+						},
+						{
+							"name": "parseerrrors"
+						},
+						{
+							"name": "derivenotificationerrors"
+						},
+						{
+							"name": "joinimporthistory"
+						},
+						{
+							"name": "select1"
+						},
+						{
+							"name": "selectimporthistory"
+						}
+					],
+					"scriptLines": [
+						"parameters{",
+						"     transaction_id as string ('646'),",
+						"     single_quote as string ('\\''),",
+						"     file_path as string ('/DEV/Upload/CurrentBacklog/646.xlsx')",
+						"}",
+						"source(output(",
+						"          Column_1 as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: true,",
+						"     purgeFiles: true,",
+						"     rowUrlColumn: 'file_name',",
+						"     wildcardPaths:[(replace(replace($file_path, '/Upload/', '/FailedTransactions/'),'.xlsx','.json'))]) ~> failure",
+						"source(output(",
+						"          id as integer,",
+						"          original_file_name as string,",
+						"          user_id as string,",
+						"          status_enum_value_id as integer,",
+						"          processed_time as timestamp,",
+						"          errors as string,",
+						"          business_unit_id as string,",
+						"          organization_id as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> importhistorylookup",
+						"failure derive(id = toInteger($transaction_id),",
+						"          errors = replace(concat('{\\'error\\':[',replace(concat(replace(Column_1,'}','},'),']'),',]',']'),'}'),$single_quote,'\"'),",
+						"          status_enum_value_id = 3,",
+						"          errors_formatted = replace(replace(concat('[',replace(Column_1,'}','},'),']'),',]',']'),'},\\n]','}]')) ~> derivedColumn1",
+						"parseerrrors alterRow(updateIf(true())) ~> AlterRow1",
+						"derivedColumn1 derive(errors = errors_formatted) ~> parseerrrors",
+						"parseerrrors derive(run_status = iif(status_enum_value_id==3,'Failed',iif(status_enum_value_id==2,'Complete','In Progress')),",
+						"          notification_type = 'Pipeline Status',",
+						"          feature_id = 32) ~> derivenotificationerrors",
+						"derivenotificationerrors, importhistorylookup join(derivedColumn1@id == importhistorylookup@id,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> joinimporthistory",
+						"joinimporthistory select(mapColumn(",
+						"          run_id = derivedColumn1@id,",
+						"          description = original_file_name,",
+						"          run_status,",
+						"          notification_type,",
+						"          feature_id,",
+						"          user_id,",
+						"          business_unit_id,",
+						"          organization_id",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"importhistorylookup select(mapColumn(",
+						"          id,",
+						"          original_file_name",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectimporthistory",
+						"AlterRow1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          id as integer,",
+						"          original_file_name as string,",
+						"          user_id as string,",
+						"          status_enum_value_id as integer,",
+						"          processed_time as timestamp,",
+						"          errors as string,",
+						"          business_unit_id as string,",
+						"          organization_id as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:false,",
+						"     updateable:true,",
+						"     upsertable:false,",
+						"     keys:['id'],",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          id,",
+						"          status_enum_value_id,",
+						"          errors = errors_formatted",
+						"     )) ~> importhistory",
+						"select1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          id as integer,",
+						"          run_id as integer,",
+						"          run_status as string,",
+						"          description as string,",
+						"          user_id as string,",
+						"          notification_status as string,",
+						"          notification_type as string,",
+						"          feature_id as integer,",
+						"          created_at as timestamp,",
+						"          updated_at as timestamp,",
+						"          business_unit_id as string,",
+						"          organization_id as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          run_id,",
+						"          run_status,",
+						"          description,",
+						"          user_id,",
+						"          notification_type,",
+						"          feature_id,",
+						"          business_unit_id,",
+						"          organization_id",
+						"     )) ~> notification"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/importhistorystatusinprogress')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "importhistory",
+								"type": "DatasetReference"
+							},
+							"name": "importhistory"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "importhistory",
+								"type": "DatasetReference"
+							},
+							"name": "importhistorysink"
+						}
+					],
+					"transformations": [
+						{
+							"name": "derivedColumn1"
+						},
+						{
+							"name": "AlterRow1"
+						},
+						{
+							"name": "select1"
+						}
+					],
+					"scriptLines": [
+						"parameters{",
+						"     transaction_id as string ('200'),",
+						"     quote as string ('\\'')",
+						"}",
+						"source(output(",
+						"          id as integer,",
+						"          original_file_name as string,",
+						"          user_id as string,",
+						"          status_enum_value_id as integer,",
+						"          processed_time as timestamp,",
+						"          errors as string,",
+						"          business_unit_id as string,",
+						"          organization_id as string,",
+						"          created_at as timestamp,",
+						"          updated_at as timestamp,",
+						"          template_id as integer",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     query: (concat('SELECT * FROM pfp.import_history WHERE id = ',$transaction_id)),",
+						"     format: 'query') ~> importhistory",
+						"importhistory derive(status_enum_value_id = 1,",
+						"          errors = 'null') ~> derivedColumn1",
+						"select1 alterRow(updateIf(true())) ~> AlterRow1",
+						"derivedColumn1 select(mapColumn(",
+						"          id,",
+						"          status_enum_value_id,",
+						"          errors",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"AlterRow1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          id as integer,",
+						"          original_file_name as string,",
+						"          user_id as string,",
+						"          status_enum_value_id as integer,",
+						"          processed_time as timestamp,",
+						"          errors as string,",
+						"          business_unit_id as string,",
+						"          organization_id as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:false,",
+						"     updateable:true,",
+						"     upsertable:false,",
+						"     keys:['id'],",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          id,",
+						"          status_enum_value_id,",
+						"          errors",
+						"     )) ~> importhistorysink"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/importhistorystatusupdate')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "importhistory",
+								"type": "DatasetReference"
+							},
+							"name": "importhistory"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "importhistory",
+								"type": "DatasetReference"
+							},
+							"name": "importhistorysink"
+						},
+						{
+							"dataset": {
+								"referenceName": "notification",
+								"type": "DatasetReference"
+							},
+							"name": "notification"
+						}
+					],
+					"transformations": [
+						{
+							"name": "filtertransaction"
+						},
+						{
+							"name": "derivestatus"
+						},
+						{
+							"name": "AlterRow1"
+						},
+						{
+							"name": "select1"
+						},
+						{
+							"name": "derivednotificationattributes"
+						}
+					],
+					"scriptLines": [
+						"parameters{",
+						"     transaction_id as string ('16'),",
+						"     quote as string ('\\''),",
+						"     status_value_id as string ('1')",
+						"}",
+						"source(output(",
+						"          id as integer,",
+						"          original_file_name as string,",
+						"          user_id as string,",
+						"          status_enum_value_id as integer,",
+						"          processed_time as timestamp,",
+						"          errors as string,",
+						"          business_unit_id as string,",
+						"          organization_id as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> importhistory",
+						"importhistory filter(id==toInteger($transaction_id)) ~> filtertransaction",
+						"filtertransaction derive(status_enum_value_id = toInteger($status_value_id),",
+						"          errors = 'null') ~> derivestatus",
+						"select1 alterRow(updateIf(true())) ~> AlterRow1",
+						"derivestatus select(mapColumn(",
+						"          id,",
+						"          status_enum_value_id,",
+						"          errors",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"derivestatus derive(description = original_file_name,",
+						"          run_status = 'Complete',",
+						"          notification_type = 'Pipeline Status',",
+						"          feature_id = 32) ~> derivednotificationattributes",
+						"AlterRow1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          id as integer,",
+						"          original_file_name as string,",
+						"          user_id as string,",
+						"          status_enum_value_id as integer,",
+						"          processed_time as timestamp,",
+						"          errors as string,",
+						"          business_unit_id as string,",
+						"          organization_id as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:false,",
+						"     updateable:true,",
+						"     upsertable:false,",
+						"     keys:['id'],",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          id,",
+						"          status_enum_value_id,",
+						"          errors",
+						"     )) ~> importhistorysink",
+						"derivednotificationattributes sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          id as integer,",
+						"          run_id as integer,",
+						"          run_status as string,",
+						"          description as string,",
+						"          user_id as string,",
+						"          notification_status as string,",
+						"          notification_type as string,",
+						"          feature_id as integer,",
+						"          created_at as timestamp,",
+						"          updated_at as timestamp,",
+						"          business_unit_id as string,",
+						"          organization_id as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          run_id = id,",
+						"          run_status,",
+						"          description,",
+						"          user_id,",
+						"          notification_type,",
+						"          feature_id,",
+						"          business_unit_id,",
+						"          organization_id",
+						"     )) ~> notification"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/runtimefailurecapture')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "importhistory",
+								"type": "DatasetReference"
+							},
+							"name": "importhistory"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "importhistory",
+								"type": "DatasetReference"
+							},
+							"name": "importhistorysink"
+						},
+						{
+							"dataset": {
+								"referenceName": "notification",
+								"type": "DatasetReference"
+							},
+							"name": "notifications"
+						}
+					],
+					"transformations": [
+						{
+							"name": "filtertransaction"
+						},
+						{
+							"name": "derivedColumn1"
+						},
+						{
+							"name": "AlterRow1"
+						},
+						{
+							"name": "select1"
+						},
+						{
+							"name": "notificationdescderive"
+						}
+					],
+					"scriptLines": [
+						"parameters{",
+						"     transaction_id as string ('1'),",
+						"     runtime_error as string ('Job failed due to reason: at Source  demandforecastuxupload : Path /DEV/Upload/DemandForecast/1.xlsx does not resolve to any file(s). Please make sure the file/folder exists and is not hidden. At the same time, please ensure special character is not included in file/folder name, for example, name starting with _'),",
+						"     quote as string ('\\'')",
+						"}",
+						"source(output(",
+						"          id as integer,",
+						"          original_file_name as string,",
+						"          user_id as string,",
+						"          status_enum_value_id as integer,",
+						"          processed_time as timestamp,",
+						"          errors as string,",
+						"          business_unit_id as string,",
+						"          organization_id as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> importhistory",
+						"importhistory filter(id==toInteger($transaction_id)) ~> filtertransaction",
+						"filtertransaction derive(status_enum_value_id = 3,",
+						"          errors = replace(concat('{\\'error\\':[{\\'runtime_error\\':\\'',$runtime_error,'\\'}]}'),$quote,'\"'),",
+						"          errors_format2 = replace(concat('[{\\'type\\':','\\'error\\',','\\'message\\'',':\\'',$runtime_error,'\\'}]'),$quote,'\"')) ~> derivedColumn1",
+						"select1 alterRow(updateIf(true())) ~> AlterRow1",
+						"derivedColumn1 select(mapColumn(",
+						"          id,",
+						"          status_enum_value_id,",
+						"          errors = errors_format2,",
+						"          business_unit_id,",
+						"          organization_id",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"filtertransaction derive(description = original_file_name,",
+						"          run_status = 'Failed',",
+						"          notification_type = 'Pipeline Failure',",
+						"          feature_id = 32) ~> notificationdescderive",
+						"AlterRow1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          id as integer,",
+						"          original_file_name as string,",
+						"          user_id as string,",
+						"          status_enum_value_id as integer,",
+						"          processed_time as timestamp,",
+						"          errors as string,",
+						"          business_unit_id as string,",
+						"          organization_id as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:false,",
+						"     updateable:true,",
+						"     upsertable:false,",
+						"     keys:['id'],",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          id,",
+						"          status_enum_value_id,",
+						"          errors,",
+						"          business_unit_id,",
+						"          organization_id",
+						"     )) ~> importhistorysink",
+						"notificationdescderive sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          id as integer,",
+						"          run_id as integer,",
+						"          run_status as string,",
+						"          description as string,",
+						"          user_id as string,",
+						"          notification_status as string,",
+						"          notification_type as string,",
+						"          feature_id as integer,",
+						"          created_at as timestamp,",
+						"          updated_at as timestamp,",
+						"          business_unit_id as string,",
+						"          organization_id as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          run_id = id,",
+						"          run_status,",
+						"          description,",
+						"          user_id,",
+						"          notification_type,",
+						"          feature_id,",
+						"          business_unit_id,",
+						"          organization_id",
+						"     )) ~> notifications"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/BUDGET_STAFFING')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "df_budget_staffing",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_budget_staffing",
+								"type": "DataFlowReference",
+								"parameters": {
+									"file_path": {
+										"value": "'@{replace(concat(pipeline().parameters.folder_path,'/',pipeline().parameters.file_name),'main','')}'",
+										"type": "Expression"
+									}
+								},
+								"datasetParameters": {
+									"staffing": {},
+									"TenantHeirarchyTable": {},
+									"LocationsTable": {},
+									"EnumTypeDB": {},
+									"EnumValue": {},
+									"operationalprofile": {},
+									"WriteToDatabase": {},
+									"sinkfailedrows": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"parameters": {
+					"folder_path": {
+						"type": "string",
+						"defaultValue": "Radial/BudgetStaffing"
+					},
+					"file_name": {
+						"type": "string",
+						"defaultValue": "20240718T050000-BudgetStaffingPlan.csv"
+					}
+				},
+				"folder": {
+					"name": "FTP"
+				},
+				"annotations": [],
+				"lastPublishTime": "2023-10-20T09:45:00Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/CURRENT_BACKLOG')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "df_activity_current_backlog",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_current_backlog",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"currentbacklog": {},
+									"tenantheirarchydetail": {},
+									"locationsjoin": {},
+									"fulfillmentservices": {},
+									"currentbacklogtable": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine",
+							"continuationSettings": {
+								"customizedCheckpointKey": "d274d239-0ecc-4f5a-8334-5b71f5b09c36"
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"folder": {
+					"name": "FTP"
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/CURRENT_BACKLOG_UX')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "validation",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "setting_status_inprogress",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_validation_current_backlog",
+								"type": "DataFlowReference",
+								"parameters": {
+									"file_path": {
+										"value": "'@{replace(concat(pipeline().parameters.folder_path,'/',pipeline().parameters.file_name),'staging','')}'",
+										"type": "Expression"
+									},
+									"transaction_id": {
+										"value": "'@{replace(pipeline().parameters.file_name,'.xlsx','')}'",
+										"type": "Expression"
+									}
+								},
+								"datasetParameters": {
+									"currentbackloguxuploadstaging": {},
+									"locations": {},
+									"fulfillmentservices": {},
+									"currentbacklog": {},
+									"importhistory": {},
+									"ValidCurrentBacklog": {},
+									"failedrows": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "runtimeerrorvalidation",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "validation",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "runtimefailurecapture",
+								"type": "DataFlowReference",
+								"parameters": {
+									"transaction_id": {
+										"value": "'@{replace(pipeline().parameters.file_name,'.xlsx','')}'",
+										"type": "Expression"
+									},
+									"runtime_error": {
+										"value": "'@{replace(replace(replace(string(json(replace(activity('validation').error.message,'\\n',' ')).Message),pipeline().parameters.quote,' '),'\"',''),pipeline().parameters.next_line,' ')}'",
+										"type": "Expression"
+									},
+									"quote": "'\\''"
+								},
+								"datasetParameters": {
+									"importhistory": {},
+									"importhistorysink": {},
+									"notifications": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "setting_status_inprogress",
+						"type": "ExecuteDataFlow",
+						"state": "Inactive",
+						"onInactiveMarkAs": "Succeeded",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "importhistorystatusinprogress",
+								"type": "DataFlowReference",
+								"parameters": {
+									"transaction_id": {
+										"value": "'@{replace(pipeline().parameters.file_name,'.xlsx','')}'",
+										"type": "Expression"
+									},
+									"quote": "'\\''"
+								},
+								"datasetParameters": {
+									"importhistory": {},
+									"importhistorysink": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "rows_failed",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "validation",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "rows_failed",
+							"value": {
+								"value": "@activity('validation').output.runstatus.metrics.failedrows.rowsWritten",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "failedrowscountcheck",
+						"type": "IfCondition",
+						"dependsOn": [
+							{
+								"activity": "rows_failed",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@equals(variables('rows_failed'),0)",
+								"type": "Expression"
+							},
+							"ifFalseActivities": [
+								{
+									"name": "dferrorvalidation",
+									"type": "ExecuteDataFlow",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataflow": {
+											"referenceName": "dffailurecapture",
+											"type": "DataFlowReference",
+											"parameters": {
+												"transaction_id": {
+													"value": "'@{replace(pipeline().parameters.file_name,'.xlsx','')}'",
+													"type": "Expression"
+												},
+												"single_quote": "'\\''",
+												"file_path": {
+													"value": "'@{concat(replace(pipeline().parameters.folder_path,'staging',''),'/',pipeline().parameters.file_name)}'",
+													"type": "Expression"
+												}
+											},
+											"datasetParameters": {
+												"failure": {},
+												"importhistorylookup": {},
+												"importhistory": {},
+												"notification": {}
+											}
+										},
+										"staging": {},
+										"compute": {
+											"coreCount": 8,
+											"computeType": "General"
+										},
+										"traceLevel": "Fine"
+									}
+								}
+							],
+							"ifTrueActivities": [
+								{
+									"name": "transform",
+									"type": "ExecuteDataFlow",
+									"state": "Inactive",
+									"onInactiveMarkAs": "Succeeded",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataflow": {
+											"referenceName": "df_transform_current_backlog",
+											"type": "DataFlowReference",
+											"parameters": {
+												"file_path": {
+													"value": "'@{replace(concat(pipeline().parameters.folder_path,'/',replace(pipeline().parameters.file_name,'.xlsx',''),'.txt'),'staging','')}'",
+													"type": "Expression"
+												},
+												"transaction_id": {
+													"value": "'@{replace(pipeline().parameters.file_name,'.xlsx','')}'",
+													"type": "Expression"
+												}
+											},
+											"datasetParameters": {
+												"currentbacklogmain": {},
+												"importhistory": {},
+												"locations": {},
+												"fulfillmentservices": {},
+												"sinkcurrentbacklog": {}
+											}
+										},
+										"staging": {},
+										"compute": {
+											"coreCount": 8,
+											"computeType": "General"
+										},
+										"traceLevel": "Fine"
+									}
+								},
+								{
+									"name": "runtimeerrortransform",
+									"type": "ExecuteDataFlow",
+									"state": "Inactive",
+									"onInactiveMarkAs": "Succeeded",
+									"dependsOn": [
+										{
+											"activity": "transform",
+											"dependencyConditions": [
+												"Failed"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataflow": {
+											"referenceName": "runtimefailurecapture",
+											"type": "DataFlowReference",
+											"parameters": {
+												"transaction_id": {
+													"value": "'@{replace(pipeline().parameters.file_name,'.xlsx','')}'",
+													"type": "Expression"
+												},
+												"runtime_error": {
+													"value": "'@{replace(replace(replace(string(json(replace(activity('transform').error.message,'\\n',' ')).Message),pipeline().parameters.quote,' '),'\"',''),pipeline().parameters.next_line,' ')}'",
+													"type": "Expression"
+												},
+												"quote": "'\\''"
+											},
+											"datasetParameters": {
+												"importhistory": {},
+												"importhistorysink": {},
+												"notifications": {}
+											}
+										},
+										"staging": {},
+										"compute": {
+											"coreCount": 8,
+											"computeType": "General"
+										},
+										"traceLevel": "Fine"
+									}
+								},
+								{
+									"name": "StatusComplete",
+									"type": "ExecuteDataFlow",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataflow": {
+											"referenceName": "importhistorystatusupdate",
+											"type": "DataFlowReference",
+											"parameters": {
+												"transaction_id": {
+													"value": "'@{replace(pipeline().parameters.file_name,'.xlsx','')}'",
+													"type": "Expression"
+												},
+												"quote": "'\\''",
+												"status_value_id": {
+													"value": "'@{'2'}'",
+													"type": "Expression"
+												}
+											},
+											"datasetParameters": {
+												"importhistory": {},
+												"importhistorysink": {},
+												"notification": {}
+											}
+										},
+										"staging": {},
+										"compute": {
+											"coreCount": 8,
+											"computeType": "General"
+										},
+										"traceLevel": "Fine"
+									}
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"parameters": {
+					"quote": {
+						"type": "string",
+						"defaultValue": "'"
+					},
+					"folder_path": {
+						"type": "string",
+						"defaultValue": "/DEV/Upload/CurrentBacklog"
+					},
+					"file_name": {
+						"type": "string",
+						"defaultValue": "25.xlsx"
+					},
+					"next_line": {
+						"type": "string",
+						"defaultValue": "\\n"
+					}
+				},
+				"variables": {
+					"transaction_id": {
+						"type": "String"
+					},
+					"rows_failed": {
+						"type": "Integer"
+					}
+				},
+				"folder": {
+					"name": "IMPORT_MANAGER"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/runtimefailurecapture')]",
+				"[concat(variables('factoryId'), '/dataflows/importhistorystatusinprogress')]",
+				"[concat(variables('factoryId'), '/dataflows/dffailurecapture')]",
+				"[concat(variables('factoryId'), '/dataflows/importhistorystatusupdate')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DAILY_ACTUALS')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Daily Actuals Data Load",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_daily_actuals",
+								"type": "DataFlowReference",
+								"parameters": {
+									"file_path": {
+										"value": "'@{replace(concat(pipeline().parameters.folder_path,'/',pipeline().parameters.file_name),'main','')}'",
+										"type": "Expression"
+									}
+								},
+								"datasetParameters": {
+									"dailyactuals": {},
+									"tenantheirarchydetail": {},
+									"locationsjoin": {},
+									"fulfillmentservices": {},
+									"currentbacklogtable": {},
+									"failedrowssinkdailyactuals": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"parameters": {
+					"folder_path": {
+						"type": "string",
+						"defaultValue": "Radial/DailyActuals"
+					},
+					"file_name": {
+						"type": "string",
+						"defaultValue": "sample_file.csv"
+					}
+				},
+				"folder": {
+					"name": "FTP"
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DEMAND_FORECAST_UX')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "dataflow_demand_forecast_validation",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "StatusInProgress",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_demand_forecast_validation",
+								"type": "DataFlowReference",
+								"parameters": {
+									"file_path": {
+										"value": "'@{replace(concat(pipeline().parameters.folder_path,'/',pipeline().parameters.file_name),'staging','')}'",
+										"type": "Expression"
+									},
+									"transaction_id": {
+										"value": "'@{replace(pipeline().parameters.file_name,'.xlsx','')}'",
+										"type": "Expression"
+									}
+								},
+								"datasetParameters": {
+									"demandforecastuxupload": {},
+									"item": {},
+									"locations": {},
+									"microarea": {},
+									"customertypes": {},
+									"fulfillmentservices": {},
+									"importhistory": {},
+									"TenantHeirarychyDetail": {},
+									"demandforecastcheck": {},
+									"validdemandforecast": {},
+									"failedrows": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "runtimeerrorvalidation",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "dataflow_demand_forecast_validation",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "runtimefailurecapture",
+								"type": "DataFlowReference",
+								"parameters": {
+									"transaction_id": {
+										"value": "'@{replace(pipeline().parameters.file_name,'.xlsx','')}'",
+										"type": "Expression"
+									},
+									"runtime_error": {
+										"value": "'@{replace(replace(replace(string(json(replace(activity('dataflow_demand_forecast_validation').error.message,'\\n',' ')).Message),pipeline().parameters.quote,' '),'\"',''),pipeline().parameters.next_line,' ')}'",
+										"type": "Expression"
+									},
+									"quote": "'\\''"
+								},
+								"datasetParameters": {
+									"importhistory": {},
+									"importhistorysink": {},
+									"notifications": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "StatusInProgress",
+						"type": "ExecuteDataFlow",
+						"state": "Inactive",
+						"onInactiveMarkAs": "Succeeded",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "importhistorystatusinprogress",
+								"type": "DataFlowReference",
+								"parameters": {
+									"transaction_id": {
+										"value": "'@{replace(pipeline().parameters.file_name,'.xlsx','')}'",
+										"type": "Expression"
+									},
+									"quote": "'\\''"
+								},
+								"datasetParameters": {
+									"importhistory": {},
+									"importhistorysink": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 32,
+								"computeType": "MemoryOptimized"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "rows_failed",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "dataflow_demand_forecast_validation",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "rows_failed",
+							"value": {
+								"value": "@activity('dataflow_demand_forecast_validation').output.runstatus.metrics.failedrows.rowsWritten",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "failedrowscountcheck",
+						"type": "IfCondition",
+						"dependsOn": [
+							{
+								"activity": "rows_failed",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@equals(variables('rows_failed'),0)",
+								"type": "Expression"
+							},
+							"ifFalseActivities": [
+								{
+									"name": "dferrorvalidation",
+									"type": "ExecuteDataFlow",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataflow": {
+											"referenceName": "dffailurecapture",
+											"type": "DataFlowReference",
+											"parameters": {
+												"transaction_id": {
+													"value": "'@{replace(pipeline().parameters.file_name,'.xlsx','')}'",
+													"type": "Expression"
+												},
+												"single_quote": "'\\''",
+												"file_path": {
+													"value": "'@{concat(replace(pipeline().parameters.folder_path,'staging',''),'/',pipeline().parameters.file_name)}'",
+													"type": "Expression"
+												}
+											},
+											"datasetParameters": {
+												"failure": {},
+												"importhistorylookup": {},
+												"importhistory": {},
+												"notification": {}
+											}
+										},
+										"staging": {},
+										"compute": {
+											"coreCount": 8,
+											"computeType": "General"
+										},
+										"traceLevel": "Fine"
+									}
+								}
+							],
+							"ifTrueActivities": [
+								{
+									"name": "transform",
+									"type": "ExecuteDataFlow",
+									"state": "Inactive",
+									"onInactiveMarkAs": "Succeeded",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataflow": {
+											"referenceName": "df_demand_forecast_core",
+											"type": "DataFlowReference",
+											"parameters": {
+												"file_path": {
+													"value": "'@{replace(concat(pipeline().parameters.folder_path,'/',replace(pipeline().parameters.file_name,'.xlsx',''),'.txt'),'staging','')}'",
+													"type": "Expression"
+												},
+												"mode": {
+													"value": "'@{'UX-Upload'}'",
+													"type": "Expression"
+												},
+												"transaction_id": {
+													"value": "'@{replace(pipeline().parameters.file_name,'.xlsx','')}'",
+													"type": "Expression"
+												}
+											},
+											"datasetParameters": {
+												"demandforecastraw": {},
+												"item": {},
+												"locations": {},
+												"microarea": {},
+												"customertype": {},
+												"fulfillmentservices": {},
+												"tenantheirarchydetail": {},
+												"importhistory": {},
+												"forecast": {}
+											}
+										},
+										"staging": {},
+										"compute": {
+											"coreCount": 8,
+											"computeType": "General"
+										},
+										"traceLevel": "Fine"
+									}
+								},
+								{
+									"name": "runtimeerrortransform",
+									"type": "ExecuteDataFlow",
+									"state": "Inactive",
+									"onInactiveMarkAs": "Succeeded",
+									"dependsOn": [
+										{
+											"activity": "transform",
+											"dependencyConditions": [
+												"Failed"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataflow": {
+											"referenceName": "runtimefailurecapture",
+											"type": "DataFlowReference",
+											"parameters": {
+												"transaction_id": {
+													"value": "'@{replace(pipeline().parameters.file_name,'.xlsx','')}'",
+													"type": "Expression"
+												},
+												"runtime_error": {
+													"value": "'@{replace(replace(replace(string(json(replace(activity('transform').error.message,'\\n',' ')).Message),pipeline().parameters.quote,' '),'\"',''),pipeline().parameters.next_line,' ')}'",
+													"type": "Expression"
+												},
+												"quote": "'\\''"
+											},
+											"datasetParameters": {
+												"importhistory": {},
+												"importhistorysink": {},
+												"notifications": {}
+											}
+										},
+										"staging": {},
+										"compute": {
+											"coreCount": 8,
+											"computeType": "General"
+										},
+										"traceLevel": "Fine"
+									}
+								},
+								{
+									"name": "StatusComplete",
+									"type": "ExecuteDataFlow",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataflow": {
+											"referenceName": "importhistorystatusupdate",
+											"type": "DataFlowReference",
+											"parameters": {
+												"transaction_id": {
+													"value": "'@{replace(pipeline().parameters.file_name,'.xlsx','')}'",
+													"type": "Expression"
+												},
+												"quote": "'\\''",
+												"status_value_id": {
+													"value": "'@{'2'}'",
+													"type": "Expression"
+												}
+											},
+											"datasetParameters": {
+												"importhistory": {},
+												"importhistorysink": {},
+												"notification": {}
+											}
+										},
+										"staging": {},
+										"compute": {
+											"coreCount": 8,
+											"computeType": "General"
+										},
+										"traceLevel": "Fine"
+									}
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"parameters": {
+					"quote": {
+						"type": "string",
+						"defaultValue": "'"
+					},
+					"folder_path": {
+						"type": "string",
+						"defaultValue": "/TEST/Upload/DemandForecast"
+					},
+					"file_name": {
+						"type": "string",
+						"defaultValue": "464.xlsx"
+					},
+					"next_line": {
+						"type": "string",
+						"defaultValue": "\\n"
+					}
+				},
+				"variables": {
+					"transaction_id": {
+						"type": "String"
+					},
+					"rows_failed": {
+						"type": "Integer"
+					}
+				},
+				"folder": {
+					"name": "IMPORT_MANAGER"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/runtimefailurecapture')]",
+				"[concat(variables('factoryId'), '/dataflows/importhistorystatusinprogress')]",
+				"[concat(variables('factoryId'), '/dataflows/dffailurecapture')]",
+				"[concat(variables('factoryId'), '/dataflows/importhistorystatusupdate')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/EDA')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "dataflow_eda",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "dataflow_EDA",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine",
+							"continuationSettings": {
+								"customizedCheckpointKey": "7d4ec7d9-56b7-4455-ade7-d54704c72f4d"
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"folder": {
+					"name": "UTILITY_PIPELINES"
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/FULFILLMENT_FORECAST')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "df_activity_fulfillment_forecast",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_fulfillment_forecast",
+								"type": "DataFlowReference",
+								"parameters": {
+									"filename": {
+										"value": "'@{replace(concat(pipeline().parameters.folder_path,'/',pipeline().parameters.file_name),'main','')}'",
+										"type": "Expression"
+									}
+								},
+								"datasetParameters": {
+									"fulfillmentforecast": {},
+									"TenantHeirarchyDetail": {},
+									"LocationMaster": {},
+									"sinkfullfillmentforecast": {},
+									"sinkfailedftpfiles": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"parameters": {
+					"folder_path": {
+						"type": "string",
+						"defaultValue": "Radial/FulfillmentForecast"
+					},
+					"file_name": {
+						"type": "string",
+						"defaultValue": "sample_file_ff_20240624.csv"
+					}
+				},
+				"folder": {
+					"name": "FTP"
+				},
+				"annotations": [],
+				"lastPublishTime": "2023-10-16T10:33:14Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/FULFILLMENT_FORECAST_UX')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "validation",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "setting_status_inprogress",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_fulfillment_forcast_ux",
+								"type": "DataFlowReference",
+								"parameters": {
+									"file_path": {
+										"value": "'@{replace(concat(pipeline().parameters.folder_path,'/',pipeline().parameters.file_name),'staging','')}'",
+										"type": "Expression"
+									},
+									"transaction_id": {
+										"value": "'@{replace(pipeline().parameters.file_name,'.xlsx','')}'",
+										"type": "Expression"
+									}
+								},
+								"datasetParameters": {
+									"FulfillmentSource": {},
+									"importHistory": {},
+									"importLocations": {},
+									"fulfillmentservices": {},
+									"fulfillmentforecast": {},
+									"validfulfillmentforecast": {},
+									"failedrows": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "runtimeerrorvalidation",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "validation",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "runtimefailurecapture",
+								"type": "DataFlowReference",
+								"parameters": {
+									"transaction_id": {
+										"value": "'@{replace(pipeline().parameters.file_name,'.xlsx','')}'",
+										"type": "Expression"
+									},
+									"runtime_error": {
+										"value": "'@{replace(replace(replace(string(json(replace(activity('validation').error.message,'\\n',' ')).Message),pipeline().parameters.quote,' '),'\"',''),pipeline().parameters.next_line,' ')}'",
+										"type": "Expression"
+									},
+									"quote": "'\\''"
+								},
+								"datasetParameters": {
+									"importhistory": {},
+									"importhistorysink": {},
+									"notifications": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "setting_status_inprogress",
+						"type": "ExecuteDataFlow",
+						"state": "Inactive",
+						"onInactiveMarkAs": "Succeeded",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "importhistorystatusinprogress",
+								"type": "DataFlowReference",
+								"parameters": {
+									"transaction_id": {
+										"value": "'@{replace(pipeline().parameters.file_name,'.xlsx','')}'",
+										"type": "Expression"
+									},
+									"quote": "'\\''"
+								},
+								"datasetParameters": {
+									"importhistory": {},
+									"importhistorysink": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "rows_failed",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "validation",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "rows_failed",
+							"value": {
+								"value": "@activity('validation').output.runstatus.metrics.failedrows.rowsWritten",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "failedrowscountcheck",
+						"type": "IfCondition",
+						"dependsOn": [
+							{
+								"activity": "rows_failed",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@equals(variables('rows_failed'),0)",
+								"type": "Expression"
+							},
+							"ifFalseActivities": [
+								{
+									"name": "dferrorvalidation",
+									"type": "ExecuteDataFlow",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataflow": {
+											"referenceName": "dffailurecapture",
+											"type": "DataFlowReference",
+											"parameters": {
+												"transaction_id": {
+													"value": "'@{replace(pipeline().parameters.file_name,'.xlsx','')}'",
+													"type": "Expression"
+												},
+												"single_quote": "'\\''",
+												"file_path": {
+													"value": "'@{concat(replace(pipeline().parameters.folder_path,'staging',''),'/',pipeline().parameters.file_name)}'",
+													"type": "Expression"
+												}
+											},
+											"datasetParameters": {
+												"failure": {},
+												"importhistorylookup": {},
+												"importhistory": {},
+												"notification": {}
+											}
+										},
+										"staging": {},
+										"compute": {
+											"coreCount": 8,
+											"computeType": "General"
+										},
+										"traceLevel": "Fine"
+									}
+								}
+							],
+							"ifTrueActivities": [
+								{
+									"name": "transform",
+									"type": "ExecuteDataFlow",
+									"state": "Inactive",
+									"onInactiveMarkAs": "Succeeded",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataflow": {
+											"referenceName": "df_transform_fulfillment_forecast_ux",
+											"type": "DataFlowReference",
+											"parameters": {
+												"file_path": {
+													"value": "'@{replace(concat(pipeline().parameters.folder_path,'/',replace(pipeline().parameters.file_name,'.xlsx',''),'.txt'),'staging','')}'",
+													"type": "Expression"
+												},
+												"transaction_id": {
+													"value": "'@{replace(pipeline().parameters.file_name,'.xlsx','')}'",
+													"type": "Expression"
+												}
+											},
+											"datasetParameters": {
+												"fulfillmentforecastmain": {},
+												"importhistory": {},
+												"locations": {},
+												"fulfillmentservices": {},
+												"sinkfulfillmentforecast": {}
+											}
+										},
+										"staging": {},
+										"compute": {
+											"coreCount": 8,
+											"computeType": "General"
+										},
+										"traceLevel": "Fine"
+									}
+								},
+								{
+									"name": "runtimeerrortransform",
+									"type": "ExecuteDataFlow",
+									"state": "Inactive",
+									"onInactiveMarkAs": "Succeeded",
+									"dependsOn": [
+										{
+											"activity": "transform",
+											"dependencyConditions": [
+												"Failed"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataflow": {
+											"referenceName": "runtimefailurecapture",
+											"type": "DataFlowReference",
+											"parameters": {
+												"transaction_id": {
+													"value": "'@{replace(pipeline().parameters.file_name,'.xlsx','')}'",
+													"type": "Expression"
+												},
+												"runtime_error": {
+													"value": "'@{replace(replace(replace(string(json(replace(activity('transform').error.message,'\\n',' ')).Message),pipeline().parameters.quote,' '),'\"',''),pipeline().parameters.next_line,' ')}'",
+													"type": "Expression"
+												},
+												"quote": "'\\''"
+											},
+											"datasetParameters": {
+												"importhistory": {},
+												"importhistorysink": {},
+												"notifications": {}
+											}
+										},
+										"staging": {},
+										"compute": {
+											"coreCount": 8,
+											"computeType": "General"
+										},
+										"traceLevel": "Fine"
+									}
+								},
+								{
+									"name": "StatusComplete",
+									"type": "ExecuteDataFlow",
+									"dependsOn": [
+										{
+											"activity": "transform",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataflow": {
+											"referenceName": "importhistorystatusupdate",
+											"type": "DataFlowReference",
+											"parameters": {
+												"transaction_id": {
+													"value": "'@{replace(pipeline().parameters.file_name,'.xlsx','')}'",
+													"type": "Expression"
+												},
+												"quote": "'\\''",
+												"status_value_id": {
+													"value": "'@{'2'}'",
+													"type": "Expression"
+												}
+											},
+											"datasetParameters": {
+												"importhistory": {},
+												"importhistorysink": {},
+												"notification": {}
+											}
+										},
+										"staging": {},
+										"compute": {
+											"coreCount": 8,
+											"computeType": "General"
+										},
+										"traceLevel": "Fine"
+									}
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"parameters": {
+					"quote": {
+						"type": "string",
+						"defaultValue": "'"
+					},
+					"folder_path": {
+						"type": "string"
+					},
+					"file_name": {
+						"type": "string"
+					},
+					"next_line": {
+						"type": "string",
+						"defaultValue": "\\n"
+					}
+				},
+				"variables": {
+					"transaction_id": {
+						"type": "String"
+					},
+					"rows_failed": {
+						"type": "Integer"
+					}
+				},
+				"folder": {
+					"name": "IMPORT_MANAGER"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/runtimefailurecapture')]",
+				"[concat(variables('factoryId'), '/dataflows/importhistorystatusinprogress')]",
+				"[concat(variables('factoryId'), '/dataflows/dffailurecapture')]",
+				"[concat(variables('factoryId'), '/dataflows/importhistorystatusupdate')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/INVENTORY')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "df_activity_inventory",
+						"description": "test publish test",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_inventory",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"inventory": {},
+									"ItemMaster": {},
+									"LocationMaster": {},
+									"TenantHeirarchyTable": {},
+									"EnumType": {},
+									"EnumValues": {},
+									"Write2Inventory": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine",
+							"continuationSettings": {
+								"customizedCheckpointKey": "37682b5c-5f39-47c5-97e5-ebbed3aa67bf"
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"folder": {
+					"name": "FTP"
+				},
+				"annotations": [],
+				"lastPublishTime": "2023-10-09T13:11:24Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/INVENTORY_UX')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "validation",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "setting_status_inprogress",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_inventory_ux",
+								"type": "DataFlowReference",
+								"parameters": {
+									"transaction_id": {
+										"value": "'@{replace(pipeline().parameters.file_name,'.xlsx','')}'",
+										"type": "Expression"
+									},
+									"file_path": {
+										"value": "'@{replace(concat(pipeline().parameters.folder_path,'/',pipeline().parameters.file_name),'staging','')}'",
+										"type": "Expression"
+									}
+								},
+								"datasetParameters": {
+									"tenanthierarchy": {},
+									"importhistory": {},
+									"fetchinglocations": {},
+									"fetchingitems": {},
+									"fetchinginventorysource": {},
+									"fetchinginventory": {},
+									"validinventoryrows": {},
+									"failedrows": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "runtimeerrorvalidation",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "validation",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "runtimefailurecapture",
+								"type": "DataFlowReference",
+								"parameters": {
+									"transaction_id": {
+										"value": "'@{replace(pipeline().parameters.file_name,'.xlsx','')}'",
+										"type": "Expression"
+									},
+									"runtime_error": {
+										"value": "'@{replace(replace(replace(string(json(replace(activity('validation').error.message,'\\n',' ')).Message),pipeline().parameters.quote,' '),'\"',''),pipeline().parameters.next_line,' ')}'",
+										"type": "Expression"
+									},
+									"quote": "'\\''"
+								},
+								"datasetParameters": {
+									"importhistory": {},
+									"importhistorysink": {},
+									"notifications": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "setting_status_inprogress",
+						"type": "ExecuteDataFlow",
+						"state": "Inactive",
+						"onInactiveMarkAs": "Succeeded",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "importhistorystatusinprogress",
+								"type": "DataFlowReference",
+								"parameters": {
+									"transaction_id": {
+										"value": "'@{replace(pipeline().parameters.file_name,'.xlsx','')}'",
+										"type": "Expression"
+									},
+									"quote": "'\\''"
+								},
+								"datasetParameters": {
+									"importhistory": {},
+									"importhistorysink": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "rows_failed",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "validation",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "rows_failed",
+							"value": {
+								"value": "@activity('validation').output.runstatus.metrics.failedrows.rowsWritten",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "failedrowscountcheck",
+						"type": "IfCondition",
+						"dependsOn": [
+							{
+								"activity": "rows_failed",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@equals(variables('rows_failed'),0)",
+								"type": "Expression"
+							},
+							"ifFalseActivities": [
+								{
+									"name": "dferrorvalidation",
+									"type": "ExecuteDataFlow",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataflow": {
+											"referenceName": "dffailurecapture",
+											"type": "DataFlowReference",
+											"parameters": {
+												"transaction_id": {
+													"value": "'@{replace(pipeline().parameters.file_name,'.xlsx','')}'",
+													"type": "Expression"
+												},
+												"single_quote": "'\\''",
+												"file_path": {
+													"value": "'@{concat(replace(pipeline().parameters.folder_path,'staging',''),'/',pipeline().parameters.file_name)}'",
+													"type": "Expression"
+												}
+											},
+											"datasetParameters": {
+												"failure": {},
+												"importhistorylookup": {},
+												"importhistory": {},
+												"notification": {}
+											}
+										},
+										"staging": {},
+										"compute": {
+											"coreCount": 8,
+											"computeType": "General"
+										},
+										"traceLevel": "Fine"
+									}
+								}
+							],
+							"ifTrueActivities": [
+								{
+									"name": "transform",
+									"type": "ExecuteDataFlow",
+									"state": "Inactive",
+									"onInactiveMarkAs": "Succeeded",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataflow": {
+											"referenceName": "df_transform_inventory",
+											"type": "DataFlowReference",
+											"parameters": {
+												"file_path": {
+													"value": "'@{replace(concat(pipeline().parameters.folder_path,'/',replace(pipeline().parameters.file_name,'.xlsx',''),'.txt'),'staging','')}'",
+													"type": "Expression"
+												},
+												"transaction_id": {
+													"value": "'@{replace(pipeline().parameters.file_name,'.xlsx','')}'",
+													"type": "Expression"
+												}
+											},
+											"datasetParameters": {
+												"inventorymain": {},
+												"importhistory": {},
+												"locations": {},
+												"item": {},
+												"tenantheirarchydetail": {},
+												"sinkinventory": {}
+											}
+										},
+										"staging": {},
+										"compute": {
+											"coreCount": 8,
+											"computeType": "General"
+										},
+										"traceLevel": "Fine"
+									}
+								},
+								{
+									"name": "runtimeerrortransform",
+									"type": "ExecuteDataFlow",
+									"state": "Inactive",
+									"onInactiveMarkAs": "Succeeded",
+									"dependsOn": [
+										{
+											"activity": "transform",
+											"dependencyConditions": [
+												"Failed"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataflow": {
+											"referenceName": "runtimefailurecapture",
+											"type": "DataFlowReference",
+											"parameters": {
+												"transaction_id": {
+													"value": "'@{replace(pipeline().parameters.file_name,'.xlsx','')}'",
+													"type": "Expression"
+												},
+												"runtime_error": {
+													"value": "'@{replace(replace(replace(string(json(replace(activity('transform').error.message,'\\n',' ')).Message),pipeline().parameters.quote,' '),'\"',''),pipeline().parameters.next_line,' ')}'",
+													"type": "Expression"
+												},
+												"quote": "'\\''"
+											},
+											"datasetParameters": {
+												"importhistory": {},
+												"importhistorysink": {},
+												"notifications": {}
+											}
+										},
+										"staging": {},
+										"compute": {
+											"coreCount": 8,
+											"computeType": "General"
+										},
+										"traceLevel": "Fine"
+									}
+								},
+								{
+									"name": "StatusComplete",
+									"type": "ExecuteDataFlow",
+									"dependsOn": [
+										{
+											"activity": "transform",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataflow": {
+											"referenceName": "importhistorystatusupdate",
+											"type": "DataFlowReference",
+											"parameters": {
+												"transaction_id": {
+													"value": "'@{replace(pipeline().parameters.file_name,'.xlsx','')}'",
+													"type": "Expression"
+												},
+												"quote": "'\\''",
+												"status_value_id": {
+													"value": "'@{'2'}'",
+													"type": "Expression"
+												}
+											},
+											"datasetParameters": {
+												"importhistory": {},
+												"importhistorysink": {},
+												"notification": {}
+											}
+										},
+										"staging": {},
+										"compute": {
+											"coreCount": 8,
+											"computeType": "General"
+										},
+										"traceLevel": "Fine"
+									}
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"parameters": {
+					"quote": {
+						"type": "string",
+						"defaultValue": "'"
+					},
+					"folder_path": {
+						"type": "string",
+						"defaultValue": "DEV/Upload/Inventory"
+					},
+					"file_name": {
+						"type": "string",
+						"defaultValue": "272.xlsx"
+					},
+					"next_line": {
+						"type": "string",
+						"defaultValue": "\\n"
+					}
+				},
+				"variables": {
+					"transaction_id": {
+						"type": "String"
+					},
+					"rows_failed": {
+						"type": "Integer"
+					}
+				},
+				"folder": {
+					"name": "IMPORT_MANAGER"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/runtimefailurecapture')]",
+				"[concat(variables('factoryId'), '/dataflows/importhistorystatusinprogress')]",
+				"[concat(variables('factoryId'), '/dataflows/dffailurecapture')]",
+				"[concat(variables('factoryId'), '/dataflows/importhistorystatusupdate')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ITEM_MASTER')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "df_activity_item_master",
+						"description": "dataflow activity transforming data from storage account and populate it to inventory table",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_item_master",
+								"type": "DataFlowReference",
+								"parameters": {
+									"filepath": {
+										"value": "'@{replace(concat(pipeline().parameters.folder_path,'/',pipeline().parameters.file_name),'main','')}'",
+										"type": "Expression"
+									}
+								},
+								"datasetParameters": {
+									"ItemMasterRaw": {},
+									"ItemHeirarchyDetail": {},
+									"TenantHeirarchyDetail": {},
+									"LifecycleStatus": {},
+									"TemporaryOutput": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"parameters": {
+					"folder_path": {
+						"type": "string",
+						"defaultValue": "main/Radial/ItemMaster"
+					},
+					"file_name": {
+						"type": "string",
+						"defaultValue": "sample_file.csv"
+					}
+				},
+				"folder": {
+					"name": "FTP"
+				},
+				"annotations": [],
+				"lastPublishTime": "2023-10-09T13:33:42Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LANE_RATES')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "df_activity_lane_rates",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_lane_rates",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"LaneRateForGround": {},
+									"HeirarchyTable": {},
+									"LaneRateForNDA": {},
+									"LaneRateFor2DA": {},
+									"tempoutput": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"folder": {
+					"name": "FTP"
+				},
+				"annotations": [],
+				"lastPublishTime": "2023-10-09T14:08:01Z"
+			},
+			"dependsOn": []
+		}
+	]
+}

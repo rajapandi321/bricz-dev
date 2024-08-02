@@ -1,0 +1,1661 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "bricz-deploy-factory"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/lifecycle_status')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "PgSQL_LinkedService3",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "db_tables"
+				},
+				"annotations": [],
+				"type": "AzurePostgreSqlTable",
+				"schema": [
+					{
+						"name": "id",
+						"type": "integer",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "status",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "lifecycle_code",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "created_date",
+						"type": "timestamp with time zone",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "updated_date",
+						"type": "timestamp with time zone",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "business_unit_id",
+						"type": "uuid",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "organization_id",
+						"type": "uuid",
+						"precision": 0,
+						"scale": 0
+					}
+				],
+				"typeProperties": {
+					"schema": "pfp",
+					"table": "lifecycle_status"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/location_type')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "PgSQL_LinkedService3",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "db_tables"
+				},
+				"annotations": [],
+				"type": "AzurePostgreSqlTable",
+				"schema": [
+					{
+						"name": "id",
+						"type": "integer",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "name",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "description",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "created_date",
+						"type": "date",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "updated_date",
+						"type": "date",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "display_icon",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					}
+				],
+				"typeProperties": {
+					"schema": "pfp",
+					"table": "location_types"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/locations')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "PgSQL_LinkedService3",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "db_tables"
+				},
+				"annotations": [],
+				"type": "AzurePostgreSqlTable",
+				"schema": [
+					{
+						"name": "id",
+						"type": "integer",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "location_code",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "name",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "address",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "city",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "state",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "zip",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "country",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "sub_type",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "delivery_partners",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "throughput",
+						"type": "real",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "capacity",
+						"type": "real",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "special_information",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "holding_cost",
+						"type": "real",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "inbound_handling_cost",
+						"type": "real",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "outbound_handling_cost",
+						"type": "real",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "longitude",
+						"type": "double precision",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "latitude",
+						"type": "double precision",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "updated_date",
+						"type": "date",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "created_date",
+						"type": "date",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "status",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "inbound_processing_time",
+						"type": "numeric",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "outbound_processing_time",
+						"type": "numeric",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "type",
+						"type": "integer",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "transfer_inbound_processing_time",
+						"type": "double precision",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "transfer_outbound_processing_time",
+						"type": "double precision",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "transfer_inbound_handling_cost",
+						"type": "double precision",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "transfer_outbound_handling_cost",
+						"type": "double precision",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "tenant_id",
+						"type": "uuid",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "organization_id",
+						"type": "uuid",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "business_unit_id",
+						"type": "uuid",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "units_per_hour",
+						"type": "real",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "max_fte_regular_hours",
+						"type": "real",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "min_fte_regular_hours",
+						"type": "real",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "max_temp_regular_hours",
+						"type": "real",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "min_temp_regular_hours",
+						"type": "real",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "max_fte_overtime_hours",
+						"type": "real",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "max_temp_overtime_hours",
+						"type": "real",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "regular_fte_wage",
+						"type": "real",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "regular_temp_wage",
+						"type": "real",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "overtime_fte_wage",
+						"type": "real",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "overtime_temp_wage",
+						"type": "real",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "fte_staff_count",
+						"type": "integer",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "temp_staff_count",
+						"type": "integer",
+						"precision": 0,
+						"scale": 0
+					}
+				],
+				"typeProperties": {
+					"schema": "pfp",
+					"table": "locations"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/micro_area')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "PgSQL_LinkedService3",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzurePostgreSqlTable",
+				"schema": [
+					{
+						"name": "id",
+						"type": "integer",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "micro_area_code",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "description",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "primary_fulfillment_location",
+						"type": "integer",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "attribute_1",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "attribute_2",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "created_date",
+						"type": "timestamp with time zone",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "updated_date",
+						"type": "timestamp with time zone",
+						"precision": 0,
+						"scale": 0
+					}
+				],
+				"typeProperties": {
+					"schema": "pfp",
+					"table": "micro_area"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/notification')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "PgSQL_LinkedService3",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzurePostgreSqlTable",
+				"schema": [
+					{
+						"name": "id",
+						"type": "integer",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "run_id",
+						"type": "integer",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "run_status",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "description",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "user_id",
+						"type": "uuid",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "notification_status",
+						"type": "USER-DEFINED",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "notification_type",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "feature_id",
+						"type": "integer",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "created_at",
+						"type": "timestamp with time zone",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "updated_at",
+						"type": "timestamp with time zone",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "business_unit_id",
+						"type": "uuid",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "organization_id",
+						"type": "uuid",
+						"precision": 0,
+						"scale": 0
+					}
+				],
+				"typeProperties": {
+					"schema": "pfp",
+					"table": "notification"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/operational_calendar')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "PgSQL_LinkedService3",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "db_tables"
+				},
+				"annotations": [],
+				"type": "AzurePostgreSqlTable",
+				"schema": [
+					{
+						"name": "id",
+						"type": "integer",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "business_unit_id",
+						"type": "uuid",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "organization_id",
+						"type": "uuid",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "location_id",
+						"type": "integer",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "date",
+						"type": "date",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "location_metric_value",
+						"type": "numeric",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "created_date",
+						"type": "timestamp with time zone",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "updated_date",
+						"type": "timestamp with time zone",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "enum_value_id",
+						"type": "integer",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "enum_type_id",
+						"type": "integer",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "operational_profile_id",
+						"type": "integer",
+						"precision": 0,
+						"scale": 0
+					}
+				],
+				"typeProperties": {
+					"schema": "pfp",
+					"table": "operational_calendar"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/operationalprofile')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "PgSQL_LinkedService3",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzurePostgreSqlTable",
+				"schema": [
+					{
+						"name": "id",
+						"type": "integer",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "name",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "created_date",
+						"type": "timestamp with time zone",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "updated_date",
+						"type": "timestamp with time zone",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "business_unit_id",
+						"type": "uuid",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "organization_id",
+						"type": "uuid",
+						"precision": 0,
+						"scale": 0
+					}
+				],
+				"typeProperties": {
+					"schema": "pfp",
+					"table": "operational_profile"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/order_history')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "PgSQL_LinkedService3",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "db_tables"
+				},
+				"annotations": [],
+				"type": "AzurePostgreSqlTable",
+				"schema": [
+					{
+						"name": "id",
+						"type": "integer",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "order_code",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "channel",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "order_date",
+						"type": "timestamp with time zone",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "must_ship_by_date",
+						"type": "timestamp with time zone",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "must_deliver_by_date",
+						"type": "timestamp with time zone",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "destination_city",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "destination_state",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "destination_postal_code",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "destination_country",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "status",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "delivery_partner_name",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "service_level_name",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "fulfillment_service",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "total_units",
+						"type": "real",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "total_shipping_charge",
+						"type": "real",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "total_order_value",
+						"type": "real",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "import_date",
+						"type": "timestamp with time zone",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "organization_id",
+						"type": "uuid",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "business_unit_id",
+						"type": "uuid",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "location_code",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					}
+				],
+				"typeProperties": {
+					"schema": "pfp",
+					"table": "order_history"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/order_line_history')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "PgSQL_LinkedService3",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "db_tables"
+				},
+				"annotations": [],
+				"type": "AzurePostgreSqlTable",
+				"schema": [
+					{
+						"name": "order_id",
+						"type": "integer",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "order_line_code",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "item_code",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "item_name",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "item_description",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "order_quantity",
+						"type": "real",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "ship_quantity",
+						"type": "real",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "line_status",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "item_price",
+						"type": "real",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "business_unit_id",
+						"type": "uuid",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "organization_id",
+						"type": "uuid",
+						"precision": 0,
+						"scale": 0
+					}
+				],
+				"typeProperties": {
+					"schema": "pfp",
+					"table": "order_line_history"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/order_status_history')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "PgSQL_LinkedService3",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "db_tables"
+				},
+				"annotations": [],
+				"type": "AzurePostgreSqlTable",
+				"schema": [
+					{
+						"name": "order_id",
+						"type": "integer",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "status",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "status_date",
+						"type": "timestamp with time zone",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "business_unit_id",
+						"type": "uuid",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "organization_id",
+						"type": "uuid",
+						"precision": 0,
+						"scale": 0
+					}
+				],
+				"typeProperties": {
+					"schema": "pfp",
+					"table": "order_status_history"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/orderhistory_mllake')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "datalakelinkedservice",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "OrderHistory",
+						"fileSystem": "mldatalake"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/sftp_files_binary')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "SFTP_RADIAL_STORAGE",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "SftpLocation",
+						"folderPath": "/outbound/"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/sftp_files_radial')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "SFTP_RADIAL_STORAGE",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "SftpLocation",
+						"folderPath": "/outbound"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/shipment_history')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "PgSQL_LinkedService3",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "db_tables"
+				},
+				"annotations": [],
+				"type": "AzurePostgreSqlTable",
+				"schema": [
+					{
+						"name": "id",
+						"type": "integer",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "shipment_code",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "order_code",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "delivery_partner_name",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "service_level",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "status",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "shipment_date",
+						"type": "timestamp with time zone",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "total_units",
+						"type": "real",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "total_weight",
+						"type": "real",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "total_volume",
+						"type": "real",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "total_cost",
+						"type": "real",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "business_unit_id",
+						"type": "uuid",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "organization_id",
+						"type": "uuid",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "import_date",
+						"type": "timestamp with time zone",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "location_code",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					}
+				],
+				"typeProperties": {
+					"schema": "pfp",
+					"table": "shipment_history"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/shipment_history_mldatalake')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "datalakelinkedservice",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "ShipmentHistory",
+						"fileSystem": "mldatalake"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/shipment_line_history')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "PgSQL_LinkedService3",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "db_tables"
+				},
+				"annotations": [],
+				"type": "AzurePostgreSqlTable",
+				"schema": [
+					{
+						"name": "shipment_id",
+						"type": "integer",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "shipment_line_code",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "order_code",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "order_line_code",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "item_code",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "item_name",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "units",
+						"type": "real",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "business_unit_id",
+						"type": "uuid",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "organization_id",
+						"type": "uuid",
+						"precision": 0,
+						"scale": 0
+					}
+				],
+				"typeProperties": {
+					"schema": "pfp",
+					"table": "shipment_line_history"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/staffing_history_mldatalake')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "datalakelinkedservice",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "StaffingHistory",
+						"fileSystem": "mldatalake"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/temp_binary_sample_files')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "datalakelinkedservice",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "temp",
+						"fileSystem": "staging"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/tenant_heirarchy_table')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "PgSQL_LinkedService3",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "db_tables"
+				},
+				"annotations": [],
+				"type": "AzurePostgreSqlTable",
+				"schema": [
+					{
+						"name": "id",
+						"type": "uuid",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "tenant_hierarchy_type",
+						"type": "integer",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "name",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "contact_name",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "email",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "phone",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "street_address_1",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "street_address_2",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "city",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "state",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "zip",
+						"type": "integer",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "country",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "active",
+						"type": "boolean",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "tenant_id",
+						"type": "uuid",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "created_date",
+						"type": "timestamp with time zone",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "updated_date",
+						"type": "timestamp with time zone",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "parent_id",
+						"type": "uuid",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "tenant_hierarchy_code",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "isdeleted",
+						"type": "boolean",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "updated_by_user_id",
+						"type": "uuid",
+						"precision": 0,
+						"scale": 0
+					}
+				],
+				"typeProperties": {
+					"schema": "pfp",
+					"table": "tenant_hierarchy_detail"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/transportation_lane')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "PgSQL_LinkedService3",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "db_tables"
+				},
+				"annotations": [],
+				"type": "AzurePostgreSqlTable",
+				"schema": [
+					{
+						"name": "id",
+						"type": "integer",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "delivery_partner_id",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "rate_code",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "fulfillment_service_type",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "service_type",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "origin_location_code",
+						"type": "integer",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "origin_address",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "origin_city",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "origin_state",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "origin_zip",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "origin_country",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "destination_location_code",
+						"type": "integer",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "destination_address",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "destination_city",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "destination_state",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "destination_zip",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "destination_country",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "transit_time",
+						"type": "integer",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "zone",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "created_date",
+						"type": "timestamp with time zone",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "updated_date",
+						"type": "timestamp with time zone",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "business_unit_id",
+						"type": "uuid",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "organization_id",
+						"type": "uuid",
+						"precision": 0,
+						"scale": 0
+					}
+				],
+				"typeProperties": {
+					"schema": "pfp",
+					"table": "transportation_lane"
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}

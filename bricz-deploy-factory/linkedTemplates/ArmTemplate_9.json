@@ -1,0 +1,594 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "bricz-deploy-factory"
+		},
+		"sftp_upload_shipment_history_properties_SHIPMENT_HISTORY_COPY_parameters_filename": {
+			"type": "string",
+			"defaultValue": "@triggerBody().filename"
+		},
+		"sftp_upload_shipment_history_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/c061dde2-a728-4240-8f3d-15ccff95ec4d/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Storage/storageAccounts/stdevdatapipe001"
+		},
+		"sftp_upload_staffing_history_properties_STAFFING_HISTORY_parameters_file_name": {
+			"type": "string",
+			"defaultValue": "@triggerBody().fileName"
+		},
+		"sftp_upload_staffing_history_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/c061dde2-a728-4240-8f3d-15ccff95ec4d/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Storage/storageAccounts/stdevdatapipe001"
+		},
+		"import_manager_current_backlog_properties_CURRENT_BACKLOG_UX_parameters_quote": {
+			"type": "string",
+			"defaultValue": "'"
+		},
+		"import_manager_current_backlog_properties_CURRENT_BACKLOG_UX_parameters_folder_path": {
+			"type": "string",
+			"defaultValue": "@triggerBody().folderPath"
+		},
+		"import_manager_current_backlog_properties_CURRENT_BACKLOG_UX_parameters_file_name": {
+			"type": "string",
+			"defaultValue": "@triggerBody().fileName"
+		},
+		"import_manager_current_backlog_properties_CURRENT_BACKLOG_UX_parameters_next_line": {
+			"type": "string",
+			"defaultValue": "\\n"
+		},
+		"import_manager_current_backlog_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/c061dde2-a728-4240-8f3d-15ccff95ec4d/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Storage/storageAccounts/stdevdatapipe001"
+		},
+		"import_manager_demand_forecast_properties_DEMAND_FORECAST_UX_parameters_quote": {
+			"type": "string",
+			"defaultValue": "'"
+		},
+		"import_manager_demand_forecast_properties_DEMAND_FORECAST_UX_parameters_folder_path": {
+			"type": "string",
+			"defaultValue": "@triggerBody().folderPath"
+		},
+		"import_manager_demand_forecast_properties_DEMAND_FORECAST_UX_parameters_file_name": {
+			"type": "string",
+			"defaultValue": "@triggerBody().fileName"
+		},
+		"import_manager_demand_forecast_properties_DEMAND_FORECAST_UX_parameters_next_line": {
+			"type": "string",
+			"defaultValue": "\\n"
+		},
+		"import_manager_demand_forecast_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/c061dde2-a728-4240-8f3d-15ccff95ec4d/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Storage/storageAccounts/stdevdatapipe001"
+		},
+		"import_manager_fulfillment_forecast_properties_FULFILLMENT_FORECAST_UX_parameters_quote": {
+			"type": "string",
+			"defaultValue": "'"
+		},
+		"import_manager_fulfillment_forecast_properties_FULFILLMENT_FORECAST_UX_parameters_folder_path": {
+			"type": "string",
+			"defaultValue": "@triggerBody().folderPath"
+		},
+		"import_manager_fulfillment_forecast_properties_FULFILLMENT_FORECAST_UX_parameters_file_name": {
+			"type": "string",
+			"defaultValue": "@triggerBody().fileName"
+		},
+		"import_manager_fulfillment_forecast_properties_FULFILLMENT_FORECAST_UX_parameters_next_line": {
+			"type": "string",
+			"defaultValue": "\\n"
+		},
+		"import_manager_fulfillment_forecast_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/c061dde2-a728-4240-8f3d-15ccff95ec4d/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Storage/storageAccounts/stdevdatapipe001"
+		},
+		"import_manager_inventory_properties_INVENTORY_UX_parameters_quote": {
+			"type": "string",
+			"defaultValue": "'"
+		},
+		"import_manager_inventory_properties_INVENTORY_UX_parameters_folder_path": {
+			"type": "string",
+			"defaultValue": "@triggerBody().folderPath"
+		},
+		"import_manager_inventory_properties_INVENTORY_UX_parameters_file_name": {
+			"type": "string",
+			"defaultValue": "@triggerBody().fileName"
+		},
+		"import_manager_inventory_properties_INVENTORY_UX_parameters_next_line": {
+			"type": "string",
+			"defaultValue": "\\n"
+		},
+		"import_manager_inventory_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/c061dde2-a728-4240-8f3d-15ccff95ec4d/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Storage/storageAccounts/stdevdatapipe001"
+		},
+		"import_manager_location_properties_LOCATION_UX_parameters_quote": {
+			"type": "string",
+			"defaultValue": "'"
+		},
+		"import_manager_location_properties_LOCATION_UX_parameters_folder_path": {
+			"type": "string",
+			"defaultValue": "@triggerBody().folderPath"
+		},
+		"import_manager_location_properties_LOCATION_UX_parameters_file_name": {
+			"type": "string",
+			"defaultValue": "@triggerBody().fileName"
+		},
+		"import_manager_location_properties_LOCATION_UX_parameters_next_line": {
+			"type": "string",
+			"defaultValue": "\\n"
+		},
+		"import_manager_location_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/c061dde2-a728-4240-8f3d-15ccff95ec4d/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Storage/storageAccounts/stdevdatapipe001"
+		},
+		"import_manager_location_staffing_properties_LOCATION_STAFFING_parameters_quote": {
+			"type": "string",
+			"defaultValue": "'"
+		},
+		"import_manager_location_staffing_properties_LOCATION_STAFFING_parameters_folder_path": {
+			"type": "string",
+			"defaultValue": "@triggerBody().folderPath"
+		},
+		"import_manager_location_staffing_properties_LOCATION_STAFFING_parameters_file_name": {
+			"type": "string",
+			"defaultValue": "@triggerBody().fileName"
+		},
+		"import_manager_location_staffing_properties_LOCATION_STAFFING_parameters_next_line": {
+			"type": "string",
+			"defaultValue": "\\n"
+		},
+		"import_manager_location_staffing_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/c061dde2-a728-4240-8f3d-15ccff95ec4d/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Storage/storageAccounts/stdevdatapipe001"
+		},
+		"sftp_upload_budget_staffing_properties_BUDGET_STAFFING_parameters_folder_path": {
+			"type": "string",
+			"defaultValue": "@triggerBody().folderPath"
+		},
+		"sftp_upload_budget_staffing_properties_BUDGET_STAFFING_parameters_file_name": {
+			"type": "string",
+			"defaultValue": "@triggerBody().fileName"
+		},
+		"sftp_upload_budget_staffing_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/c061dde2-a728-4240-8f3d-15ccff95ec4d/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Storage/storageAccounts/stdevdatapipe001"
+		},
+		"sftp_upload_daily_actuals_properties_DAILY_ACTUALS_parameters_folder_path": {
+			"type": "string",
+			"defaultValue": "@triggerBody().folderPath"
+		},
+		"sftp_upload_daily_actuals_properties_DAILY_ACTUALS_parameters_file_name": {
+			"type": "string",
+			"defaultValue": "@triggerBody().fileName"
+		},
+		"sftp_upload_daily_actuals_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/c061dde2-a728-4240-8f3d-15ccff95ec4d/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Storage/storageAccounts/stdevdatapipe001"
+		},
+		"sftp_upload_fulfillment_forecast_properties_FULFILLMENT_FORECAST_parameters_folder_path": {
+			"type": "string",
+			"defaultValue": "@triggerBody().folderPath"
+		},
+		"sftp_upload_fulfillment_forecast_properties_FULFILLMENT_FORECAST_parameters_file_name": {
+			"type": "string",
+			"defaultValue": "@triggerBody().fileName"
+		},
+		"sftp_upload_fulfillment_forecast_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/c061dde2-a728-4240-8f3d-15ccff95ec4d/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Storage/storageAccounts/stdevdatapipe001"
+		},
+		"sftp_upload_location_master_properties_LOCATION_MASTER_parameters_folder_path": {
+			"type": "string",
+			"defaultValue": "@triggerBody().folderPath"
+		},
+		"sftp_upload_location_master_properties_LOCATION_MASTER_parameters_file_name": {
+			"type": "string",
+			"defaultValue": "@triggerBody().fileName"
+		},
+		"sftp_upload_location_master_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/c061dde2-a728-4240-8f3d-15ccff95ec4d/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Storage/storageAccounts/stdevdatapipe001"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/sftp_upload_shipment_history')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "SHIPMENT_HISTORY_COPY",
+							"type": "PipelineReference"
+						},
+						"parameters": {
+							"filename": "[parameters('sftp_upload_shipment_history_properties_SHIPMENT_HISTORY_COPY_parameters_filename')]"
+						}
+					}
+				],
+				"type": "BlobEventsTrigger",
+				"typeProperties": {
+					"blobPathBeginsWith": "/main/blobs/Radial/ShipmentHistory",
+					"blobPathEndsWith": ".csv",
+					"ignoreEmptyBlobs": true,
+					"scope": "[parameters('sftp_upload_shipment_history_properties_typeProperties_scope')]",
+					"events": [
+						"Microsoft.Storage.BlobCreated"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/sftp_upload_staffing_history')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "STAFFING_HISTORY",
+							"type": "PipelineReference"
+						},
+						"parameters": {
+							"file_name": "[parameters('sftp_upload_staffing_history_properties_STAFFING_HISTORY_parameters_file_name')]"
+						}
+					}
+				],
+				"type": "BlobEventsTrigger",
+				"typeProperties": {
+					"blobPathBeginsWith": "/main/blobs/Radial/StaffingHistory",
+					"blobPathEndsWith": ".csv",
+					"ignoreEmptyBlobs": true,
+					"scope": "[parameters('sftp_upload_staffing_history_properties_typeProperties_scope')]",
+					"events": [
+						"Microsoft.Storage.BlobCreated"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/import_manager_current_backlog')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "CURRENT_BACKLOG_UX",
+							"type": "PipelineReference"
+						},
+						"parameters": {
+							"quote": "[parameters('import_manager_current_backlog_properties_CURRENT_BACKLOG_UX_parameters_quote')]",
+							"folder_path": "[parameters('import_manager_current_backlog_properties_CURRENT_BACKLOG_UX_parameters_folder_path')]",
+							"file_name": "[parameters('import_manager_current_backlog_properties_CURRENT_BACKLOG_UX_parameters_file_name')]",
+							"next_line": "[parameters('import_manager_current_backlog_properties_CURRENT_BACKLOG_UX_parameters_next_line')]"
+						}
+					}
+				],
+				"type": "BlobEventsTrigger",
+				"typeProperties": {
+					"blobPathBeginsWith": "/staging/blobs/DEV/Upload/CurrentBacklog",
+					"blobPathEndsWith": ".xlsx",
+					"ignoreEmptyBlobs": true,
+					"scope": "[parameters('import_manager_current_backlog_properties_typeProperties_scope')]",
+					"events": [
+						"Microsoft.Storage.BlobCreated"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/import_manager_demand_forecast')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "DEMAND_FORECAST_UX",
+							"type": "PipelineReference"
+						},
+						"parameters": {
+							"quote": "[parameters('import_manager_demand_forecast_properties_DEMAND_FORECAST_UX_parameters_quote')]",
+							"folder_path": "[parameters('import_manager_demand_forecast_properties_DEMAND_FORECAST_UX_parameters_folder_path')]",
+							"file_name": "[parameters('import_manager_demand_forecast_properties_DEMAND_FORECAST_UX_parameters_file_name')]",
+							"next_line": "[parameters('import_manager_demand_forecast_properties_DEMAND_FORECAST_UX_parameters_next_line')]"
+						}
+					}
+				],
+				"type": "BlobEventsTrigger",
+				"typeProperties": {
+					"blobPathBeginsWith": "/staging/blobs/DEV/Upload/DemandForecast/",
+					"blobPathEndsWith": ".xlsx",
+					"ignoreEmptyBlobs": true,
+					"scope": "[parameters('import_manager_demand_forecast_properties_typeProperties_scope')]",
+					"events": [
+						"Microsoft.Storage.BlobCreated"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/import_manager_fulfillment_forecast')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "FULFILLMENT_FORECAST_UX",
+							"type": "PipelineReference"
+						},
+						"parameters": {
+							"quote": "[parameters('import_manager_fulfillment_forecast_properties_FULFILLMENT_FORECAST_UX_parameters_quote')]",
+							"folder_path": "[parameters('import_manager_fulfillment_forecast_properties_FULFILLMENT_FORECAST_UX_parameters_folder_path')]",
+							"file_name": "[parameters('import_manager_fulfillment_forecast_properties_FULFILLMENT_FORECAST_UX_parameters_file_name')]",
+							"next_line": "[parameters('import_manager_fulfillment_forecast_properties_FULFILLMENT_FORECAST_UX_parameters_next_line')]"
+						}
+					}
+				],
+				"type": "BlobEventsTrigger",
+				"typeProperties": {
+					"blobPathBeginsWith": "/staging/blobs/DEV/Upload/FulfillmentForecast/",
+					"blobPathEndsWith": ".xlsx",
+					"ignoreEmptyBlobs": true,
+					"scope": "[parameters('import_manager_fulfillment_forecast_properties_typeProperties_scope')]",
+					"events": [
+						"Microsoft.Storage.BlobCreated"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/import_manager_inventory')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "INVENTORY_UX",
+							"type": "PipelineReference"
+						},
+						"parameters": {
+							"quote": "[parameters('import_manager_inventory_properties_INVENTORY_UX_parameters_quote')]",
+							"folder_path": "[parameters('import_manager_inventory_properties_INVENTORY_UX_parameters_folder_path')]",
+							"file_name": "[parameters('import_manager_inventory_properties_INVENTORY_UX_parameters_file_name')]",
+							"next_line": "[parameters('import_manager_inventory_properties_INVENTORY_UX_parameters_next_line')]"
+						}
+					}
+				],
+				"type": "BlobEventsTrigger",
+				"typeProperties": {
+					"blobPathBeginsWith": "/staging/blobs/DEV/Upload/Inventory/",
+					"blobPathEndsWith": ".xlsx",
+					"ignoreEmptyBlobs": true,
+					"scope": "[parameters('import_manager_inventory_properties_typeProperties_scope')]",
+					"events": [
+						"Microsoft.Storage.BlobCreated"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/import_manager_location')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "LOCATION_UX",
+							"type": "PipelineReference"
+						},
+						"parameters": {
+							"quote": "[parameters('import_manager_location_properties_LOCATION_UX_parameters_quote')]",
+							"folder_path": "[parameters('import_manager_location_properties_LOCATION_UX_parameters_folder_path')]",
+							"file_name": "[parameters('import_manager_location_properties_LOCATION_UX_parameters_file_name')]",
+							"next_line": "[parameters('import_manager_location_properties_LOCATION_UX_parameters_next_line')]"
+						}
+					}
+				],
+				"type": "BlobEventsTrigger",
+				"typeProperties": {
+					"blobPathBeginsWith": "/staging/blobs/DEV/Upload/Location/",
+					"blobPathEndsWith": ".xlsx",
+					"ignoreEmptyBlobs": true,
+					"scope": "[parameters('import_manager_location_properties_typeProperties_scope')]",
+					"events": [
+						"Microsoft.Storage.BlobCreated"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/import_manager_location_staffing')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "LOCATION_STAFFING",
+							"type": "PipelineReference"
+						},
+						"parameters": {
+							"quote": "[parameters('import_manager_location_staffing_properties_LOCATION_STAFFING_parameters_quote')]",
+							"folder_path": "[parameters('import_manager_location_staffing_properties_LOCATION_STAFFING_parameters_folder_path')]",
+							"file_name": "[parameters('import_manager_location_staffing_properties_LOCATION_STAFFING_parameters_file_name')]",
+							"next_line": "[parameters('import_manager_location_staffing_properties_LOCATION_STAFFING_parameters_next_line')]"
+						}
+					}
+				],
+				"type": "BlobEventsTrigger",
+				"typeProperties": {
+					"blobPathBeginsWith": "/staging/blobs/DEV/Upload/LocationStaffing/",
+					"blobPathEndsWith": ".xlsx",
+					"ignoreEmptyBlobs": true,
+					"scope": "[parameters('import_manager_location_staffing_properties_typeProperties_scope')]",
+					"events": [
+						"Microsoft.Storage.BlobCreated"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/sftp_upload_budget_staffing')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "BUDGET_STAFFING",
+							"type": "PipelineReference"
+						},
+						"parameters": {
+							"folder_path": "[parameters('sftp_upload_budget_staffing_properties_BUDGET_STAFFING_parameters_folder_path')]",
+							"file_name": "[parameters('sftp_upload_budget_staffing_properties_BUDGET_STAFFING_parameters_file_name')]"
+						}
+					}
+				],
+				"type": "BlobEventsTrigger",
+				"typeProperties": {
+					"blobPathBeginsWith": "/main/blobs/Radial/BudgetStaffing",
+					"blobPathEndsWith": ".csv",
+					"ignoreEmptyBlobs": true,
+					"scope": "[parameters('sftp_upload_budget_staffing_properties_typeProperties_scope')]",
+					"events": [
+						"Microsoft.Storage.BlobCreated"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/sftp_upload_daily_actuals')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "DAILY_ACTUALS",
+							"type": "PipelineReference"
+						},
+						"parameters": {
+							"folder_path": "[parameters('sftp_upload_daily_actuals_properties_DAILY_ACTUALS_parameters_folder_path')]",
+							"file_name": "[parameters('sftp_upload_daily_actuals_properties_DAILY_ACTUALS_parameters_file_name')]"
+						}
+					}
+				],
+				"type": "BlobEventsTrigger",
+				"typeProperties": {
+					"blobPathBeginsWith": "/main/blobs/Radial/DailyActuals",
+					"blobPathEndsWith": ".csv",
+					"ignoreEmptyBlobs": true,
+					"scope": "[parameters('sftp_upload_daily_actuals_properties_typeProperties_scope')]",
+					"events": [
+						"Microsoft.Storage.BlobCreated"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/sftp_upload_fulfillment_forecast')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "FULFILLMENT_FORECAST",
+							"type": "PipelineReference"
+						},
+						"parameters": {
+							"folder_path": "[parameters('sftp_upload_fulfillment_forecast_properties_FULFILLMENT_FORECAST_parameters_folder_path')]",
+							"file_name": "[parameters('sftp_upload_fulfillment_forecast_properties_FULFILLMENT_FORECAST_parameters_file_name')]"
+						}
+					}
+				],
+				"type": "BlobEventsTrigger",
+				"typeProperties": {
+					"blobPathBeginsWith": "/main/blobs/Radial/FulfillmentForecast",
+					"blobPathEndsWith": ".csv",
+					"ignoreEmptyBlobs": true,
+					"scope": "[parameters('sftp_upload_fulfillment_forecast_properties_typeProperties_scope')]",
+					"events": [
+						"Microsoft.Storage.BlobCreated"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/sftp_upload_location_master')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "LOCATION_MASTER",
+							"type": "PipelineReference"
+						},
+						"parameters": {
+							"folder_path": "[parameters('sftp_upload_location_master_properties_LOCATION_MASTER_parameters_folder_path')]",
+							"file_name": "[parameters('sftp_upload_location_master_properties_LOCATION_MASTER_parameters_file_name')]"
+						}
+					}
+				],
+				"type": "BlobEventsTrigger",
+				"typeProperties": {
+					"blobPathBeginsWith": "/main/blobs/Radial/LocationMaster",
+					"blobPathEndsWith": ".csv",
+					"ignoreEmptyBlobs": true,
+					"scope": "[parameters('sftp_upload_location_master_properties_typeProperties_scope')]",
+					"events": [
+						"Microsoft.Storage.BlobCreated"
+					]
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}
