@@ -26,13 +26,6 @@ jobs:
         # Paste output of `az ad sp create-for-rbac` as value of secret variable: AZURE_CREDENTIALS
         creds: ${{secrets.AZURE_CREDENTIALS}}
 
-    - name: Check DB STring
-      env:
-        MY_HOST: "${{secrets.DB_QA_CONN_STRING}}"
-      run: |
-        # Use the secret value with an equal sign
-        echo $MY_HOST
-
     - name: Stop All ADF Triggers
       run: |
         triggers=$(az datafactory trigger list --resource-group rg-qa-001 --factory-name $FACTORY_NAME --query "[].name" -o tsv)
